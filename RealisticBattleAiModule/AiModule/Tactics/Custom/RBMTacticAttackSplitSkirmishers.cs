@@ -31,10 +31,10 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
             // The second reserved infantry slot is often empty: search FormationsIncludingEmpty to find it.
-            Formation skirmisherSlot = FormationsIncludingEmpty.FirstOrDefault((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation);
+            Formation skirmisherSlot = FormationsIncludingEmpty.FirstOrDefault((Formation f) => f != _mainInfantry && f.IsAIOwned && f.QuerySystem.IsInfantryFormation);
 
-            // ChooseAndSortByPriority only prefers AI formations: never reshuffle player-commanded men.
-            if (skirmisherSlot != null && _mainInfantry.IsAIControlled)
+            // ChooseAndSortByPriority only prefers AI formations: never reshuffle player-commanded men (IsAIOwned: delegated ones too).
+            if (skirmisherSlot != null && _mainInfantry.IsAIOwned)
             {
                 // Read the two infantry slots directly: QuerySystem can be stale right after ManageFormationCounts.
                 List<Agent> allInfantry = new List<Agent>();

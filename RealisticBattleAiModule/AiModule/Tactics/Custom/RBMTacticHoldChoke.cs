@@ -55,7 +55,8 @@ public class RBMTacticHoldChoke : TacticComponent
     /// <summary>HoldLateCharge.ChargeReason when engaged, else null.</summary>
     private string _engagedWord;
     private float _engagedAt = float.NaN;
-    private float _noFootSince = float.NaN;
+    /// <summary>The recall rules' timers (no foot / calm, separate).</summary>
+    private readonly HoldRecall _recall = new HoldRecall();
     /// <summary>Pursuit leash's anchor.</summary>
     private Vec2 _chargeStart = Vec2.Invalid;
     private float _recalledAt = float.NaN; // NaN = none; quiet for RecallQuietSeconds after it
@@ -86,7 +87,7 @@ public class RBMTacticHoldChoke : TacticComponent
         _engaged = false;
         _engagedWord = null;
         _engagedAt = float.NaN;
-        _noFootSince = float.NaN;
+        _recall.Reset();
         _chargeStart = Vec2.Invalid;
         _recalledAt = float.NaN;
         _infantryPeak = 0;
@@ -337,7 +338,7 @@ public class RBMTacticHoldChoke : TacticComponent
                 _engagedWord = word;
                 _engagedAt = now;
                 _engagedMen = infantryMen;
-                _noFootSince = float.NaN;
+                _recall.Reset();
                 _chargeStart = (_mainInfantry != null && _mainInfantry.CountOfUnits > 0) ? RBMAI.Utilities.GetFormationCenter(_mainInfantry) : Vec2.Invalid;
                 IsTacticReapplyNeeded = true;
                 TerrainChokeHold.Enqueue(Team, _mainInfantry, now, "Hold->Engage", "hold",
@@ -379,7 +380,7 @@ public class RBMTacticHoldChoke : TacticComponent
         if (mission == null || plan == null || _mainInfantry == null || _mainInfantry.CountOfUnits < HoldLateCharge.LineGoneMen
             || !HoldLateCharge.IsLocalChargeReason(word) || float.IsNaN(_engagedAt))
         {
-            _noFootSince = float.NaN;
+            _recall.Reset();
             return;
         }
         Vec2 centre = RBMAI.Utilities.GetFormationCenter(_mainInfantry);
@@ -391,6 +392,7 @@ public class RBMTacticHoldChoke : TacticComponent
         if (toHold > RecallReturnDistance)
         {
             // Beyond RecallReturnDistance: still fighting = the full engage (FarFightWord); calm for RecallSeconds = back to the hold.
+            _recall.ResetNoFoot();
             float farMelee = HoldLateCharge.MeleeShare(_mainInfantry);
             if (farMelee >= HoldLateCharge.ContactMeleeShare)
             {
@@ -398,43 +400,30 @@ public class RBMTacticHoldChoke : TacticComponent
                     + TerrainChokeHold.Fmt0(toHold) + "m from the hold (>" + TerrainChokeHold.Fmt0(RecallReturnDistance) + ") melee="
                     + farMelee.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + ": full engage");
                 _engagedWord = FarFightWord;
-                _noFootSince = float.NaN;
+                _recall.Reset();
                 IsTacticReapplyNeeded = true;
                 return;
             }
             CheckCalmRecall(mission, plan, now);
             return;
         }
-        float nearestFootOld;
-        float nearestFoot = HoldLateCharge.NearestEnemyFootGap(mission, _mainInfantry, out nearestFootOld);
-        float leash = _chargeStart.IsValid ? centre.Distance(_chargeStart) : 0f;
-        // Never out of a fight it is in (significant enemy foot within ContactGap).
-        if (leash > LeashDistance && nearestFoot > HoldLateCharge.ContactGap)
+        _recall.ResetCalm();
+        float nearestFoot = HoldLateCharge.NearestEnemyFootGap(mission, _mainInfantry);
+        float leash;
+        float melee;
+        if (HoldRecall.Leashed(_mainInfantry, centre, _chargeStart, LeashDistance, nearestFoot, out leash, out melee))
         {
-            float melee = HoldLateCharge.MeleeShare(_mainInfantry);
-            if (melee < HoldLateCharge.ContactMeleeShare)
-            {
-                Recall(now, "recall leash " + word + " charge: " + TerrainChokeHold.Fmt0(leash) + "m from its start (>"
-                    + TerrainChokeHold.Fmt0(LeashDistance) + ") melee=" + melee.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
-                    + " foot=" + FootText(nearestFoot, nearestFootOld) + " back to the hold " + TerrainChokeHold.Fmt0(toHold) + "m", true);
-                return;
-            }
-        }
-        if (now - _engagedAt < HoldLateCharge.RecallMinCharge || nearestFoot <= HoldLateCharge.RecallFootGap)
-        {
-            _noFootSince = float.NaN;
+            Recall(now, "recall leash " + word + " charge: " + TerrainChokeHold.Fmt0(leash) + "m from its start (>"
+                + TerrainChokeHold.Fmt0(LeashDistance) + ") melee=" + melee.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                + " foot=" + FootText(nearestFoot) + " back to the hold " + TerrainChokeHold.Fmt0(toHold) + "m", true);
             return;
         }
-        if (float.IsNaN(_noFootSince))
-        {
-            _noFootSince = now;
-        }
-        if (now - _noFootSince < HoldLateCharge.RecallSeconds)
+        if (!_recall.NoFootFor(now, _engagedAt, nearestFoot))
         {
             return;
         }
         Recall(now, "recall " + word + " charge: no enemy foot within " + TerrainChokeHold.Fmt0(HoldLateCharge.RecallFootGap) + "m for "
-            + TerrainChokeHold.Fmt0(HoldLateCharge.RecallSeconds) + "s (nearest foot=" + FootText(nearestFoot, nearestFootOld)
+            + TerrainChokeHold.Fmt0(HoldLateCharge.RecallSeconds) + "s (nearest foot=" + FootText(nearestFoot)
             + ") back to the hold " + TerrainChokeHold.Fmt0(toHold) + "m", true);
     }
 
@@ -444,7 +433,7 @@ public class RBMTacticHoldChoke : TacticComponent
         _engaged = false;
         _engagedWord = null;
         _engagedAt = float.NaN;
-        _noFootSince = float.NaN;
+        _recall.Reset();
         _chargeStart = Vec2.Invalid;
         _recalledAt = quiet ? now : float.NaN;
         _applyGeneration++;
@@ -464,20 +453,11 @@ public class RBMTacticHoldChoke : TacticComponent
         if (mission == null || plan == null || _mainInfantry == null || _mainInfantry.CountOfUnits < HoldLateCharge.LineGoneMen
             || float.IsNaN(_engagedAt) || now - _engagedAt < HoldLateCharge.RecallMinCharge)
         {
-            _noFootSince = float.NaN;
+            _recall.ResetCalm();
             return;
         }
-        string calm = HoldLateCharge.CalmReason(mission, _mainInfantry, word == "outshot");
+        string calm = _recall.CalmFor(now, _engagedAt, HoldLateCharge.CalmReason(mission, _mainInfantry, word == "outshot"));
         if (calm == null)
-        {
-            _noFootSince = float.NaN;
-            return;
-        }
-        if (float.IsNaN(_noFootSince))
-        {
-            _noFootSince = now;
-        }
-        if (now - _noFootSince < HoldLateCharge.RecallSeconds)
         {
             return;
         }
@@ -487,9 +467,9 @@ public class RBMTacticHoldChoke : TacticComponent
             + "s, back to the hold " + TerrainChokeHold.Fmt0(toHold) + "m", true);
     }
 
-    private static string FootText(float nearestFoot, float old)
+    private static string FootText(float nearestFoot)
     {
-        return FormationGeometry.Shadow(nearestFoot, old);
+        return FormationGeometry.GapText(nearestFoot);
     }
 
     /// <summary>

@@ -241,6 +241,79 @@ namespace RBMAI
             return true;
         }
 
+        /// <summary>
+        /// HasBattleBeenJoined for a tactic whose main infantry may be missing: while the team has a FormationCohesion.TeamMain, the old test. Otherwise (no
+        /// melee-infantry main; a token infantry formation the native tactic still passes as its main included) measured from the team's position anchor
+        /// (ArmyComposition): joined when the enemy is only cavalry, the anchor is in melee, an archer anchor is dry (ArmyComposition.IsDry), or a significant
+        /// enemy of any class is within range (+10 m once joined). No anchor (all mounted / token foot): joined, as before. An ArmyScale tiny side keeps the old test.
+        /// </summary>
+        public static bool HasBattleBeenJoined(Team team, Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange = 75f)
+        {
+            if (!UsesAnchor(team))
+            {
+                return HasBattleBeenJoined(mainInfantry, hasBattleBeenJoined, battleJoinRange);
+            }
+            Formation anchor = ArmyComposition.PositionAnchor(team);
+            if (anchor == null || anchor.CountOfUnits <= 0 || CheckIfOnlyCavRemaining(anchor))
+            {
+                return true;
+            }
+            // the anchor is never mounted, so a dry anchor is a dry archer anchor
+            if (FormationFightingInMelee(anchor, ArmyComposition.InMelee) || ArmyComposition.IsDry(anchor))
+            {
+                return true;
+            }
+            float gap = NearestSignificantEnemyGap(anchor);
+            return gap <= battleJoinRange + (hasBattleBeenJoined ? 10f : 0f);
+        }
+
+        /// <summary>The anchor path for a team with no melee-infantry main (FormationCohesion.TeamMain), whatever the tactic passes (native tactics pass a token
+        /// infantry group as their main); a TeamMain (e.g. player-led, not the tactic's) keeps the old test, and so does an ArmyScale tiny side.</summary>
+        private static bool UsesAnchor(Team team)
+        {
+            if (team == null || FormationCohesion.TeamMain(team) != null)
+            {
+                return false;
+            }
+            ArmyScale.SideScale scale = ArmyScale.For(team.Side);
+            return !(scale != null && scale.ReactionsOff);
+        }
+
+        /// <summary>AI thread: edge gap (ScatterAware) from the formation to the nearest enemy formation significant to it; MaxValue without one.</summary>
+        internal static float NearestSignificantEnemyGap(Formation formation)
+        {
+            float best = float.MaxValue;
+            Mission mission = Mission.Current;
+            if (formation?.Team == null || mission == null)
+            {
+                return best;
+            }
+            Mission.TeamCollection teams = mission.Teams;
+            for (int t = 0; t < teams.Count; t++)
+            {
+                Team team = teams[t];
+                if (team == null || !team.IsEnemyOf(formation.Team))
+                {
+                    continue;
+                }
+                MBList<Formation> formations = team.FormationsIncludingEmpty;
+                for (int i = 0; i < formations.Count; i++)
+                {
+                    Formation e = formations[i];
+                    if (e == null || e.CountOfUnits <= 0 || !ThreatSignificance.IsSignificant(formation, e))
+                    {
+                        continue;
+                    }
+                    float gap = FormationGeometry.Gap(formation, FootprintMode.ScatterAware, e, FootprintMode.ScatterAware);
+                    if (gap < best)
+                    {
+                        best = gap;
+                    }
+                }
+            }
+            return best;
+        }
+
         private sealed class AttackJoinLatch
         {
             public bool Joined;
@@ -259,9 +332,15 @@ namespace RBMAI
 
         private const float AttackUnjoinSeconds = 10f;
 
-        /// <summary>The main infantry is fighting in melee, or a significant enemy formation exists for it to join.</summary>
-        private static bool HasEnemyToJoin(Formation mainInfantry)
+        /// <summary>The main infantry is fighting in melee, or a significant enemy formation exists for it to join. Without one, the same for the position anchor (any enemy class).</summary>
+        private static bool HasEnemyToJoin(Formation mainInfantry, Team team)
         {
+            if (UsesAnchor(team))
+            {
+                Formation anchor = ArmyComposition.PositionAnchor(team);
+                return anchor != null && anchor.CountOfUnits > 0
+                    && (FormationFightingInMelee(anchor, ArmyComposition.InMelee) || NearestSignificantEnemyGap(anchor) < float.MaxValue);
+            }
             if (mainInfantry == null || mainInfantry.CountOfUnits <= 0)
             {
                 return false;
@@ -289,10 +368,10 @@ namespace RBMAI
             }
             AttackJoinLatch latch = _attackJoinLatches.GetOrAdd(team, t => new AttackJoinLatch());
             float now = mission.CurrentTime;
-            if (HasBattleBeenJoined(mainInfantry, hasBattleBeenJoined || latch.Joined, battleJoinRange))
+            if (HasBattleBeenJoined(team, mainInfantry, hasBattleBeenJoined || latch.Joined, battleJoinRange))
             {
                 // HasBattleBeenJoined is also true with no enemy formation (team's first decision, before spawn): only a join against a real enemy latches.
-                if (!latch.Joined && !HasEnemyToJoin(mainInfantry))
+                if (!latch.Joined && !HasEnemyToJoin(mainInfantry, team))
                 {
                     return true;
                 }
@@ -313,7 +392,12 @@ namespace RBMAI
                 return true;
             }
             bool quiet = true;
-            if (mainInfantry != null && mainInfantry.CountOfUnits > 0)
+            Formation anchor = UsesAnchor(team) ?ArmyComposition.PositionAnchor(team) : null;
+            if (anchor != null && anchor.CountOfUnits > 0)
+            {
+                quiet = !FormationFightingInMelee(anchor, AttackUnjoinMelee) && NearestSignificantEnemyGap(anchor) > AttackUnjoinGap;
+            }
+            else if (mainInfantry != null && mainInfantry.CountOfUnits > 0)
             {
                 if (FormationFightingInMelee(mainInfantry, AttackUnjoinMelee))
                 {

@@ -107,6 +107,7 @@ namespace RBMAI
         private const float ScatterSnapshotMaxAge = 0.5f; // s
         private const float DetachedMaxGap = 50f; // m beyond the attached men's bounds; detached men farther out are not part of the block
         private const float TrimSigmas = 2f;
+        private const float ScatterMinCapSide = 20f; // m: a scattered box side is capped at max(2x the nominal size, this)
 
         internal static bool TryGet(Formation formation, FootprintMode mode, out Footprint footprint)
         {
@@ -351,40 +352,14 @@ namespace RBMAI
             return (length > 0.01f) ? Vec2.DotProduct(velocity, to) / length : 0f;
         }
 
-        // shadow log: the measure the migrated sites used before, printed beside the new gap
-
-        /// <summary>Computing the old measures is worth it only while the terrain log (BEHAVIOR / REACT lines) is written.</summary>
-        internal static bool ShadowOn => RBMConfig.RBMConfig.battleTerrainLoggingEnabled;
-
-        /// <summary>Old "circle" gap: centre distance minus half the larger side of each; NaN without centres.</summary>
-        internal static float OldCircleGap(Formation a, Formation b)
-        {
-            if (a == null || b == null)
-            {
-                return float.NaN;
-            }
-            Vec2 ca = RBMAI.Utilities.GetFormationCenter(a);
-            Vec2 cb = RBMAI.Utilities.GetFormationCenter(b);
-            if (!ca.IsValid || !cb.IsValid)
-            {
-                return float.NaN;
-            }
-            return ca.Distance(cb) - MathF.Max(a.Width, a.Depth) * 0.5f - MathF.Max(b.Width, b.Depth) * 0.5f;
-        }
-
-        /// <summary>"Xm(old Ym)", or "Xm" when old is NaN / not computed; "none" for MaxValue.</summary>
-        internal static string Shadow(float gap, float old)
+        /// <summary>Log text of a gap: "Xm", "none" for MaxValue / NaN.</summary>
+        internal static string GapText(float gap)
         {
             if (gap == float.MaxValue || float.IsNaN(gap))
             {
                 return "none";
             }
-            string text = gap.ToString("0", CultureInfo.InvariantCulture) + "m";
-            if (float.IsNaN(old) || old == float.MaxValue)
-            {
-                return text;
-            }
-            return text + "(old " + old.ToString("0", CultureInfo.InvariantCulture) + "m)";
+            return gap.ToString("0", CultureInfo.InvariantCulture) + "m";
         }
 
         private static bool Separated(in Footprint a, in Footprint b, Vec2 axis)
@@ -421,19 +396,28 @@ namespace RBMAI
             {
                 return false;
             }
-            footprint = Footprint.Box(snapshot.RobustCentre, snapshot.RobustDir, MathF.Max(snapshot.RobustHalfAcross, MinSize * 0.5f),
-                MathF.Max(snapshot.RobustHalfAlong, MinSize * 0.5f));
+            // USER RULE 2026-10-30: each side at most 2x the formation's own Width / Depth (>= ScatterMinCapSide), on the bulk of the men
+            Vec2 dir = snapshot.RobustDir;
+            Vec2 side = new Vec2(-dir.y, dir.x);
+            Vec2 toBulk = snapshot.RobustBulk - snapshot.RobustCentre;
+            float along = CappedOffset(snapshot.RobustHalfAlong, toBulk.x * dir.x + toBulk.y * dir.y,
+                MathF.Max(formation.Depth, ScatterMinCapSide * 0.5f), out float halfAlong);
+            float across = CappedOffset(snapshot.RobustHalfAcross, toBulk.x * side.x + toBulk.y * side.y,
+                MathF.Max(formation.Width, ScatterMinCapSide * 0.5f), out float halfAcross);
+            footprint = Footprint.Box(snapshot.RobustCentre + dir * along + side * across, dir, MathF.Max(halfAcross, MinSize * 0.5f),
+                MathF.Max(halfAlong, MinSize * 0.5f));
             return true;
         }
 
         /// <summary>
         /// The men's box in the frame (dir, its side): selectable men only, detached ones only within DetachedMaxGap of the attached men's
-        /// bounds, each axis trimmed to the men within mean +- TrimSigmas sigma. Pure; false without a man.
+        /// bounds, each axis trimmed to the men within mean +- TrimSigmas sigma; bulk = the kept men's mean per axis. Pure; false without a man.
         /// </summary>
         internal static bool RobustBox(Vec2[] positions, bool[] selectable, int attachedCount, Vec2 dir,
-            out Vec2 centre, out Vec2 frameDir, out float halfAlong, out float halfAcross, out int count)
+            out Vec2 centre, out Vec2 frameDir, out float halfAlong, out float halfAcross, out int count, out Vec2 bulk)
         {
             centre = Vec2.Invalid;
+            bulk = Vec2.Invalid;
             halfAlong = 0f;
             halfAcross = 0f;
             count = 0;
@@ -503,6 +487,10 @@ namespace RBMAI
             float highA = float.MinValue;
             float lowB = float.MaxValue;
             float highB = float.MinValue;
+            double keptSumA = 0.0;
+            double keptSumB = 0.0;
+            int keptA = 0;
+            int keptB = 0;
             for (int i = 0; i < n; i++)
             {
                 if (!selectable[i] || !positions[i].IsValid || (i >= attachedCount && !DetachedIncluded(positions[i], attached, minX, minY, maxX, maxY)))
@@ -516,11 +504,15 @@ namespace RBMAI
                 {
                     lowA = Math.Min(lowA, a);
                     highA = Math.Max(highA, a);
+                    keptSumA += a;
+                    keptA++;
                 }
                 if (Math.Abs(b - meanB) <= limitB)
                 {
                     lowB = Math.Min(lowB, b);
                     highB = Math.Max(highB, b);
+                    keptSumB += b;
+                    keptB++;
                 }
             }
             if (lowA > highA || lowB > highB)
@@ -529,9 +521,26 @@ namespace RBMAI
                 return false;
             }
             centre = origin + u * ((lowA + highA) * 0.5f) + s * ((lowB + highB) * 0.5f);
+            bulk = origin + u * (float)(keptSumA / keptA) + s * (float)(keptSumB / keptB);
             halfAlong = (highA - lowA) * 0.5f;
             halfAcross = (highB - lowB) * 0.5f;
             return true;
+        }
+
+        /// <summary>
+        /// One axis of the men's box capped to maxHalf: the capped half size, and the returned offset of its centre from the box centre,
+        /// on the bulk of the men (bulkOffset) but inside the box. A box within the cap is unchanged (offset 0). Pure.
+        /// </summary>
+        internal static float CappedOffset(float half, float bulkOffset, float maxHalf, out float cappedHalf)
+        {
+            if (half <= maxHalf)
+            {
+                cappedHalf = half;
+                return 0f;
+            }
+            cappedHalf = maxHalf;
+            float room = half - maxHalf;
+            return Math.Max(-room, Math.Min(room, bulkOffset));
         }
 
         private static void Accumulate(Vec2 r, Vec2 u, Vec2 s, ref double sumA, ref double sumB, ref double sqA, ref double sqB)

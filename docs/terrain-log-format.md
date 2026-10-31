@@ -221,8 +221,8 @@ Terrain tactics (TerrainTacticFactors). A terrain factor t per tactic and side: 
 TerrainWeight 2, clamped 0.35..2.5 (shown as t=F(rawR)), computed and published once right after the TERRAIN lines in
 every field battle. With terrainTacticsEnabled (applied=1) it is IN the AI's choice: the final weight =
 GetTacticWeight through RBM's patches = composition fit x TacticSelection's culture/commander/jitter multiplier x t,
-and RBM's 30 s TacticDwell hold is dropped at the publish (`# terrain tactic factors published ...: tactic dwell
-released for N team(s)`) so the next native decision (<= 5 s) re-picks with it. With the toggle off (applied=0) the
+and every team is marked for one terrain re-pick at its next decision (<= 5 s; `# terrain tactic factors published
+...: terrain re-pick ... due for N team(s)`; it runs whatever RBM's 30 s TacticDwell holds). With the toggle off (applied=0) the
 lines are a prediction only: weight x t. Terrain is never multiplied twice: applied, the evaluated weight already holds
 t and the no-terrain score is w / t. The weights are re-read on each line, the factors fixed. Native's x1.5 bonus for
 the current tactic and the dwell hold are not modelled, so agree=0 can mean the AI is holding its tactic, not that it
@@ -328,10 +328,13 @@ SPOTS t  SPOTS  replan  side  reason  wallMs  pruned  (SPOTS fields)   (main thr
        re-planned only when its OWN army moved > 40 m / its main formation turned > 15 deg since its own
        last plan: "(own moved Xm turned Ydeg)", else "kept vN (own moved ...)" (its version stays)
 SPOTS t  SPOTS  replanStop  melee gap Nm<120m | melee atk|def main S in melee | cap 10   no more
-       re-plans this battle (the lines are meeting: centres < 120 m apart or a main infantry >= 10% in
-       melee; or the cap)
-GAP SHADOW: a gap written key=Xm(old Ym) in BEHAVIOR / REACT lines is FormationGeometry's footprint edge gap X (0 =
-       overlapping) with Y the measure that site used before (circle / depth); checker 14 sums new - old
+       re-plans this battle of the archer spots AND the cavalry ground (one job, TerrainArmyReplan, one
+       line for both; the lines are meeting: centres < 120 m apart or a main infantry >= 10% in melee;
+       or the cap). The spots' and the cavalry's replan lines of one job carry the same reason / wallMs;
+       a failed job writes SPOTS replan failed= (and CAVALRY replan failed= while the cavalry ground has
+       a plan)
+Gaps (gap=, foot=, allyGap=, ... in BEHAVIOR / REACT lines) are FormationGeometry's footprint edge gaps (0 = overlapping),
+       written Xm, "none" without one.
 BEHAVIOR t  BEHAVIOR  team  formation  ArcherFlank|ArcherSkirmish  cover take|change|step|engaged|disengaged|
        release|none|stay  spot=cover  why   ArcherCover (DEFENDER archers take cover behind / beside friendly
        infantry from a closing significant enemy melee FOOT formation: <= 35 m or closing within 70 m;
@@ -431,8 +434,9 @@ CAVALRY t  CAVALRY  replan  side  reason  wallMs  pruned  (CAVALRY fields)   (ma
        lanes / reform points found again from where the armies stand NOW (same rules; the lane
        aims spread along each enemy main formation's current line when it faces within 60 deg of the
        axis, else across the axis; the read's frontages, paces and bad-ground mask) on a background task,
-       published as the next version. Same timer, cap, stop and fields as SPOTS replan / replanStop
-       (its own count)
+       published as the next version. The SAME job as SPOTS replan (one frame, one timer, cap and stop:
+       the SPOTS replanStop line), run only while the cavalry ground has a plan for a side. A re-plan
+       with no earlier plan publishes v=2 (as the spots)
 BEHAVIOR t  BEHAVIOR  team  formation  behavior  what  point  why   (AI thread, queued) what =
        takeLane/releaseLane (CavalryCharge rides to a lane's run-up point, then charges: why=arrived,
        timeout 15 s, melee, enemyClose < 60 m, targetMoved, stale ..., inactive, newCharge, behaviorEnded),
@@ -464,31 +468,57 @@ FORMSHAPE t  FORMSHAPE  team  formation  behavior  what  why  values   (AI threa
        back at >= 1.3 x); values = share woods minPass at normal narrow width depth men arr
 BEHAVIOR t  BEHAVIOR  team  formation  CavalryCharge  chaseTimeout  why = fN Ns dist A->B excluded Ns (xK)
        [footOnly 60s]: the target's exclusion doubles per repeat (20/40/80 s); a second timeout within 60 s
-       picks foot targets only for 60 s (gap audit C6).
+       picks foot targets only for 60 s (gap audit C6). Never while the target is <= 80 m (edge gap) or our
+       dev > 3 x idealDisp (the window restarts).
+BEHAVIOR t  BEHAVIOR  team  formation  CavalryCharge  charge advance|charge go  why (FORMED APPROACH, USER RULE 2026-10-30):
+       an AI cavalry charge (Charging, off a lane) whose target is beyond 35 m edge gap (FootprintMode.Current) rides
+       a Move in Line to the target's near edge (led by its sampled velocity, <= 2 s, never back toward us), facing it,
+       at full pace. advance why = "fN -> fM:Class gap=Gm[ keepLost]" (keepLost = a go whose gap stayed > 110 m for 2 s
+       with no melee / contact). go why = "fM:Class gap=Gm | melee gap=Gm (own riders >= 0.2 in melee) | clash closing=C gap=Gm (mounted target, closing m/s x 4 s >= gap)
+       | noPoint after Ns" = the ChargeToTarget starts; the through / contact timers start only here. Logged only when
+       a go ends an advance (a charge already within 35 m goes without lines).
 BEHAVIOR t  BEHAVIOR  team  formation  CavalryCharge  reform take|change|release|none  why = kind=through|left|
-       right|back gap=Gm(enemy fN:Class) ride=Rm overlap=S terrain=slopeD|- cost=C [was=kind(why)]: the reform
-       point picked from the live situation (CavalryReform): through 120/160/200 m beyond the target's far edge,
-       left/right 130/180 m off the charge line, back 40 m behind our main; rejected with a significant enemy
-       <= 60 m edge gap, friend overlap > 0.3 (kept to 0.5), off the map / not walkable, bad ground (terrain
-       tactics on); re-checked every 2 s, changed when unsafe or beaten by 25% (<= 1 / 4 s); none = the
-       rejects per kind, the reform is skipped (charge again); release why = newCharge|undetermined|
-       behaviorEnded|none(...)|noTarget
+       right|back gap=Gm(enemy fN:Class) ride=Rm overlap=S terrain=slopeD|bad,slopeD|- cost=C [was=kind(why)]: the reform
+       point picked from the live situation (CavalryReform; all shapes compact = FootprintMode.Current, 2026-10-30):
+       through 80/110/140/170/200 m beyond the target's far edge, left/right 130/180 m off the charge line, back 40 m
+       behind our position anchor (main infantry, else the foot anchor, e.g. archers); rejected with a significant
+       enemy <= 40 m edge gap (enemy), friend overlap > 0.3 (kept to 0.5), within 30 m of the map edge / not
+       walkable (ground), water (water), slope > 35 deg (steep), ride > min(150 m, 19 s x 0.75 x top speed) at the
+       take, back points > 250 m (ride); bad ground / woods only costs (terrain=bad,...; USER RULE 2026-10-30);
+       re-checked every 2 s, changed
+       when unsafe or beaten by 25% (<= 1 / 4 s), a change only to the same kind within 60 m (kind / shift);
+       none = the rejects per kind, the reform is skipped (charge again); release why =
+       newCharge(enemyClose|timeout|ready|underFire|targetGone|- dev=D/I [held=Ns])|undetermined|
+       behaviorEnded|none(...)|noTarget (dev / idealDisp of the formation, held = seconds in Reforming)
 BEHAVIOR t  BEHAVIOR  team  formation  ArcherSkirmish  counter take|change|end  counter  fN:Class d=M
        hits=R: while our archers are hit (UnderRangedAttackRatio >= 0.05, held 10 s) the nearest significant
        enemy foot ranged formation within 1.3 x the shooting range is their target (gap audit R7); charge  -
-       noAmmo|enemyClose noInfantry (no own infantry left: charges once the quivers are mostly empty or the
-       enemy is within 0.4 x range, R3).
+       enemyClose noInfantry (no melee-infantry main: charges when the enemy is within 0.4 x range, R3).
+BEHAVIOR t  BEHAVIOR  team  formation  ArcherSkirmish  initiative|initiative end  -  why (INITIATIVE, no
+       melee-infantry main, 2026-10-29): initiative = 'dry ammo=A<0.20' (ArmyComposition dry state: under 20%
+       of its archer men with ammunition; was the 0.5 noAmmo charge) | 'idle shooting=R for Ns d=D/Rm enemy=fN supportExhausted' (a significant enemy
+       within the shooting reach, MakingRangedAttackRatio < 0.05 for 20 s after SupportFire's last pick or
+       ladder ended in none) | 'ineffectiveFire lost=L/M in Ns d=D/Rm enemy=fN' (attacker only, no melee-infantry main,
+       not weaker than the enemy by weighted strength: shooting a significant enemy foot formation in reach that lost under 5 %
+       of its men over 60 s) + target=fN team=take|held <composition shares> (the same text as its COMPEVENT role
+       what=initiative, one call writes both): the archers ChargeToTarget the
+       nearest significant enemy (ChargeGuard walks it in) for the rest of the behavior's life and the team's
+       mounted ProtectFlank guards (AI-controlled only) charge with them; initiative end  -  mainInfantry fN =
+       the team has a melee-infantry main again. Only the ACTIVE behavior of an AI formation latches it, never
+       a token archer force or an ArmyScale NoPlans side (dry archers then charge on their own: COMPEVENT
+       what=initiative suppressed); kCavPlace  -  'behindMain on kCav=K>=0.50 behind fN' | 'behindMain off
+       kCav=K<=0.35 | mainLost' (the kCav place choice; ArcherFlank writes the same with point=flank). The enemyClose charge is never made at a mounted target.
 BEHAVIOR t  BEHAVIOR  team  formation  AttackSplitInfantry|FullScaleAttack  refreshOnly  formations
        battleJoined|interval Ns: a formation-count change after the battle is joined or within 30 s of the
        last split only refreshes the tactic's references (a stray formation's men join the one of their
        kind), no re-deal of the army (gap audit X3).
 BEHAVIOR t  BEHAVIOR  team  formation  ChargeGuard  charge advance|charge go|charge drop  spot=target
-       why (CHARGE START <= 50 m, USER RULE 2026-10-22, Orders/ChargeGuard.cs): an AI foot formation's
-       Charge / ChargeToTarget with its target (edge gap along the line between the centres) beyond 50 m,
+       why (CHARGE START <= 40 m, USER RULE 2026-10-22, 50 m until 2026-10-30, Orders/ChargeGuard.cs): an AI foot formation's
+       Charge / ChargeToTarget with its target (edge gap along the line between the centres) beyond 40 m,
        under 10% in melee and no significant enemy within 20 m is walked as a Move in formation to 15 m
        short of the target's edge: advance why = "fN -> fM:Class gap=Gm by=<behavior>[ keepLost]"
        (keepLost = a released charge whose gap stayed > 75 m for 3 s). go why = "gap=Gm | foot fK gap=Gm
-       (a significant enemy foot formation within 50 m) | attacked fK gap=Gm (any within 20 m) | melee=S
+       (a significant enemy foot formation within 40 m) | attacked fK gap=Gm (any within 20 m) | melee=S
        after Ns" = the real charge starts. drop why = "order=X after Ns": the behavior gave another order.
        melee go (2026-10-23): "melee=main S all=A far=N": S = share in melee of the MAIN BODY only (men within
        40 m + depth of the men's median along the facing; N men left out), A = the whole formation's share.
@@ -511,7 +541,13 @@ BEHAVIOR t  BEHAVIOR  team  formation  ArcherSkirmish|ArcherFlank|HoldPosition|H
        their place while it serves (postOk). Map label 'ArcherSkirmish(support behind)', 'HoldPosition(archers
        support behind)'. While supporting the engaged main is the cohesion anchor under Charge too and counts
        as ArcherCover's cover (archers behind it relative to the threat); cover fallback steps bend toward the
-       support place and the archers walk back to it afterwards.
+       support place and the archers walk back to it afterwards. The main is the behavior's position anchor
+       (ArmyComposition.AnchorFor: the main infantry, else the foot anchor); beside an ARCHER anchor the
+       connection reads 'archerAnchor fN d=D/Rm' (the nearest significant enemy within 0.9 x reach of the
+       anchor to take, 1.1 x to keep), places laid out round the anchor as for a main. ALONE (the formation
+       is the anchor, or there is none, 2026-10-29): main = the archers themselves; the connection reads
+       'alone fN d=D/Rm'; behind / sides / search are laid out round the archers, no cohesion test, no
+       mainMoved / outOfRange / ahead re-pick.
 ```
 
 ## Hold the choke
@@ -592,7 +628,10 @@ BEHAVIOR t  BEHAVIOR  team  formation  HoldChoke  what  point  why   (AI thread,
        engages are latched until the tactic is applied again. reface / unface (point = hold): the line
        turned in place toward the enemy's concentration (HoldReface: holding, out of melee, > 35 deg off
        for 5 s, <= 1 turn / 10 s, only within 60 deg of the gap's facing): facing a->b turn plan+ dist
-       melee conc=x,y n main w; the archers face the same way. shift / unshift / noShift (point = archer |
+       melee conc=x,y n main w; the archers and the cavalry reserve face the same way, and their places
+       turn with the line: turnPlace / unturnPlace (point = archer | reserve) as HoldPosition's (the place
+       turned round the line's pivot, or back; offGround = not walkable / near the edge).
+       shift / unshift / noShift (point = archer |
        reserve) = the place moved ONCE along the facing clear of a friend heading there:
        shift back|forward Mm friendOverlap fN:Class share=S->S2 (S > 0.3 of its footprint over where
        fN is heading: its cached order position as front-centre, ranks behind; cleared by 5 m, <= 80 m,
@@ -632,7 +671,9 @@ BATTLEPOS t  BATTLEPOS  Defender  applied  in  armies  winner  terms  total  cur
        centres / walking pace, expanded = their cells. Facing = toward the attacker's centre (choke: the gap).
        winner = kind(source) at, facing, span (walkable width, ends), line = min(span x 0.95, front x 1.2)
        (the infantry's custom width), flanks = own left/right cover (water/blocked within one line width
-       of the end, or >= 3 cells of woods/steep > 25 deg/cavalry bad ground there; the edge never covers),
+       of the end, or a run of >= 3 cells of woods/steep > 25 deg/cavalry bad ground there; the edge never
+       covers; 2026-10-30: the same test must also pass 30 m ahead of and behind the line, else
+       open(shallow-<kind>) - a patch riders ride round),
        reach (s) and walk (m). terms (raw): h = clamp(height over the ground 50-200 m in front / 15 m, -1,
        1) x 0.30; front = narrower than the attacker's frontage (0..1) - 2 x short of own frontage (not in a
        choke) x 0.15; flanks = 0.5 per covered end x 0.15; fire = share of 18 approach points (30-180 m in
@@ -687,7 +728,54 @@ BEHAVIOR t  BEHAVIOR  team  formation  HoldPosition  what  point  why   (AI thre
        m, out of melee; outshot: no shooters <= 150 m) and for 25 s only melee / allyFighting engage it;
        turnPlace / unturnPlace (point = archer | reserve) = the place turned round the line's pivot with a
        re-faced line (or back; offGround = the turned place is not walkable); reserve release / resume
-       as HoldChoke's; a player-controlled formation is never assigned
+       as HoldChoke's; reserve ready / reserve wait (point = reserve, 2026-10-30) why=line <state> | line
+       engaged | line not holding the position | noLine: the cavalry Reserve weighs 0 (the tactic's flank
+       guard) until its tactic's Line holds at its point, and again when it stops (3 s debounce both ways);
+       a player-controlled formation is never assigned.
+       No melee-infantry main: the archer anchor is never a HoldPosition Line (see ArcherStand below); other foot
+       ranged formations take the Archers role. The line engage belongs to the tactic: a line handed to another
+       formation (main swap) stays engaged until a calm recall (Engage->Hold recall); a Line that is no longer
+       the current one weighs 0.
+     ArcherStand (2026-10-29, user rule: defending archers without much infantry stand and shoot) - the
+       defender's archer anchor without an infantry main (ArmyComposition line holder; small / bandit battles
+       and terrainTacticsEnabled off too), in every tactic phase; ArcherFlank / ArcherSkirmish / HoldPosition and
+       the cover / support glue step aside for it:
+       archerStand take  why=men=N ammo=A <composition shares>
+       archerStand spot  spot=x,y  why=position <plan kind> vN d=Dm (the battle position's hold) |
+                         stay (where they stand, facing the enemy's concentration; a battle position published
+                         later is taken once while the nearest significant enemy is > 150 m away)
+       archerStand contact  why=Holding->Contact|Contact->Holding <late-charge why> gap=Gm (fights in place,
+                         the Move order kept)
+       archerStand charge dry | charge broken  why=ammo=A<0.20 | broken lost=... target=fN gap=Gm (ChargeToTarget the
+                         nearest significant enemy, ChargeGuard walks it in; latched)
+       archerStand release  why=notHolder|player|role phase=P (no longer the line holder / player control)
+       ESCORT (2026-10-30, both sides): a team without an infantry main sends its AI melee-infantry and dry
+       formations (not the anchor itself) 5 m in front of its target's front (side by side), facing its way; the
+       target = the stand holder (kind stand), else the position anchor (kind anchor, the attacker's archers). In
+       melee, or with the target gone (kind lastPoint), it holds its last point and fights there; it charges
+       when the target charges (the stand's charge, the target under a charge order, or the archers'
+       initiative), or (USER RULE 2026-10-30) when a significant enemy FOOT formation comes within
+       ChargeGuard.ChargeStartDistance 40 m edge gap of it ("foot": charges that one, re-targets foot only,
+       recalled once no enemy foot is within ChargeKeepDistance 75 m; the archers keep standing):
+       archerStand escort take  why=men=N target=stand|anchor|lastPoint:fN:Class (also on a target change)
+       archerStand escort charge  why=target=<kind>:fN:Class <stand state>|charging|initiative|foot target=fN gap=Gm (latched)
+       archerStand escort recall  why=noFoot gap=Gm (a foot charge: no enemy foot within 75 m any more, back in front of the archers)
+       archerStand escort release  why=notHolder|player|role phase=P target=fN:Class (an infantry main again / player control)
+       MOUNTED ESCORT (2026-10-30, both sides, with or without an infantry main): an AI cavalry / horse-archer
+       formation whose category is an own token force rides beside the position anchor's flank (front level with
+       its centre, just outside its width; first right, then left, then further out), facing its way;
+       MountedSkirmish / HorseArcherSkirmish weigh 0 for it. No anchor = released (old behaviour):
+       archerStand escort take  why=men=N target=main(mounted):fN:Class
+       archerStand escort charge  why=target=main(mounted):fN:Class mainCharging|mainMelee|melee|enemyNear gap=Gm target=fN gap=Gm
+                                  (the main under a real Charge order, the main / itself >= 0.1 in melee, an enemy <= 40 m)
+       archerStand escort recall  why=target=main(mounted):fN:Class (none of those any more and the enemy > 80 m: back beside the main)
+       archerStand escort release  as above (no longer token / no anchor / player control)
+       map label 'ArcherStand(holding position|moving position 40m|contact holding stay|charge fN:Class|escort fN:Class|escort contact fN:Class|escort lastPoint)'.
+       COMPEVENT anchor reason=keptInContact: the held foot anchor kept although another is 1.2x stronger,
+       because it is in melee / its stand fights / a significant enemy is within 75 m. A dry formation is never
+       the anchor (nor the line holder). The defend
+       tactics' battle joined is the stand's latched joined (an enemy within 75 m or contact), so Defend /
+       Engage no longer flip-flop.
 RESERVE t  RESERVE  [repick]  Defender  applied  position  plug  tier  hidden  dLine  reach  drop  score  cells  plan
        (at the publish and after each re-pick) the battle position's INFANTRY reserve point for
        RBMTacticReservePlug: cells 50-130 m behind the line, <= 20 m beyond either end, walkable, dry, <= 15 deg,
@@ -858,7 +946,10 @@ REACT t  REACT  team  kind  what  id=N  victim=fN:Class[(leftEnd|rightEnd)]  att
        holding line whose allyFighting rule will answer; latched = it went; late = not latched within 3 s, a
        formation is sent) | covered (another own strike on the attacker: a task, a CavalryCharge on it)
        | none (no free responder, once per event: fN:Class=reason ..., or cap) | phase (Approach->Strike /
-       Strike->Fight with the trigger) | end (reason: targetGone targetRetreat insignificant relieved disengaged
+       Strike->Fight with the trigger; a MOUNTED Strike's formed approach, FormedApproach, USER RULE 2026-10-30:
+       'strike approach gap=Gm[ keepLost]' = it rides a Move in Line to the target's near edge (React's edge gap
+       beyond 35 m; keepLost = a go whose gap stayed > 110 m for 2 s out of melee), 'strike go <why> after Ns' =
+       the ChargeToTarget starts, why as BEHAVIOR CavalryCharge charge go: gap=Gm | melee gap=Gm | clash closing=C gap=Gm | gap=0m | noPoint; a strike already within 35 m goes without lines) | end (reason: targetGone targetRetreat insignificant relieved disengaged
        timeout chaseTimeout leash threatened reshuffled lostControl overridden replaced armyRetreat noMen
        sideClosed (no stage side left after the target turned; a re-pick is a phase line 'side old->new');
        relieved ends set no responder cooldown; line 'released' = a line's latch dropped, the handshake runs again; Hunt:
@@ -891,14 +982,167 @@ SCALE t  SCALE  side  men field src power/enemy bandit siegeScene mode plans rea
        AI on a siege scene) | normal; plans=off: no battle position, choke hold, reserve plug,
        hedgehog, archer spots, cavalry lanes or flank plan for that side, no terrain factor,
        no terrain re-pick; reactions = all | R1R2 (plans off) | off (tiny)
+COMPOSITION t  COMPOSITION  team  shares  men  enemyMen  dismounted  strength  token  mainRule  main  anchor  line  k  dry  scale  trigger
+       (k = kFoot kCav kWeak kMount kHA footRangedEngage)
+       (ArmyComposition; per team with men, after the publish: every 10 s, sooner when any share or k
+       moved >= 0.05 since the team's last line, at once on a token / main / anchor / line / infantry-leads
+       change; written from the AI thread's last published plan only (the snapshot built at most once
+       a second, which holds every decision: verdict, main, anchor, line holder, k, bands), no line
+       before the team's first snapshot; trigger = first | roles | change | timer). CATEGORIES BY TROOP TYPE
+       (the troop's DefaultFormationClass via the formation's logical class counts; ammo never changes
+       a man's category; skirmishers count as archers, light cavalry as horse archers; a formation's
+       category = its majority, mounted when at least half its men are): melee infantry, archers,
+       melee cavalry, horse archers. DISMOUNTED riders count by what they are now: a formation's
+       mounted men = its cached physical mount share (QuerySystem cav + horse-archer unit ratios,
+       ReadOnly, normalised over the four ratios) x its men, never above the troop-type count; the
+       difference moves melee cavalry -> infantry and horse archers -> archers in proportion
+       (ammo still never moves anyone); dismounted = own/enemy such riders (already inside the
+       inf:/arc: men, also in a formation's category). shares = MEN x class weight (inf 1, arc 1, cav 1.5, ha 1.3)
+       smoothed by an EMA (tau 10 s; reseeded unsmoothed when a side's men grow > 20 % over their
+       lowest since the last seed - reinforcements, refills - and once at the terrain publish):
+       own inf / rng (archers) / cav / ha / mnt = cav + ha, haOfMnt = horse archers' share of our
+       mounted, enemy eFoot / eRng / eCav / eHa, cavRatio = own non-token mounted / enemy non-token
+       melee cavalry (capped 10); men = raw own men inf:arc:cav:ha, enemyMen the same; strength =
+       raw own/enemy weighted men, start = the enemy's at the first snapshot plus every later rise
+       (arrivals are not losses; wear-down's enemyLoss); token = token categories "own:inf,ha
+       enemy:-" (TOKEN FORCE: weighted share < 0.10 AND < 60 men; stops at >= 0.15 or >= 80 men;
+       a token category never drives a role or ramp: no main, no anchor, no archer stand, no
+       initiative, never "our cavalry" for FollowCavalry, nothing for wear-down to hold, kWeak 0
+       with all our mounted token, and an enemy token category counts as absent in kFoot / kCav /
+       kHA, the army frame's enemy infantry and the HA push's "only mounted left"); mainRule =
+       the ONE main-body verdict "leads|noLead share=S" (the team's smoothed infantry share of its
+       weighted men; leads needs >= 0.25 to start, keeps it down to 0.15, never with own infantry a
+       token force); main = FormationCohesion.TeamMain (only while infantry leads), anchor = main,
+       else the plan's foot anchor (the strongest AI foot formation of a non-token category with
+       >= MinMainMen men and >= 0.15 of the team's foot men, held with x1.2; reason = main | noMain |
+       none(noFoot|token inf|token arc|token inf arc|small)); line = the defender's archer stand holder
+       (the foot anchor when it is archers, no main; small / bandit sides too; reason = archerAnchor |
+       main | attacker | noAnchor | anchorNotArchers); dry = each own archer / horse-archer
+       formation's ammo share (men with ammunition / its shooters), "(dry)" under 0.2; scale = ArmyScale
+       reason, "(limited)" = NoPlans: every k 0, no FollowCavalry / wear-down / initiative (the archer stand stays)
+       (a tiny side also keeps the old battle-joined rule);
+       k = the composition ramps on the men shares (0 for a normal enemy: >= ~40 % melee infantry
+       and <= ~30 % mounted by men, which read eFoot >= 0.35 and eCav <= 0.39 with the weights):
+          kFoot = Ramp(1 - eFoot, 0.7, 0.9) (enemy without melee foot): HoldPosition counts enemy
+                  foot archers for battleJoined / enemyNear while footRangedEngage=1 (on at kFoot
+                  0.5, off at 0.3; per team), HoldLateCharge outshot window 60 -> 20 s and loss
+                  8 % / 10 men -> 0, behind's ranged gap 30 -> 60 m, R3 infantry push at horse
+                  archers on a friend (footRangedEngage; on itself with kFoot > 0, the main only
+                  with footRangedEngage); army frame forward toward any-class enemy only with kFoot
+                  > 0 or no TeamMain
+          kCav  = Ramp(eCav, 0.4, 0.6) (enemy with melee cavalry): cohesion limits x (1 -> 0.6),
+                  ArcherFlank's flank place (left/right sides) and ArcherSkirmish's approach /
+                  pull-back place are EITHER behind the main (shared CavalryBehindPlace; on at
+                  kCav 0.5, off at 0.35; pulled up to 5 m toward the enemy to keep it in reach;
+                  ArcherFlank: reach = half its max missile range + half its depth toward the
+                  team's median target; the last point kept 6 s when the main is lost) OR the
+                  normal place (BEHAVIOR ArcherSkirmish|ArcherFlank kCavPlace "behindMain on|off
+                  ..." + COMPEVENT gate what=kCavPlace), archer spots need score -
+                  0.5 x kCav >= the line's fire + 0.1 (refusal "cavScore(...)")
+          kWeak = Ramp(1 - cavRatio, 0.2, 0.6) x kCav (our cavalry outmatched; 0 with our mounted
+                  all token / absent): ProtectFlank cavalry sortie ranges / time and the React
+                  cavalry main leash x (1 - 0.6 x kWeak), CavalryCharge weight x max(1 - kWeak,
+                  0.1) unless enemy melee cavalry is within 30 m of our foot in melee (never the
+                  Embolon wedge); native BehaviorCharge of that formation reads the same gate
+                  (CavalryCommit: 0 while wear-down holds it) in every tactic
+          own-army ramps (0 for a normal army, mnt <= 0.39 at 30 % mounted men; token mounted
+          categories count as 0):
+          kMount = Ramp(mnt, 0.45, 0.75) (our army cavalry-heavy): AI melee foot gets FollowCavalry
+                  (weight kMount x 3; the defender only while its hold has engaged / its battle is
+                  joined, not latched: on >= 10 s, off after 5 s), defender
+                  ProtectFlank cavalry sortie ranges / time x Lerp(1, 1.8, kMount) (composes with
+                  kWeak's shrink) with a 250 m home leash from the anchor, and its sorties may take
+                  EXPOSED enemy foot (foot archers x1.5, beside / behind the enemy main x1.3,
+                  stragglers insignificant to the guard x1.2; distance / weight, harassers x1;
+                  unscreened, inside the sortie leash) - DecisionTrace note "sortie scale= exposed="
+          kHA    = Ramp(haOfMnt, 0.3, 0.7) (our mounted power mostly horse archers): melee cavalry
+                  CavalryCharge waits (wear down, below; needs kMount > 0 too)
+       BEHAVIOR FollowCavalry  follow take|charge|end  -  why: take = activated / released back to
+          following ("release gap=Nm" past 75 m), Move point 60 m short of the target's near edge
+          (never stepping back), facing it; charge = ChargeToTarget (through ChargeGuard) at edge gap
+          <= 50 m, or <= 60 m with our cavalry in melee within 30 m of the target ("cavalryEngaged");
+          end = melee (own >= 0.1: the tactic's charge takes over; stays off until < 0.05 for 5 s) | noTarget | player | notJoined |
+          hedgehog | choke | reservePlug | armyRetreat | replaced; target = the enemy
+          formation our strongest non-token mounted formation fights (CavalryCharge target, ChargeToTarget
+          target, else its closest enemy while charging / in melee; a MOUNTED target only while our
+          cavalry is in melee with it within 30 m, and then charged only at <= 50 m); cav=, kMount= kHA=; map label
+          FollowCavalry(follow|charge fN:Class)
+       BEHAVIOR CavalryCharge  wearDown hold|open  why (once per change, active only; the same text as its COMPEVENT
+          gate what=wearDown hold|open, one call writes both): k = kHA x kMount > 0 holds
+          the team's melee cavalry (not horse archers, not the Embolon wedge, not player-led) at a
+          guard post (beside the anchor's flank, 10 m out, facing the enemy; no foot anchor: 40 m
+          behind our strongest horse archers), weight 0.01 (any tactic behavior wins), until -
+          latched open per team - enemyLoss=L>=Lerp(0, 0.2, k) (raw weighted men vs the start, arrivals added),
+          footEngaged fN on fM (a significant enemy >= 0.1 in melee within 30 m of our foot),
+          haAmmo=A (< 0.3 riders with ammunition in our horse-archer formations) | noHorseArchers,
+          time=Ns>=Lerp(0, 90, k)s since first contact (any of ours >= 0.1 in melee or a significant
+          enemy within 150 m edge gap), kHA=0 | kMount=0 (fell after a hold);
+          per formation selfMelee (it is in melee itself), [(never held)] when it opened before any hold;
+          hold text "k= kHA= kMount= loss=/need haAmmo= joined=s/need" (joined = since contact); the
+          native BehaviorCharge reads the same gate (CavalryCommit)
+       Behavior lines whose decision a k changed carry it: BEHAVIOR HoldPosition Hold->Engage
+       "rangedEngage kFoot=..", outshot "kFoot= window= need=", behind "kFoot= rangedGap=",
+       ArcherFlank / ArcherSkirmish kCavPlace, spots take "score= kCav= cav=-", cohesion texts
+       " kCav=", CavalryCharge kWeak home|engaged|off, React end "leash main=.. limit= kWeak=",
+       REACT assign note "haPush kFoot=..", refusal infVsHorseArchers(noHits|kFoot=..);
+       BEHAVIOR <Charge|Advance> haPush take|leash|follow|end (foot, only mounted enemies left, no
+       significant melee cavalry within 150 m: Move toward the nearest significant horse archers,
+       leashed 150 m from the position anchor, or from the push start for the anchor itself - one
+       start per formation, kept until 15 s without a push or enemy foot is back; a token enemy
+       foot group counts as no foot)
+COMPEVENT t  COMPEVENT  team  kind  formation=fN:Class|-  what=W  text   (ArmyComposition.Note, queued on
+       any thread, drained after the COMPOSITION lines; per team / kind / what / formation the same text is
+       written once per 30 s and a different text within 0.5 s of the last is counted - the next
+       line ends " suppressed=N"; also a DecisionTrace note "Composition <what>" when the AI log
+       traces; a call that names a behavior writes that BEHAVIOR line too, undeduped, instead of the
+       trace note). The plan's own changes (state token / infantryLeads / footRangedEngage, role main /
+       anchor / line) come from ONE diff of each new snapshot against the previous one. kind = role
+       (who does what) | state (the army's state) | gate (a gate on a behavior) | tactic (a tactic-level
+       choice); what:
+       state  token         "own|enemy inf|arc|cav|ha on|off share=S men=N (thresholds)"
+              infantryLeads "on share=S>=0.25" | "off share=S<0.15|tokenInfantry" (the one main-body verdict)
+              footRangedEngage "on|off kFoot=.."
+              reseed        "first|publish|ownGrew|enemyGrew own=lowest->now enemy=lowest->now"
+              startEnemy    "raised +R -> S (enemy arrivals)"
+              dry           "enter|exit ammo=A<|>=0.20 shooters=N men=M" (an archer / HA formation)
+              scale         "suppressed side= mode= men=: ..." (once per side, ArmyScale NoPlans)
+       role   main          "gained|lost fA->fB leads|noLead share=.. men=N minMen=M" (TeamMain change)
+              anchor        "fA->fB reason=noMain|none(..) men= power=" (the foot anchor without a main;
+                            nothing while the anchor is the main)
+              line          "archerStand fA->fB reason=archerAnchor|main|attacker|noAnchor|
+                            anchorNotArchers men= ammo=" (the archer stand holder; a former holder's
+                            stand releases)
+              initiative    "<why> target= team=take|held <shares>" (+ BEHAVIOR ArcherSkirmish initiative)
+              initiative end "mainInfantry fN" (+ BEHAVIOR ArcherSkirmish initiative end)
+              initiative suppressed "tokenArchers|scale|player <dry ...> (own charge)" (dry archers still
+                            charge, without the team's initiative)
+       gate   wearDown hold|open  the BEHAVIOR CavalryCharge text (per formation, active only)
+              kWeak         "home weight xF kWeak=.. kFoot= kCav= kWeak=" | "engaged fN ..." | "off ..."
+                            (+ BEHAVIOR CavalryCharge kWeak)
+              followCavalry skip "mountedTarget fN cav=fM notEngaged"
+              haPush origin "set|reset after Ns idle at x,y" | "cleared enemyFootBack"
+              kCavPlace     "ArcherSkirmish|ArcherFlank behindMain on kCav=K>=0.50 behind fN" | "... behindMain
+                            off kCav=K<=0.35 | mainLost" (the same switch as the BEHAVIOR line)
+              reactLeash    "fromAnchor fN leash ..." (RBMBehaviorReact leashed from the position anchor
+                            without a melee main; REACT end reads "leash anchor=")
+       tactic reapply       "<Tactic> main=fN|- line=fA->fB infShare=S" (the plan's main appeared / vanished or
+                            its archer line holder changed under the current tactic: native
+                            IsTacticReapplyNeeded set, <= 1 per 5 s per tactic)
+              noMainArchers "<Tactic> Advance: ArcherSkirmish for ..." (no melee-infantry main)
+              mountedFloor  "FullScaleAttack k=K mnt=S src=composition|native floor=W" (the all-mounted
+                            weight floor 0.5 x sqrt(remaining power) x Ramp(mnt, 0.6, 0.9); mnt = the TEAM's
+                            weighted-men mounted share, token mounted categories and dismounted riders out,
+                            native unweighted cavalry + horse-archer ratio before the first snapshot; written
+                            when k moves >= 0.1 or crosses 0)
 PREDICT t  PREDICT  team  side  terrainAt  applied  scale  in  options  pick  basePick  real  agree   (once per
        team, right after the TERRAIN lines; terrainAt = the publish time; applied = 1 when the factor
        is in the AI's weights: terrainTacticsEnabled on, the side's factors published and its scale
        has plans; scale = the SCALE mode, 'unread' before the latch)
           in       = the raw snapshot inputs: corr = mid-field corridor / wider frontage ((all) =
                      the whole corridor); exit = own exit / frontage; flanksLR = own flank routes
-                     reachable (1/0/-); runupMax = own LONGEST run-up onto the enemy line m (the
-                     best charge lane); clutter/steep15/deep = field strip shares; fire = own fire
+                     reachable (1/0/-); runupAhead = own run-up straight ahead onto the enemy
+                     line's centre m (TERRAIN_MOUNTED's centre walk: the wedge forms in front of the
+                     main infantry); clutter/steep15/deep = field strip shares; fire = own fire
                      share; hdiff = defender - attacker mean height m; deadDef = 1 - defender fire;
                      sameGround
           options  = applied=1: Name:w=<final weight>/t=<applied factor>(rawR)[term=value,...]/

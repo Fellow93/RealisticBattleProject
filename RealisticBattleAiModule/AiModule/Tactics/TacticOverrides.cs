@@ -74,6 +74,15 @@ namespace RBMAI
             [HarmonyPatch("Advance")]
             private static void PostfixAdvance(TacticRangedHarrassmentOffensive __instance, ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
             {
+                // No melee-infantry main: native's skirmish line / screened skirmish have nothing to stand with; the archers skirmish on their own
+                // (RBMBehaviorArcherSkirmish: SupportFire alone, the initiative) as FullScaleAttack's do. Re-applied on a main change (ArmyComposition.MainChangeReapplyPatch).
+                if (____archers != null && FormationCohesion.TeamMain(__instance.Team) == null)
+                {
+                    ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
+                    ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
+                    ArmyComposition.Note(__instance.Team, ____archers, ArmyComposition.KindTactic, "noMainArchers", "RangedHarassmentOffensive Advance: ArcherSkirmish for SkirmishLine/ScreenedSkirmish");
+                }
                 if (____mainInfantry != null)
                 {
                     // Native leaves Regroup at 0, which also locks RallyLogic out.
@@ -135,16 +144,16 @@ namespace RBMAI
 
             [HarmonyPostfix]
             [HarmonyPatch("HasBattleBeenJoined")]
-            private static void PostfixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
+            private static void PostfixHasBattleBeenJoined(TacticRangedHarrassmentOffensive __instance, Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
             {
-                __result = RBMAI.Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
+                __result = RBMAI.Utilities.HasBattleBeenJoined(__instance.Team, ____mainInfantry, ____hasBattleBeenJoined);
             }
 
             [HarmonyPostfix]
             [HarmonyPatch("ManageFormationCounts")]
             private static void PostfixManageFormationCounts(ref Formation ____leftCavalry, ref Formation ____rightCavalry)
             {
-                if (____leftCavalry != null && ____rightCavalry != null && ____leftCavalry.IsAIControlled && ____rightCavalry.IsAIControlled)
+                if (____leftCavalry != null && ____rightCavalry != null && ____leftCavalry.IsAIOwned && ____rightCavalry.IsAIOwned)
                 {
                     List<Agent> mountedSkirmishersList = new List<Agent>();
                     List<Agent> mountedMeleeList = new List<Agent>();

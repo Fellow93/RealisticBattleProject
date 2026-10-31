@@ -12,11 +12,13 @@ namespace RBMAI
     /// <summary>
     /// DYNAMIC REFORM (user 2026-10-23): where RBMBehaviorCavalryCharge regroups after a charge, picked from where the formations
     /// stand now. Candidates: through (beyond the target's far edge along the charge direction), left / right (off the charge
-    /// line), back (behind our main infantry). Formations first: no significant enemy within HardGap (edge gap), room from enemies
+    /// line), back (behind our position anchor). All shapes compact (ShapeMode), so a target scattered over 100 m does not push
+    /// points off the map. Formations first: no significant enemy within HardGap (edge gap), room from enemies
     /// up to RoomGap (melee cavalry and spear/shield-heavy foot cost more), no friend standing on / heading for it (FriendlyOverlap,
-    /// other reforming cavalry included); then the ride and a small pull toward our army. Terrain only filters (map edge, walkable;
-    /// bad ground / woods and a slope cost with terrainTacticsEnabled). Re-checked every CheckSeconds; the point is kept unless it
-    /// turned unsafe or another beats it by SwitchMargin, at most one change per ChangeSeconds.
+    /// other reforming cavalry included); then the ride and a small pull toward our army. Terrain filters map edge (EdgeMargin), walkable,
+    /// water and MaxSlope; bad ground / woods and a slope cost with terrainTacticsEnabled. Taken only within maxRide (reachable before the
+    /// caller's timer; back points within BackMaxRide). Re-checked every CheckSeconds; the point is kept unless it turned unsafe or another beats it by SwitchMargin, at most
+    /// one change per ChangeSeconds, and a change stays the same kind within MaxShift (none such while unsafe = released).
     /// THREADING: AI thread, one instance per behavior. Cached formation data and the immutable terrain grid; the Move point is a
     /// copy of the formation's cached median with ONE SetVec2MT, built only when the point changes.
     /// </summary>
@@ -30,9 +32,15 @@ namespace RBMAI
             Back
         }
 
-        private const float HardGap = 60f;
+        // shapes are compact (FootprintMode.Current: median-ish centre, nominal width/depth); scattered bounds put points off the map
+        private const FootprintMode ShapeMode = FootprintMode.Current;
+        private const float HardGap = 40f;
         private const float RoomGap = 150f;
-        private static readonly float[] ThroughDistances = { 120f, 160f, 200f };
+        private const float EdgeMargin = 30f; // m off the map edge (the grid's NearEdge is 60 m)
+        private const float BadGroundCost = 0.3f; // woods / rough cavalry ground: a tie-break, never a reject
+        private const float MaxSlope = 35f; // deg; steeper is a cliff riders cannot hold on
+        internal const float BackMaxRide = 250f; // m; riding home is safe, so back points may exceed the caller's maxRide
+        private static readonly float[] ThroughDistances = { 80f, 110f, 140f, 170f, 200f };
         private static readonly float[] SideDistances = { 130f, 180f };
         private const float SideAlong = 30f; // side points a little beyond the target's centre
         private const float BackGap = 40f; // behind our main's rear
@@ -51,6 +59,7 @@ namespace RBMAI
         private const float CheckSeconds = 2f;
         private const float ChangeSeconds = 4f;
         private const float SwitchMargin = 0.25f;
+        private const float MaxShift = 60f; // m a held point may move
 
         private struct Candidate
         {
@@ -63,6 +72,7 @@ namespace RBMAI
             public float Ride;
             public float Overlap;
             public float Slope;
+            public bool BadGround;
             public string Reject;
         }
 
@@ -81,8 +91,13 @@ namespace RBMAI
 
         internal string KindName => _has ? Name(_current.Kind) : null;
 
+        internal bool HoldingBack => _has && _current.Kind == Kind.Back;
+
+        /// <summary>The held point (Invalid when none).</summary>
+        internal Vec2 HeldPoint => _has ? _current.Point : Vec2.Invalid;
+
         /// <summary>AI thread, every reform tick: true and the Move point; false (released, logged) when no candidate is usable.</summary>
-        internal bool Tick(BehaviorComponent behavior, string behaviorName, Formation target, Vec2 chargeDirection, out WorldPosition order)
+        internal bool Tick(BehaviorComponent behavior, string behaviorName, Formation target, Vec2 chargeDirection, float maxRide, out WorldPosition order)
         {
             order = WorldPosition.Invalid;
             Formation formation = behavior?.Formation;
@@ -112,7 +127,8 @@ namespace RBMAI
                 Release(behavior, behaviorName, "noGeometry");
                 return false;
             }
-            Formation main = FormationCohesion.TeamMain(formation.Team);
+            // the position anchor: an army whose infantry does not lead still has a foot formation to regroup behind
+            Formation main = ArmyComposition.PositionAnchor(formation.Team);
             if (main == formation || (main != null && (main.QuerySystem.IsCavalryFormation || main.QuerySystem.IsRangedCavalryFormation)))
             {
                 main = null;
@@ -141,6 +157,22 @@ namespace RBMAI
             {
                 Candidate c = _candidates[i];
                 Score(mission, formation, terrain, us, main, pike, false, ref c);
+                if (c.Reject == null)
+                {
+                    if (!_has && c.Ride > (c.Kind == Kind.Back ? MathF.Max(maxRide, BackMaxRide) : maxRide))
+                    {
+                        c.Reject = "ride";
+                    }
+                    // a held point only moves within its kind, a little (never across the field)
+                    else if (_has && c.Kind != _current.Kind)
+                    {
+                        c.Reject = "kind";
+                    }
+                    else if (_has && c.Point.Distance(_current.Point) > MaxShift)
+                    {
+                        c.Reject = "shift";
+                    }
+                }
                 _candidates[i] = c;
                 if (c.Reject == null && (best < 0 || c.Cost < _candidates[best].Cost))
                 {
@@ -230,7 +262,7 @@ namespace RBMAI
                 foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
                 {
                     Footprint print;
-                    if (enemy == null || enemy.CountOfUnits <= 0 || !FormationGeometry.TryGet(enemy, FootprintMode.ScatterAware, out print))
+                    if (enemy == null || enemy.CountOfUnits <= 0 || !FormationGeometry.TryGet(enemy, ShapeMode, out print))
                     {
                         continue;
                     }
@@ -245,7 +277,7 @@ namespace RBMAI
         {
             _candidates.Clear();
             Footprint targetPrint;
-            if (!FormationGeometry.TryGet(target, FootprintMode.ScatterAware, out targetPrint))
+            if (!FormationGeometry.TryGet(target, ShapeMode, out targetPrint))
             {
                 targetPrint = Footprint.Circle(targetAt, MathF.Max(target.Width, target.Depth) * 0.5f);
             }
@@ -290,6 +322,7 @@ namespace RBMAI
             c.Nearest = null;
             c.Gap = float.MaxValue;
             c.Slope = float.NaN;
+            c.BadGround = false;
             Vec2 p = c.Point;
             if (!p.IsValid || !c.Facing.IsValid)
             {
@@ -298,19 +331,27 @@ namespace RBMAI
             }
             if (terrain != null)
             {
-                if (terrain.NearEdge(p) || !terrain.IsWalkable(p))
+                if (terrain.EdgeDistanceAt(p) < EdgeMargin || !terrain.IsWalkable(p))
                 {
                     c.Reject = "ground";
                     return;
                 }
+                // USER RULE 2026-10-30: woods / rough ground is fine for a regroup (a small cost); only water and cliffs are not
+                if (terrain.IsWet(p))
+                {
+                    c.Reject = "water";
+                    return;
+                }
+                float slope = terrain.SlopeAt(p);
+                if (slope > MaxSlope)
+                {
+                    c.Reject = "steep";
+                    return;
+                }
                 if (RBMConfig.RBMConfig.terrainTacticsEnabled)
                 {
-                    if (terrain.Cavalry.IsBadGround(p))
-                    {
-                        c.Reject = "badGround";
-                        return;
-                    }
-                    c.Slope = terrain.SlopeAt(p);
+                    c.BadGround = terrain.Cavalry.IsBadGround(p);
+                    c.Slope = slope;
                 }
             }
             else if (!mission.IsPositionInsideBoundaries(p))
@@ -370,6 +411,10 @@ namespace RBMAI
             {
                 cost += SlopeWeight * MathF.Min(1f, c.Slope / SlopeNorm);
             }
+            if (c.BadGround)
+            {
+                cost += BadGroundCost;
+            }
             c.Cost = cost;
         }
 
@@ -386,7 +431,7 @@ namespace RBMAI
         {
             return "kind=" + Name(c.Kind) + " gap=" + Fmt0(c.Gap) + "m(enemy " + TerrainCavalry.FormationName(c.Nearest) + ") ride=" + Fmt0(c.Ride)
                 + "m overlap=" + c.Overlap.ToString("0.##", CultureInfo.InvariantCulture)
-                + " terrain=" + (float.IsNaN(c.Slope) ? "-" : "slope" + Fmt0(c.Slope))
+                + " terrain=" + (float.IsNaN(c.Slope) ? "-" : (c.BadGround ? "bad,slope" : "slope") + Fmt0(c.Slope))
                 + " cost=" + c.Cost.ToString("0.00", CultureInfo.InvariantCulture);
         }
 

@@ -19,8 +19,9 @@ namespace RBMAI
     ///    within RefaceMaxOffPlan of the gap's facing (farther, RBMTacticHoldChoke drops the bypassed choke). pushedBack / behind read the turned facing and point.
     ///  - Archers: Move to the archer place (a spot behind / beside the line, or a rise behind it), facing as the line, Line at the post,
     ///    Loose under fire / broken ground (ChooseRangedArrangement), fire at will.
-    ///  - Reserve (cavalry, when the choke covers both flanks): Move to the reserve place behind the line, facing the gap; released to the tactic's
+    ///  - Reserve (cavalry, when the choke covers both flanks): Move to the reserve place behind the line, facing as the line; released to the tactic's
     ///    ProtectFlank while threatened (RBMBehaviorHoldPosition.ReserveRelease).
+    ///  Archers / Reserve: the place turns with a re-faced line round its pivot (HoldReface.TurnedPlace, turnPlace / unturnPlace).
     ///  Archers / Reserve: a place overlapping a friend's destination by more than TakeMaxShare is moved ONCE along the facing (FriendlyOverlap.PlaceShift).
     ///  Archers: a (shifted) place beyond the FormationCohesion limit is pulled toward the main infantry (Pull; the cavalry Reserve is exempt).
     ///  Archers: ArcherCover - behind / beside friendly infantry from a closing significant enemy melee formation no infantry screens (point=cover).
@@ -84,11 +85,13 @@ namespace RBMAI
         /// <summary>Archers role. AI thread.</summary>
         private readonly FormationCohesion.Pull _cohesion = new FormationCohesion.Pull();
         /// <summary>Archers role: cover, and support fire once the frontlines connect and the place no longer serves. AI thread.</summary>
-        private readonly CoverSupport _glue = new CoverSupport(CoverSupport.LogQueue.ChokeHold, null);
+        private readonly CoverSupport _glue = new CoverSupport("HoldChoke", "point");
         /// <summary>Line role: ReactionMonitor's line-answers handshake. AI thread.</summary>
         private Formation _allyAnswered;
         /// <summary>Line role. AI thread.</summary>
         private readonly HoldReface _reface = new HoldReface();
+        /// <summary>Archers / Reserve roles: the place turned with a re-faced line. AI thread.</summary>
+        private readonly HoldReface.TurnedPlace _turnedPlace = new HoldReface.TurnedPlace();
         /// <summary>Line role: the front point it holds now (the plan's hold, turned by the re-face). AI thread.</summary>
         private Vec2 _linePoint = Vec2.Invalid;
         /// <summary>Reserve role. AI thread.</summary>
@@ -158,18 +161,21 @@ namespace RBMAI
             _shift.Reset();
             _cohesion.Reset();
             _reface.Reset();
+            _turnedPlace.Reset();
             _linePoint = Vec2.Invalid;
             _reserveRelease.Reset();
             ReleaseCover("assigned");
             SetState(HoldState.Wait, float.NaN, null);
         }
 
-        /// <summary>AI thread: the choke Line's facing now (the gap's or re-faced); Invalid without one. Archers face the same way.</summary>
-        private static Vec2 LineFacing(Team team, TacticComponent owner)
+        /// <summary>AI thread: the facing the choke Line (assigned by owner) holds now - the gap's, or re-faced toward the enemy's concentration - and its depth (pivot of a turned place); false without one. Archers / Reserve face the same way.</summary>
+        private static bool LineTurn(Team team, TacticComponent owner, out Vec2 facing, out float depth)
         {
+            facing = Vec2.Invalid;
+            depth = 0f;
             if (team == null || owner == null)
             {
-                return Vec2.Invalid;
+                return false;
             }
             foreach (Formation f in team.FormationsIncludingSpecialAndEmpty)
             {
@@ -180,10 +186,12 @@ namespace RBMAI
                 RBMBehaviorHoldChoke line = f.AI.GetBehavior<RBMBehaviorHoldChoke>();
                 if (line != null && line._owner == owner && line._role == Role.Line && !line._charged)
                 {
-                    return line._reface.Facing;
+                    facing = line._reface.Facing;
+                    depth = f.Depth;
+                    return facing.IsValid;
                 }
             }
-            return Vec2.Invalid;
+            return false;
         }
 
         public override void TickOccasionally()
@@ -283,24 +291,40 @@ namespace RBMAI
                 CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
                 return;
             }
+            Vec2 placeFacing = plan.Facing;
             if (_role != Role.Line)
             {
+                // the line re-faced (HoldReface): the place turns with it round the line's pivot and faces its way
+                Vec2 lineFacing;
+                float lineDepth;
+                if (LineTurn(formation.Team, _owner, out lineFacing, out lineDepth))
+                {
+                    Vec2 pivot = plan.Hold - plan.Facing.Normalized() * (MathF.Max(lineDepth, 1f) * 0.5f);
+                    string turnWhat;
+                    string turnWhy;
+                    world = _turnedPlace.Resolve(world, point, pivot, plan.Facing, lineFacing, now, out point, out turnWhat, out turnWhy);
+                    if (turnWhat != null)
+                    {
+                        TerrainChokeHold.Enqueue(formation.Team, formation, now, turnWhat, pointName, turnWhy);
+                    }
+                    placeFacing = lineFacing;
+                }
                 // user rule: the archer / reserve place moved once along the facing off a friend standing there
                 string shiftWhat;
                 string shiftWhy;
-                world = _shift.Resolve(formation, world, plan.Facing, out point, out shiftWhat, out shiftWhy);
+                world = _shift.Resolve(formation, world, placeFacing, out point, out shiftWhat, out shiftWhy);
                 if (shiftWhat != null)
                 {
                     TerrainChokeHold.Enqueue(formation.Team, formation, now, shiftWhat, pointName, shiftWhy);
                 }
                 // user rule: foot never stands beyond its cohesion limit from the main infantry (the cavalry reserve is exempt)
-                world = _cohesion.Resolve(formation, world, plan.Facing, FormationCohesion.Kind.Auto, null, out point, out shiftWhat, out shiftWhy);
+                world = _cohesion.Resolve(formation, world, placeFacing, FormationCohesion.Kind.Auto, null, out point, out shiftWhat, out shiftWhy);
                 if (shiftWhat != null)
                 {
                     TerrainChokeHold.Enqueue(formation.Team, formation, now, shiftWhat, pointName, shiftWhy);
                 }
             }
-            Vec2 facing = plan.Facing;
+            Vec2 facing = placeFacing;
             if (_role == Role.Line)
             {
                 // holding at its point, the line turns in place toward the enemy's main concentration within RefaceMaxOffPlan of the gap's facing; only the active behavior turns
@@ -317,15 +341,6 @@ namespace RBMAI
                 if (_reface.Facing.IsValid)
                 {
                     facing = _reface.Facing;
-                }
-            }
-            else if (_role == Role.Archers)
-            {
-                // the archers face the way their line faces
-                Vec2 lineFacing = LineFacing(formation.Team, _owner);
-                if (lineFacing.IsValid)
-                {
-                    facing = lineFacing;
                 }
             }
             // user rule: archers approached by the enemy take cover (ArcherCover); the place's states wait and resume
@@ -611,6 +626,10 @@ namespace RBMAI
             Mission mission = Mission.Current;
             if (_role == Role.Reserve && mission != null && base.Formation.Team != null)
             {
+                if (!RBMBehaviorHoldPosition.HasFootLeft(base.Formation.Team))
+                {
+                    return 0f;
+                }
                 // a threatened reserve goes to the tactic's fallback for a while (ReserveRelease)
                 string what;
                 string why;

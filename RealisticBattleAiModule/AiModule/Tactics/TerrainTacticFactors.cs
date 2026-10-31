@@ -13,7 +13,7 @@ namespace RBMAI
     /// final weight = composition fit x culture/commander/jitter x this factor; 1 before the publish or with the toggle off.
     /// Reads only the snapshot's raw measurements, never its map-type hint. A missing measurement makes its term 1 (logged n/a).
     /// Total = (product of the terms) ^ TerrainWeight, clamped to [TotalMin, TotalMax].
-    /// Terms: room/exit/flanks = the splits; runup/clutter/steep = the wedge (runup = the LONGEST charge lane onto the enemy line);
+    /// Terms: room/exit/flanks = the splits; runup/clutter/steep = the wedge (runup = the run-up straight ahead onto the enemy line's centre, where the wedge forms in front of the main infantry);
     /// fire = the shooting tactics; adv = height; choke = the DEFENDER's holding tactics (and Hold the
     /// choke's own term); dead / water = defender holding; position = the defender's battle position; hidden = the reserve plug
     /// point; cavlanes / open / rough = the hedgehog.
@@ -63,7 +63,7 @@ namespace RBMAI
         public const float FlanksOneFactor = 1f;
         public const float FlanksBothFactor = 1.05f;
 
-        // Wedge: own riders' LONGEST run-up onto the enemy line (m, RunUpOntoEnemy.Max: cavalry charges down its best lane); lerps over RunUpShort -> RunUpLong.
+        // Wedge: own riders' run-up straight ahead onto the enemy line's centre (m, RunUpOntoEnemy.Centre: the wedge forms in front of the main infantry and charges along the axis); lerps over RunUpShort -> RunUpLong.
         public const float RunUpShort = 40f;
         public const float RunUpLong = 150f;
         public const float RunUpFactorShort = 0.75f;
@@ -318,7 +318,7 @@ namespace RBMAI
                     i.FlanksReachable = ((left != null && left.Reachable) ? 1 : 0) + ((right != null && right.Reachable) ? 1 : 0);
                 }
                 i.FlanksText = Route(left) + "/" + Route(right);
-                i.RunUp = (own.RunUpOntoEnemy != null) ? own.RunUpOntoEnemy.Max : float.NaN;
+                i.RunUp = (own.RunUpOntoEnemy != null) ? own.RunUpOntoEnemy.Centre : float.NaN;
                 i.Fire = own.FireAny;
                 i.ClearLine = own.ClearLine;
             }
@@ -573,7 +573,7 @@ namespace RBMAI
             sb.Append("corr=").Append(Fmt(i.Corridor)).Append(i.CorridorIsMid ? "(mid)" : "(all)");
             sb.Append(" exit=").Append(Fmt(i.ExitFront));
             sb.Append(" flanksLR=").Append(i.FlanksText);
-            sb.Append(" runupMax=").Append(Fmt(i.RunUp));
+            sb.Append(" runupAhead=").Append(Fmt(i.RunUp));
             sb.Append(" clutter=").Append(Fmt(i.Clutter));
             sb.Append(" steep15=").Append(Fmt(i.Steep));
             sb.Append(" fire=").Append(Fmt(i.Fire));

@@ -175,6 +175,10 @@ namespace RBMAI
 
         protected override float GetAiWeight()
         {
+            if (RBMBehaviorArcherStand.MountedEscorts(base.Formation))
+            {
+                return 0f; // a token mounted force rides with the main body
+            }
             if (base.Formation != null && base.Formation.QuerySystem.IsCavalryFormation)
             {
                 if (RBMAI.Utilities.CheckIfMountedSkirmishFormation(base.Formation, 0.6f))

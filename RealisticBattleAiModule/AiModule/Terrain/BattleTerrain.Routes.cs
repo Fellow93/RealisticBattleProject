@@ -12,16 +12,17 @@ namespace RBMAI
             return BattleTerrainRead.ReplanFlanks(_grid, attacker, defender, attackerFrontage, defenderFrontage, attackerRide, defenderRide);
         }
 
-        /// <summary>TerrainCavalry's live re-plan. Any thread: pure grid work, own A* scratch, never writes to this snapshot.</summary>
-        internal CavalryInfo ReplanCavalry(Vec2 attacker, Vec2 defender, Vec2 attackerAcross, Vec2 defenderAcross)
+        /// <summary>One army re-plan's results (TerrainArmyReplan): the archer spots, and the cavalry ground when asked (else null).</summary>
+        internal sealed class ArmyReplan
         {
-            return BattleTerrainRead.ReplanCavalry(this, _grid, attacker, defender, attackerAcross, defenderAcross);
+            public SpotsInfo Spots;
+            public CavalryInfo Cavalry;
         }
 
-        /// <summary>TerrainSpots' live re-plan. Same rules as ReplanCavalry.</summary>
-        internal SpotsInfo ReplanSpots(Vec2 attacker, Vec2 defender, Vec2 attackerAcross, Vec2 defenderAcross)
+        /// <summary>TerrainArmyReplan's live re-plan of the archer spots and (cavalry) the cavalry ground on ONE frame. Any thread: pure grid work, own A* scratch, never writes to this snapshot.</summary>
+        internal ArmyReplan ReplanArmyPlans(Vec2 attacker, Vec2 defender, Vec2 attackerAcross, Vec2 defenderAcross, bool cavalry)
         {
-            return BattleTerrainRead.ReplanSpots(this, _grid, attacker, defender, attackerAcross, defenderAcross);
+            return BattleTerrainRead.ReplanArmyPlans(this, _grid, attacker, defender, attackerAcross, defenderAcross, cavalry);
         }
     }
 }

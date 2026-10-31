@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -641,26 +643,47 @@ namespace RBMAI.AiModule
             {
                 if (____mapEvent != null && ____mapEvent.IsFieldBattle && ____campaignBattleResult != null && ____campaignBattleResult.PlayerVictory && ____campaignBattleResult.BattleResolved)
                 {
+                    MapEventSide defeatedSide = ____mapEvent.GetMapEventSide(____mapEvent.DefeatedSide);
                     List<UniqueTroopDescriptor> troopsList = null;
-                    ____mapEvent.GetMapEventSide(____mapEvent.DefeatedSide).GetAllTroops(ref troopsList);
+                    defeatedSide.GetAllTroops(ref troopsList);
                     foreach (UniqueTroopDescriptor troop in troopsList)
                     {
-                        if (troop.IsValid)
+                        // Only troops still standing: killed/routed ones are already out of the member roster
+                        // (WoundTroop then indexes -1 or wounds another man of the same type).
+                        if (!troop.IsValid || !IsActiveAllocatedTroop(defeatedSide, troop))
                         {
-                            try
-                            {
-                                ____mapEvent.GetMapEventSide(____mapEvent.DefeatedSide).OnTroopWounded(troop);
-                            }
-                            catch (Exception e)
-                            {
-                                e.ToString();
-                            }
+                            continue;
+                        }
+                        try
+                        {
+                            defeatedSide.OnTroopWounded(troop);
+                        }
+                        catch (Exception e)
+                        {
+                            e.ToString();
                         }
                     }
                     __result = false;
                     return false;
                 }
                 return true;
+            }
+
+            private static bool IsActiveAllocatedTroop(MapEventSide side, UniqueTroopDescriptor troop)
+            {
+                PartyBase party = side.GetAllocatedTroopParty(troop);
+                if (party == null)
+                {
+                    return false;
+                }
+                foreach (MapEventParty mapEventParty in side.Parties)
+                {
+                    if (mapEventParty.Party == party)
+                    {
+                        return mapEventParty.GetTroopState(troop) == RosterTroopState.Active;
+                    }
+                }
+                return false;
             }
         }
     }

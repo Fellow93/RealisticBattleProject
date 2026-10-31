@@ -332,6 +332,9 @@ namespace RBMAI
     [HarmonyPatch("SetControlledByAI")]
     internal class RefreshBehaviorValuesOnControlChange
     {
+        private static readonly AccessTools.FieldRef<Formation, bool> EnforceNotSplittableByAI =
+            AccessTools.FieldRefAccess<Formation, bool>("_enforceNotSplittableByAI");
+
         private static void Prefix(Formation __instance, out bool __state)
         {
             __state = __instance.IsAIControlled;
@@ -339,7 +342,18 @@ namespace RBMAI
 
         private static void Postfix(Formation __instance, bool __state)
         {
-            if (__state == __instance.IsAIControlled || __instance.CountOfUnits == 0)
+            if (__state == __instance.IsAIControlled)
+            {
+                return;
+            }
+            // USER RULE: a sergeant's formation handed to the AI (F6) is still commanded, never split/merged/drained:
+            // native IsAIOwned then stays false, so native and RBM reshuffles count it but leave its men alone.
+            if (__instance.IsAIControlled && Agent.Main != null && __instance.PlayerOwner == Agent.Main
+                && __instance.Team != null && !__instance.Team.IsPlayerGeneral)
+            {
+                EnforceNotSplittableByAI(__instance) = true;
+            }
+            if (__instance.CountOfUnits == 0)
             {
                 return;
             }

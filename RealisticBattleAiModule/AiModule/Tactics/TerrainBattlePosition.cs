@@ -70,20 +70,16 @@ namespace RBMAI
         internal const float KeepFacingCos = 0.966f;
 
 
-        private static volatile Plan _defender;
+        // defender side only
+        private static readonly PlanSlot<Plan> Plans = new PlanSlot<Plan>();
         private static volatile bool _published;
-
-        private static readonly ConcurrentQueue<UseEvent> UseEvents = new ConcurrentQueue<UseEvent>();
 
         // NeedsReapply: the plan each defend tactic last applied.
         private static readonly ConcurrentDictionary<TacticComponent, Plan> SeenBy = new ConcurrentDictionary<TacticComponent, Plan>();
 
 
-        private static Task<BattleTerrain.BattlePositionResult> _repick;
-        private static int _generation;
-        private static int _repickGeneration;
+        private static readonly ReplanJob<BattleTerrain.BattlePositionResult> Repick = new ReplanJob<BattleTerrain.BattlePositionResult>("re-pick canceled");
         private static float _lastRepickAt = float.NegativeInfinity;
-        private static string _repickReason;
         private static int _moves; // re-picks that moved the hold this battle
         private static int _moveBudget = RepickMaxMoves;
         private static string _requested; // from the AI thread (RequestRepick: choke bypass), taken by TickRepick; volatile
@@ -189,15 +185,11 @@ namespace RBMAI
         public static Plan PlanFor(Team team)
         {
             // None for a defender without terrain plans (ArmyScale.NoPlans): it holds where it is.
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || team == null || team.Side != BattleSideEnum.Defender || ArmyScale.NoPlans(team))
-            {
-                return null;
-            }
-            return _defender;
+            return (team != null && team.Side == BattleSideEnum.Defender) ? Plans.ForTeam(team) : null;
         }
 
         /// <summary>Whatever the toggle (log and map).</summary>
-        internal static Plan Published => _defender;
+        internal static Plan Published => Plans.Defender;
 
         /// <summary>Published, whether or not the defender has a plan. Any thread.</summary>
         public static bool IsPublished => _published;
@@ -230,29 +222,19 @@ namespace RBMAI
         /// <summary>Main thread: the terrain publish and each re-pick.</summary>
         internal static void Publish(Plan defender)
         {
-            _defender = defender;
+            Plans.Set(BattleSideEnum.Defender, defender);
             _published = true;
         }
 
         /// <summary>Main thread: mission end (BattleTerrainLogic) and MissionStartReset. Drops the queued events and abandons a running re-pick.</summary>
         public static void Clear()
         {
-            _defender = null;
+            Plans.Clear();
             _published = false;
-            UseEvent ignored;
-            while (UseEvents.TryDequeue(out ignored))
-            {
-            }
+            TerrainLog.Clear();
             SeenBy.Clear();
-            _generation++;
-            if (_repick != null)
-            {
-                // Observe a late fault so it is never reported as an unobserved task exception.
-                _repick.ContinueWith(t => { var unused = t.Exception; }, TaskContinuationOptions.OnlyOnFaulted);
-                _repick = null;
-            }
+            Repick.Clear();
             _lastRepickAt = float.NegativeInfinity;
-            _repickReason = null;
             _moves = 0;
             _moveBudget = RepickMaxMoves;
             System.Threading.Volatile.Write(ref _requested, null);
@@ -382,26 +364,23 @@ namespace RBMAI
             {
                 return null;
             }
-            Plan plan = _defender;
+            Plan plan = Plans.Defender;
             BattleTerrain.BattlePositionInfo info = terrain.BattlePosition;
-            if (_repick != null)
+            if (Repick.Running)
             {
-                if (!_repick.IsCompleted)
+                BattleTerrain.BattlePositionResult result;
+                string ms;
+                string failure;
+                ReplanJob<BattleTerrain.BattlePositionResult>.Outcome finish = Repick.TryFinish(out result, out ms, out failure);
+                string repickReason = Repick.Reason;
+                if (finish == ReplanJob<BattleTerrain.BattlePositionResult>.Outcome.Failed)
+                {
+                    return "reason=" + (repickReason ?? "-") + "\tfailed=" + failure;
+                }
+                if (finish != ReplanJob<BattleTerrain.BattlePositionResult>.Outcome.Done)
                 {
                     return null;
                 }
-                Task<BattleTerrain.BattlePositionResult> task = _repick;
-                _repick = null;
-                if (_repickGeneration != _generation)
-                {
-                    return null;
-                }
-                if (task.IsFaulted || task.IsCanceled)
-                {
-                    Exception e = (task.Exception != null) ? task.Exception.GetBaseException() : new OperationCanceledException("re-pick canceled");
-                    return "reason=" + (_repickReason ?? "-") + "\tfailed=" + e.GetType().Name + ":" + BattleTerrainRead.Sanitize(e.Message);
-                }
-                BattleTerrain.BattlePositionResult result = task.Result;
                 string why;
                 Plan next = Build(mission, terrain, result, (plan != null) ? plan.Version + 1 : 1, now, out why);
                 string outcome = "";
@@ -472,7 +451,7 @@ namespace RBMAI
                     {
                         Publish(next);
                     }
-                    return "reason=" + (_repickReason ?? "-") + "\t" + Describe(info, result, next, why) + outcome;
+                    return "reason=" + (repickReason ?? "-") + "\t" + Describe(info, result, next, why) + outcome;
                 }
                 if (next != null && plan != null)
                 {
@@ -518,7 +497,7 @@ namespace RBMAI
                 {
                     Publish(next);
                 }
-                return "reason=" + (_repickReason ?? "-") + "\t" + Describe(info, result, next, why) + outcome;
+                return "reason=" + (repickReason ?? "-") + "\t" + Describe(info, result, next, why) + outcome;
             }
             if (!RBMConfig.RBMConfig.terrainTacticsEnabled || plan == null || info == null || info.Ground == null || info.Armies == null)
             {
@@ -614,7 +593,7 @@ namespace RBMAI
             _refAttacker = attacker;
             _refBearing = bearing;
             _minGap = gap;
-            _repickReason = reason + " atk " + Fmt0(distance) + "m moves " + _moves.ToString(CultureInfo.InvariantCulture) + "/"
+            string repickWhy = reason + " atk " + Fmt0(distance) + "m moves " + _moves.ToString(CultureInfo.InvariantCulture) + "/"
                 + _moveBudget.ToString(CultureInfo.InvariantCulture) + " (v" + plan.Version.ToString(CultureInfo.InvariantCulture) + ")";
             BattleTerrainRead.PositionGround ground = info.Ground;
             BattleTerrainRead.PositionArmies armies = info.Armies.MovedTo(ground.Grid, defender, attacker);
@@ -627,9 +606,8 @@ namespace RBMAI
             bool skipChoke = TerrainChokeHold.IsBypassed;
             // A bypassed choke hold is no reference a move must beat: the current line is.
             Vec2 previous = (skipChoke && plan.IsChoke) ? Vec2.Invalid : plan.Hold;
-            _repickGeneration = _generation;
             // Background: the same evaluation over the immutable grid / snapshot (no engine call), published next tick(s).
-            _repick = Task.Run(() => BattleTerrainRead.EvaluateBattlePosition(ground, armies, previous, skipChoke));
+            Repick.Start(repickWhy, () => BattleTerrainRead.EvaluateBattlePosition(ground, armies, previous, skipChoke));
             return null;
         }
 
@@ -768,50 +746,18 @@ namespace RBMAI
             return true;
         }
 
-        // behavior events (AI thread writes, main thread drains)
+        // behavior events (TerrainLog)
 
-        /// <summary>HoldPosition / ReservePlug state change or engage. Immutable.</summary>
-        internal sealed class UseEvent
-        {
-            public Team Team;
-            public int FormationIndex;
-            public float Time;
-            public string Behavior;
-            public string What;
-            public string Point;
-            public string Why;
-        }
-
-        /// <summary>AI thread; only with the terrain log on.</summary>
+        /// <summary>AI thread: a HoldPosition state change or engage.</summary>
         internal static void Enqueue(Team team, Formation formation, float time, string what, string point, string why)
         {
             Enqueue(team, formation, time, "HoldPosition", what, point, why);
         }
 
-        /// <summary>AI thread; only with the terrain log on.</summary>
+        /// <summary>AI thread: a HoldPosition / ReservePlug / ... state change or engage.</summary>
         internal static void Enqueue(Team team, Formation formation, float time, string behavior, string what, string point, string why)
         {
-            DecisionTrace.Note(formation, behavior, what, why);
-            if (!RBMConfig.RBMConfig.battleTerrainLoggingEnabled || team == null)
-            {
-                return;
-            }
-            UseEvents.Enqueue(new UseEvent
-            {
-                Team = team,
-                FormationIndex = (formation != null) ? (int)formation.FormationIndex : -1,
-                Time = time,
-                Behavior = behavior,
-                What = what,
-                Point = point,
-                Why = why
-            });
-        }
-
-        /// <summary>Main thread (terrain log).</summary>
-        internal static bool TryDequeueUse(out UseEvent e)
-        {
-            return UseEvents.TryDequeue(out e);
+            TerrainLog.Behavior(team, formation, time, behavior ?? "HoldPosition", what, "point", point, why);
         }
 
         // log (main thread)
@@ -850,7 +796,7 @@ namespace RBMAI
                   .Append(" facing=").Append(Fmt2(w.Facing.x)).Append(',').Append(Fmt2(w.Facing.y))
                   .Append(" span=").Append(Fmt0(w.Span)).Append("m(").Append(EndName(w.LeftEnd)).Append('/').Append(EndName(w.RightEnd)).Append(')')
                   .Append(" line=").Append(Fmt0(w.LineWidth)).Append('m')
-                  .Append(" flanks=").Append(w.LeftCovered ? w.LeftCover : "open").Append('/').Append(w.RightCovered ? w.RightCover : "open")
+                  .Append(" flanks=").Append(FlankText(w.LeftCovered, w.LeftCover)).Append('/').Append(FlankText(w.RightCovered, w.RightCover))
                   .Append(" reach=def ").Append(Fmt0(w.DefenderSeconds)).Append("s atk ").Append(Fmt0(w.AttackerSeconds)).Append("s walk ").Append(Fmt0(w.Distance)).Append('m');
                 if (plan != null && plan.Fallback)
                 {
@@ -1002,6 +948,16 @@ namespace RBMAI
         private static string EndName(BattleTerrain.End end)
         {
             return end.ToString().ToLowerInvariant();
+        }
+
+        /// <summary>The cover kind; "open", or "open(shallow-kind)" for cover that is not there ahead of and behind the line.</summary>
+        private static string FlankText(bool covered, string cover)
+        {
+            if (covered)
+            {
+                return cover;
+            }
+            return (cover != null && cover.StartsWith("shallow-", StringComparison.Ordinal)) ? "open(" + cover + ")" : "open";
         }
 
         private static string Point(Vec2 p)

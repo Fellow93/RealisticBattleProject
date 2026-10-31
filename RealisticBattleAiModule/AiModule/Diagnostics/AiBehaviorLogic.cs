@@ -170,7 +170,8 @@ namespace RBMAI
                     AiBehaviorLog.Write("t=" + AiBehaviorLog.Fmt(now) + "\tCHANGE\tTACTIC\t" + TeamName(team)
                         + "\t" + previous + " -> " + tacticName + "\tjoined=" + BattleJoined(tactic)
                         + "\toptions=" + TacticOptions(team, tactic)
-                        + "\tcomp=" + TacticSelection.DescribeComposition(team));
+                        + "\tcomp=" + TacticSelection.DescribeComposition(team)
+                        + "\tshares=" + ArmyComposition.DescribePeek(team));
                 }
             }
 
@@ -746,8 +747,39 @@ namespace RBMAI
                 sb.Append('|').Append("v").Append(s.HasSpeed ? AiBehaviorLog.Fmt(s.Speed) : "-");
                 sb.Append('|').Append("catch").Append(s.CatchUp ? "1" : "0");
                 sb.Append('|').Append(s.Action ?? "-");
+                sb.Append('|').Append(FrontlineTag(s.Agent, now));
             }
             return sb.ToString();
+        }
+
+        // Frontline decision, close-up ally and seconds held by close-up: "flAttack>#215h4.2", "flNone". Worker-written fields, read stale.
+        private string FrontlineTag(Agent agent, float now)
+        {
+            try
+            {
+                if (!Frontline.aiDecisionCooldownDict.TryGetValue(agent, out Frontline.AIDecisionState state) || state == null)
+                {
+                    return "flNone";
+                }
+                Frontline.AIMindset mindset = state.AIMindset;
+                string tag = "fl" + mindset.currentDecision;
+                Agent ahead = mindset.aheadAlly;
+                if (ahead != null)
+                {
+                    tag += ">#" + ahead.Index;
+                }
+                float heldSince = mindset.closeUpHeldSince;
+                if (heldSince != float.MinValue && now >= heldSince)
+                {
+                    tag += "h" + AiBehaviorLog.Fmt(now - heldSince);
+                }
+                return tag;
+            }
+            catch (Exception e)
+            {
+                ReportOnce("frontlineTag", e);
+                return "fl?";
+            }
         }
 
         private const float RunAheadMin = 3f;
@@ -820,6 +852,7 @@ namespace RBMAI
             sb.Append('\t').Append(Flag("allowAiTicking", Mission.Current.AllowAiTicking));
             sb.Append('\t').Append("options=").Append(TacticOptions(team, tactic));
             sb.Append('\t').Append("comp=").Append(TacticSelection.DescribeComposition(team));
+            sb.Append('\t').Append("shares=").Append(ArmyComposition.DescribePeek(team));
             return sb.ToString();
         }
 
@@ -1168,8 +1201,12 @@ namespace RBMAI
             sb.Append("#                       share, wedgeRiders/barded = the wedge's last count, rem = remaining power,").Append("\n");
             sb.Append("#                       defApplicable (defenders) = native gate for the defensive tactics (0 = they weigh 0)").Append("\n");
             sb.Append("#                       CHANGE TACTIC lines carry the same column.").Append("\n");
+            sb.Append("#             shares  = ArmyComposition (men x class weight by troop type, inf/arc 1 cav 1.5 ha 1.3, EMA 10 s;").Append("\n");
+            sb.Append("#                       own inf/rng(archers)/cav/ha/mnt, haOfMnt = horse archers of mounted, enemy").Append("\n");
+            sb.Append("#                       eFoot/eRng/eCav/eHa, cavRatio = own non-token mounted / enemy non-token melee").Append("\n");
+            sb.Append("#                       cavalry); also on CHANGE TACTIC lines").Append("\n");
             sb.Append("#").Append("\n");
-            sb.Append("#   ROUT   t  ROUT  team  remaining  -- a side under 10% power with nobody on foot was routed at once").Append("\n");
+            sb.Append("#   ROUT  t  ROUT  team  remaining  -- a side under 10% power with nobody on foot was routed at once").Append("\n");
             sb.Append("#          (TacticSelection's MakeDecision prefix); once per team.").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   (The battlefield terrain read -- TERRAIN and TERRAIN_* -- and the log-only terrain tactic prediction --").Append("\n");

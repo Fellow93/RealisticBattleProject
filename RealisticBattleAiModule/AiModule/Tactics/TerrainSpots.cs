@@ -25,13 +25,12 @@ namespace RBMAI
     /// (FriendlyOverlap Take/KeepMaxShare), or the cohesion limit is exceeded (FormationCohesion); then no new spot for SpotRetakeCooldown.
     /// Claims: one spot to at most one formation of a team (ClaimKey, TryAdd), a formation holds at most one; a behavior only
     /// TAKES a spot while it is its formation's active behavior (native also calls CalculateCurrentOrder for candidates).
-    /// Re-plan: Tick (MAIN thread) asks its TerrainPlanRefresh when the armies moved/turned enough, runs BattleTerrain.ReplanSpots
-    /// on a background Task (generation token) and builds/publishes the next SidePlan versions (the attacker's always, the
-    /// DEFENDER's only when its own army moved or turned). A claim on an OLD version's spot moves on the AI thread to the new
+    /// Re-plan: TerrainArmyReplan (one job with the cavalry ground) hands ApplyReplan the worker's result, which builds/publishes
+    /// the next SidePlan versions (the attacker's always, the DEFENDER's only when its own army moved or turned). A claim on an OLD version's spot moves on the AI thread to the new
     /// spot nearest it (within SpotAdoptDistance, the take rules, once per version via Claim.SeenVersion: "rebase"), else is KEPT
     /// on the old spot while every keep rule passes ("keepOld"). PruneOld drops claims of inactive behaviors and unused owner
     /// entries. "refuse" lines are deduped on the reasons (digits stripped), at most one per formation per RefusalLogSeconds.
-    /// THREADING: Build / Publish / Tick / FinishReplan / PruneOld run on the MAIN thread (Build creates and navmesh-validates
+    /// THREADING: Build / Publish / ApplyReplan / PruneOld run on the MAIN thread (Build creates and navmesh-validates
     /// each WorldPosition). TryHoldSpot / Release run on the async AI thread: volatile reads, the immutable plan, cached formation
     /// positions, concurrent-dictionary claims and a queue; no engine call, no WorldPosition construction (the cached one is
     /// copied), no MBRandom. BEHAVIOR events are queued and written by BattleTerrainLogic on the main thread. The overlay reads
@@ -61,18 +60,7 @@ namespace RBMAI
         public const float SpotAdoptDistance = 40f; // re-plan: an old claim moves to the nearest new spot only within this, else released
 
 
-        private static volatile SidePlan _attacker;
-        private static volatile SidePlan _defender;
-
-
-        private static readonly TerrainPlanRefresh Refresh = new TerrainPlanRefresh("spots");
-        private static int _generation; // bumped in Clear: an older re-plan is dropped
-        private static Task<BattleTerrain.SpotsInfo> _replan;
-        private static int _replanGeneration;
-        private static string _replanReason;
-        private static long _replanStartTicks;
-        private static bool _replanDefender; // the running re-plan publishes the defender's next version (its own army moved, TerrainPlanRefresh.SideMoved)
-        private static string _replanDefenderNote;
+        private static readonly PlanSlot<SidePlan> Plans = new PlanSlot<SidePlan>();
 
         /// <summary>WorldPosition built on the main thread. Immutable.</summary>
         internal sealed class Spot
@@ -97,14 +85,16 @@ namespace RBMAI
             public readonly string Dropped; // spots dropped at the publish ("A3:outside A4:noNavmesh"), or null
             public readonly int Version; // 1 at the publish, + 1 per re-plan
             public readonly string Note; // publish | replan
+            public readonly float LineFire; // the line's own fire share (the worker's spot bar), NaN unknown
 
-            internal SidePlan(BattleSideEnum side, IReadOnlyList<Spot> spots, string dropped, int version = 1, string note = "publish")
+            internal SidePlan(BattleSideEnum side, IReadOnlyList<Spot> spots, string dropped, int version = 1, string note = "publish", float lineFire = float.NaN)
             {
                 Side = side;
                 Spots = spots;
                 Dropped = dropped;
                 Version = version;
                 Note = note;
+                LineFire = lineFire;
             }
 
             public bool Contains(Spot spot)
@@ -123,23 +113,18 @@ namespace RBMAI
         /// <summary>The side's plan as the behaviors read it: null with terrainTacticsEnabled off, before the publish, or for another side. Any thread.</summary>
         public static SidePlan ForSide(BattleSideEnum side)
         {
-            // None for a side without terrain plans (ArmyScale).
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || ArmyScale.NoPlans(side))
-            {
-                return null;
-            }
-            return Published(side);
+            return Plans.ForSide(side);
         }
 
         public static SidePlan ForTeam(Team team)
         {
-            return (team != null) ? ForSide(team.Side) : null;
+            return Plans.ForTeam(team);
         }
 
         /// <summary>Whatever the toggle (log and map).</summary>
         internal static SidePlan Published(BattleSideEnum side)
         {
-            return (side == BattleSideEnum.Attacker) ? _attacker : (side == BattleSideEnum.Defender) ? _defender : null;
+            return Plans.Published(side);
         }
 
         /// <summary>MAIN thread, at the terrain publish: both sides' plans from the snapshot's spots, each with a navmesh-validated WorldPosition; spots outside the boundary or off the navmesh are dropped. Null for a side without spots.</summary>
@@ -188,143 +173,63 @@ namespace RBMAI
                 }
                 usable.Add(new Spot(data, position));
             }
-            return new SidePlan(side, Array.AsReadOnly(usable.ToArray()), dropped?.ToString(), version, note);
+            return new SidePlan(side, Array.AsReadOnly(usable.ToArray()), dropped?.ToString(), version, note, spots.LineFire);
         }
 
         /// <summary>Main thread, at the terrain publish.</summary>
         internal static void Publish(SidePlan attacker, SidePlan defender)
         {
-            _attacker = attacker;
-            _defender = defender;
+            Plans.Publish(attacker, defender);
         }
 
-        /// <summary>Main thread: mission end and MissionStartReset. Also drops the claims, queued events and the re-plan state (a running re-plan is abandoned by generation).</summary>
+        /// <summary>Main thread: mission end and MissionStartReset. Also drops the claims, the queued log lines and the archer/cavalry re-plan (TerrainArmyReplan).</summary>
         public static void Clear()
         {
-            _attacker = null;
-            _defender = null;
+            Plans.Clear();
             Claims.Clear();
             Owners.Clear();
             ReleasedAt.Clear();
             AdvancingSeenAt.Clear();
             AdvanceSamples.Clear();
             LoggedRefusals.Clear();
-            UseEvent ignored;
-            while (UseEvents.TryDequeue(out ignored))
-            {
-            }
-            _generation++;
-            if (_replan != null)
-            {
-                // Observe a late fault so it is never reported as an unobserved task exception.
-                _replan.ContinueWith(t => { var unused = t.Exception; }, TaskContinuationOptions.OnlyOnFaulted);
-                _replan = null;
-            }
-            _replanReason = null;
-            _replanDefender = false;
-            _replanDefenderNote = null;
+            TerrainLog.Clear();
             RefusalLoggedAt.Clear();
-            Refresh.Clear();
+            TerrainArmyReplan.Clear();
         }
 
-        // re-plan (MAIN thread)
+        // re-plan (MAIN thread, TerrainArmyReplan)
 
-        /// <summary>MAIN thread, every tick after the publish: finishes a running re-plan or starts one when TerrainPlanRefresh says it is due. Adds the log lines' fields to lines; runs whether or not the log is on. Nothing with terrainTacticsEnabled off (a running re-plan is still finished).</summary>
-        internal static void Tick(Mission mission, BattleTerrain terrain, float now, List<string> lines)
+        /// <summary>Main thread: builds and publishes a finished re-plan (WorldPositions here, as Build), then prunes old claims; SPOTS replan lines into lines. defender = publish the defender's next version (its own army moved), defenderNote = that rule's text.</summary>
+        internal static void ApplyReplan(Mission mission, BattleTerrain.SpotsInfo info, bool replanDefender, string defenderNote, string reason, string ms, List<string> lines)
         {
-            if (mission == null || terrain == null)
+            if (info == null || mission == null || mission.Scene == null)
             {
                 return;
             }
-            if (_replan != null)
-            {
-                FinishReplan(mission, terrain, lines);
-                return;
-            }
-            // Also with no spot for either side at the publish (there may be some later); none when neither side uses spots (ArmyScale).
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || (ArmyScale.NoPlans(BattleSideEnum.Attacker) && ArmyScale.NoPlans(BattleSideEnum.Defender)))
-            {
-                return;
-            }
-            TerrainPlanRefresh.Armies armies;
-            string note;
-            string reason = Refresh.Check(mission, now, out armies, out note);
-            if (note != null)
-            {
-                lines.Add("SPOTS\t" + note);
-            }
-            if (reason == null)
-            {
-                return;
-            }
-            Refresh.Started(now, armies);
-            // User rule: the defender's spots are re-drawn only when the DEFENDER's own army moved / turned (TerrainPlanRefresh.SideMoved).
-            _replanDefender = Refresh.SideMoved(BattleSideEnum.Defender, armies, out _replanDefenderNote);
-            if (_replanDefender)
-            {
-                Refresh.SidePlanned(BattleSideEnum.Defender, armies);
-            }
-            _replanGeneration = _generation;
-            _replanStartTicks = DateTime.UtcNow.Ticks;
-            _replanReason = reason;
-            Vec2 attacker = armies.Attacker;
-            Vec2 defender = armies.Defender;
-            Vec2 attackerAcross = armies.AttackerAcross;
-            Vec2 defenderAcross = armies.DefenderAcross;
-            // Background: the read's FindSpots over the immutable snapshot only (no engine call).
-            _replan = Task.Run(() => terrain.ReplanSpots(attacker, defender, attackerAcross, defenderAcross));
-        }
-
-        /// <summary>Main thread: builds and publishes a finished re-plan (WorldPositions here, as Build), then prunes old claims.</summary>
-        private static void FinishReplan(Mission mission, BattleTerrain terrain, List<string> lines)
-        {
-            Task<BattleTerrain.SpotsInfo> task = _replan;
-            if (!task.IsCompleted)
-            {
-                return;
-            }
-            _replan = null;
-            if (_replanGeneration != _generation)
-            {
-                return;
-            }
-            string ms = ((DateTime.UtcNow.Ticks - _replanStartTicks) / (double)TimeSpan.TicksPerMillisecond).ToString("0", CultureInfo.InvariantCulture);
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                Exception e = (task.Exception != null) ? task.Exception.GetBaseException() : new OperationCanceledException("spots re-plan canceled");
-                lines.Add("SPOTS\treplan\tfailed=" + e.GetType().Name + ":" + BattleTerrainRead.Sanitize(e.Message) + "\treason=" + _replanReason + "\twallMs=" + ms);
-                return;
-            }
-            BattleTerrain.SpotsInfo info = task.Result;
-            if (info == null || mission.Scene == null)
-            {
-                return;
-            }
-            SidePlan oldAttacker = _attacker;
-            SidePlan oldDefender = _defender;
+            SidePlan oldAttacker = Plans.Attacker;
+            SidePlan oldDefender = Plans.Defender;
             SidePlan attacker = Next(mission, BattleSideEnum.Attacker, info.Attacker, oldAttacker);
-            SidePlan defender = _replanDefender ? Next(mission, BattleSideEnum.Defender, info.Defender, oldDefender) : oldDefender;
-            _attacker = attacker;
-            _defender = defender;
+            SidePlan defender = replanDefender ? Next(mission, BattleSideEnum.Defender, info.Defender, oldDefender) : oldDefender;
+            Plans.Publish(attacker, defender);
             int pruned = PruneOld();
             foreach (BattleSideEnum side in new[] { BattleSideEnum.Attacker, BattleSideEnum.Defender })
             {
                 BattleTerrain.SideSpots data = (side == BattleSideEnum.Attacker) ? info.Attacker : info.Defender;
                 SidePlan plan = (side == BattleSideEnum.Attacker) ? attacker : defender;
                 string what;
-                if (side == BattleSideEnum.Defender && !_replanDefender)
+                if (side == BattleSideEnum.Defender && !replanDefender)
                 {
-                    what = "kept v" + ((plan != null) ? plan.Version.ToString(CultureInfo.InvariantCulture) : "-") + " (" + _replanDefenderNote + ")";
+                    what = "kept v" + ((plan != null) ? plan.Version.ToString(CultureInfo.InvariantCulture) : "-") + " (" + defenderNote + ")";
                 }
                 else if (data != null)
                 {
-                    what = Describe(info, data, plan) + ((side == BattleSideEnum.Defender) ? " (" + _replanDefenderNote + ")" : "");
+                    what = Describe(info, data, plan) + ((side == BattleSideEnum.Defender) ? " (" + defenderNote + ")" : "");
                 }
                 else
                 {
                     what = "failed=" + (info.Error ?? "?") + " kept v" + ((plan != null) ? plan.Version.ToString(CultureInfo.InvariantCulture) : "-");
                 }
-                lines.Add("SPOTS\treplan\t" + side + "\treason=" + _replanReason + "\twallMs=" + ms + "\tpruned=" + pruned.ToString(CultureInfo.InvariantCulture) + "\t" + what);
+                lines.Add("SPOTS\treplan\t" + side + "\treason=" + reason + "\twallMs=" + ms + "\tpruned=" + pruned.ToString(CultureInfo.InvariantCulture) + "\t" + what);
             }
         }
 
@@ -341,8 +246,8 @@ namespace RBMAI
         /// <summary>MAIN thread, after a re-plan's publish: drops claims on old spots of empty formations or inactive behaviors (they would never tick again), and owner entries no claim uses. Conditional removes only, so a concurrent take / move on the AI thread is never undone. Returns how many were dropped.</summary>
         private static int PruneOld()
         {
-            SidePlan attacker = _attacker;
-            SidePlan defender = _defender;
+            SidePlan attacker = Plans.Attacker;
+            SidePlan defender = Plans.Defender;
             Mission mission = Mission.Current;
             float now = (mission != null) ? mission.CurrentTime : 0f;
             int dropped = 0;
@@ -439,29 +344,11 @@ namespace RBMAI
         private static readonly ConcurrentDictionary<Formation, float> RefusalLoggedAt = new ConcurrentDictionary<Formation, float>();
 
         public const float RefusalLogSeconds = 10f; // at most one "refuse" line per formation per this; each set of REASONS (digits stripped) once
-        private static readonly ConcurrentQueue<UseEvent> UseEvents = new ConcurrentQueue<UseEvent>();
-
-        internal sealed class UseEvent
-        {
-            public Team Team;
-            public int FormationIndex;
-            public float Time;
-            public string Behavior;
-            public string What;
-            public string SpotId;
-            public string Why;
-        }
 
         /// <summary>Any thread: placed on purpose, so nobody waits for it to close up.</summary>
         internal static bool IsHolding(Formation formation)
         {
             return formation != null && Claims.ContainsKey(formation);
-        }
-
-        /// <summary>Main thread (terrain log).</summary>
-        internal static bool TryDequeueUse(out UseEvent e)
-        {
-            return UseEvents.TryDequeue(out e);
         }
 
         /// <summary>Main thread (the map): every current claim of a non-empty formation, as (formation, spot).</summary>
@@ -580,7 +467,7 @@ namespace RBMAI
             StringBuilder refusal = null;
             foreach (Spot spot in plan.Spots)
             {
-                string why = TakeFailure(spot, formation, team, anchor, wantedSide, ally, minFire, enemyAt, takeRange, logging);
+                string why = TakeFailure(spot, plan, formation, team, anchor, wantedSide, ally, minFire, enemyAt, takeRange, logging);
                 if (why == null)
                 {
                     if (Owners.TryAdd(new ClaimKey(team, spot), formation))
@@ -589,7 +476,7 @@ namespace RBMAI
                         Claims[formation] = taken;
                         Enqueue(team, formation, now, behaviorName, "take", spot.Id,
                             spot.Data.Kind.ToString().ToLowerInvariant() + " shift=" + Fmt0(anchor.Distance(spot.Data.Position)) + "m enemy="
-                            + Fmt0(NearestEnemyDistance(team, spot.Data.Position)) + "m");
+                            + Fmt0(NearestEnemyDistance(team, spot.Data.Position)) + "m" + CavScoreText(team, spot));
                         target = spot.Position;
                         return true;
                     }
@@ -784,7 +671,7 @@ namespace RBMAI
                     continue;
                 }
                 // The take rules, but an enemy near is judged by the keep rule after the move.
-                string why = TakeFailure(spot, formation, team, anchor, wantedSide, ally, minFire, enemyAt, takeRange, false);
+                string why = TakeFailure(spot, plan, formation, team, anchor, wantedSide, ally, minFire, enemyAt, takeRange, false);
                 if (why == null || why == "enemyNear")
                 {
                     bestDistance = d;
@@ -869,7 +756,16 @@ namespace RBMAI
         }
 
         /// <summary>Why this spot cannot be taken now, or null. explain = false gives the two formatted reasons as their bare word ("friendOverlap" / "cohesion"), skipping string formatting for callers that read only null / "enemyNear".</summary>
-        private static string TakeFailure(Spot spot, Formation formation, Team team, Vec2 anchor, FormationAI.BehaviorSide wantedSide,
+        /// <summary>" score=0.82 kCav=0.40 cav=-0.20" when the cavalry penalty applies, else "".</summary>
+        private static string CavScoreText(Team team, Spot spot)
+        {
+            float kCav = ArmyComposition.KCav(team);
+            return (kCav > 0f) ? " score=" + Fmt2(spot.Data.Score) + " kCav=" + Fmt2(kCav) + " cav=-" + Fmt2(ArmyComposition.SpotCavalryPenalty * kCav) : "";
+        }
+
+        private const float SpotCavalryMinImprove = 0.1f; // = BattleTerrainRead.SpotMinImprove
+
+        private static string TakeFailure(Spot spot, SidePlan plan, Formation formation, Team team, Vec2 anchor, FormationAI.BehaviorSide wantedSide,
             Formation ally, float minFire, Vec2 enemyAt, float takeRange, bool explain)
         {
             BattleTerrain.ArcherSpot data = spot.Data;
@@ -884,6 +780,17 @@ namespace RBMAI
             if (!(data.Fire >= minFire))
             {
                 return "lowFire";
+            }
+            // an enemy of melee cavalry: a spot out on its own must be that much better than the line (score - 0.5 x kCav vs the worker's bar)
+            float kCav = ArmyComposition.KCav(team);
+            if (kCav > 0f && plan != null)
+            {
+                float bar = (float.IsNaN(plan.LineFire) ? 0f : plan.LineFire) + SpotCavalryMinImprove;
+                float penalised = data.Score - ArmyComposition.SpotCavalryPenalty * kCav;
+                if (penalised < bar)
+                {
+                    return explain ? "cavScore(" + Fmt2(data.Score) + "-" + Fmt2(ArmyComposition.SpotCavalryPenalty * kCav) + "<" + Fmt2(bar) + ")" : "cavScore";
+                }
             }
             Formation owner;
             if (Owners.TryGetValue(new ClaimKey(team, spot), out owner) && owner != formation)
@@ -1034,24 +941,10 @@ namespace RBMAI
 
         private static void Enqueue(Team team, Formation formation, float now, string behavior, string what, string spotId, string why)
         {
-            DecisionTrace.Note(formation, behavior, what, why);
-            if (!RBMConfig.RBMConfig.battleTerrainLoggingEnabled)
-            {
-                return;
-            }
-            UseEvents.Enqueue(new UseEvent
-            {
-                Team = team,
-                FormationIndex = (int)formation.FormationIndex,
-                Time = now,
-                Behavior = behavior,
-                What = what,
-                SpotId = spotId,
-                Why = why
-            });
+            TerrainLog.Behavior(team, formation, now, behavior, what, "spot", spotId, why);
         }
 
-        /// <summary>AI thread: queues one BEHAVIOR line of an archer behavior that is not about a spot (ArcherCover lines), written with spot=pointId. Only with the terrain log on.</summary>
+        /// <summary>AI thread: one BEHAVIOR line of a behavior that is not about a spot, written with spot=pointId.</summary>
         internal static void EnqueueBehavior(Team team, Formation formation, float now, string behavior, string what, string pointId, string why)
         {
             if (team == null || formation == null)

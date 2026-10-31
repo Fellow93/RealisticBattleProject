@@ -34,7 +34,8 @@ public class RBMTacticHedgehog : TacticComponent
     private bool _engaged;
     private string _engagedReason;
     private float _engagedAt = float.NaN;
-    private float _noFootSince = float.NaN;
+    /// <summary>The recall rules' timers (no foot / calm, separate).</summary>
+    private readonly HoldRecall _recall = new HoldRecall();
     /// <summary>Pursuit leash's anchor.</summary>
     private Vec2 _chargeStart = Vec2.Invalid;
     private bool _reformInPlace;
@@ -64,7 +65,7 @@ public class RBMTacticHedgehog : TacticComponent
         _engaged = false;
         _engagedReason = null;
         _engagedAt = float.NaN;
-        _noFootSince = float.NaN;
+        _recall.Reset();
         _chargeStart = Vec2.Invalid;
         _reformInPlace = false;
         _recalledAt = float.NaN;
@@ -296,7 +297,7 @@ public class RBMTacticHedgehog : TacticComponent
             _engagedReason = reason;
             _engagedAt = now;
             _engagedMen = infantryMen;
-            _noFootSince = float.NaN;
+            _recall.Reset();
             _chargeStart = (_mainInfantry != null && _mainInfantry.CountOfUnits > 0) ? RBMAI.Utilities.GetFormationCenter(_mainInfantry) : Vec2.Invalid;
             IsTacticReapplyNeeded = true;
             TerrainHedgehog.Enqueue(Team, _mainInfantry, now, "Hold->Engage", "squareCharged " + (reason ?? "-")
@@ -329,15 +330,15 @@ public class RBMTacticHedgehog : TacticComponent
         if (mission == null || _mainInfantry == null || _mainInfantry.CountOfUnits < HoldLateCharge.LineGoneMen
             || !HoldLateCharge.IsLocalChargeReason(word) || float.IsNaN(_engagedAt))
         {
-            _noFootSince = float.NaN;
+            _recall.ResetNoFoot();
             return;
         }
         TerrainHedgehog.SidePlan plan = TerrainHedgehog.ForSide(Team.Side);
-        // MELEE cavalry only.
+        // gate: only while the enemy's MELEE cavalry is still a threat
         float enemyMounted = TerrainHedgehog.EnemyMeleeCavalryNow(Team);
         if (plan == null || plan.EnemyMounted <= 0 || enemyMounted < RBMBehaviorHedgehog.CavalryGoneShare * plan.EnemyMounted)
         {
-            _noFootSince = float.NaN;
+            _recall.ResetNoFoot();
             return;
         }
         Vec2 centre = RBMAI.Utilities.GetFormationCenter(_mainInfantry);
@@ -345,57 +346,51 @@ public class RBMTacticHedgehog : TacticComponent
         {
             return;
         }
-        float nearestFootOld;
-        float nearestFoot = HoldLateCharge.NearestEnemyFootGap(mission, _mainInfantry, out nearestFootOld);
+        float nearestFoot = HoldLateCharge.NearestEnemyFootGap(mission, _mainInfantry);
         TerrainBattlePosition.Plan position = TerrainBattlePosition.PlanFor(Team);
         float toHold = (position != null) ? centre.Distance(position.Hold) : float.MaxValue;
         bool farFromPosition = toHold > RecallReturnDistance;
 
         // At once, out of melee: significant enemy cavalry close (not with enemy foot at the square), or the pursuit leash.
         float cavalryGap = float.MaxValue;
-        float cavalryGapOld = float.NaN;
-        Formation cavalry = (nearestFoot > HoldLateCharge.ContactGap) ? HoldLateCharge.NearestSignificantEnemyCavalry(mission, _mainInfantry, out cavalryGap, out cavalryGapOld) : null;
+        Formation cavalry = (nearestFoot > HoldLateCharge.ContactGap) ? HoldLateCharge.NearestSignificantEnemyCavalry(mission, _mainInfantry, out cavalryGap) : null;
         bool cavalryNear = cavalry != null && cavalryGap <= HoldLateCharge.CavalryRecallDistance;
-        float leash = _chargeStart.IsValid ? centre.Distance(_chargeStart) : 0f;
-        // The leash never pulls the infantry out of a fight (significant enemy foot within ContactGap).
-        if (cavalryNear || (leash > HoldLateCharge.LeashDistance && nearestFoot > HoldLateCharge.ContactGap))
+        float leash;
+        float melee;
+        bool leashed = HoldRecall.Leashed(_mainInfantry, centre, _chargeStart, HoldLateCharge.LeashDistance, nearestFoot, out leash, out melee);
+        // immediate trigger: significant enemy cavalry close, out of melee (the foot gap already kept it from being looked up)
+        if (cavalryNear && !leashed)
         {
-            float melee = HoldLateCharge.MeleeShare(_mainInfantry);
+            melee = HoldLateCharge.MeleeShare(_mainInfantry);
+        }
+        if (leashed || cavalryNear)
+        {
             if (melee < HoldLateCharge.ContactMeleeShare)
             {
                 if (cavalryNear)
                 {
                     // The march halts and squares up in place while the riders are within the behavior's MarchHaltCavalry.
-                    Recall(now, farFromPosition, "recall cavalry " + ThreatSignificance.Describe(_mainInfantry, cavalry) + " gap=" + FormationGeometry.Shadow(cavalryGap, cavalryGapOld)
+                    Recall(now, farFromPosition, "recall cavalry " + ThreatSignificance.Describe(_mainInfantry, cavalry) + " gap=" + FormationGeometry.GapText(cavalryGap)
                         + " (<=" + TerrainHedgehog.Fmt0(HoldLateCharge.CavalryRecallDistance) + ") " + word + " charge melee=" + TerrainHedgehog.Fmt2(melee)
-                        + " foot=" + FootText(nearestFoot, nearestFootOld) + MountedText(enemyMounted, plan) + ReformText(farFromPosition, toHold), true);
+                        + " foot=" + FootText(nearestFoot) + MountedText(enemyMounted, plan) + ReformText(farFromPosition, toHold), true);
                 }
                 else
                 {
                     Recall(now, farFromPosition, "recall leash " + word + " charge: " + TerrainHedgehog.Fmt0(leash) + "m from its start (>"
-                        + TerrainHedgehog.Fmt0(HoldLateCharge.LeashDistance) + ") melee=" + TerrainHedgehog.Fmt2(melee) + " foot=" + FootText(nearestFoot, nearestFootOld)
+                        + TerrainHedgehog.Fmt0(HoldLateCharge.LeashDistance) + ") melee=" + TerrainHedgehog.Fmt2(melee) + " foot=" + FootText(nearestFoot)
                         + MountedText(enemyMounted, plan) + ReformText(farFromPosition, toHold), true);
                 }
                 return;
             }
         }
 
-        if (now - _engagedAt < HoldLateCharge.RecallMinCharge || nearestFoot <= HoldLateCharge.RecallFootGap)
-        {
-            _noFootSince = float.NaN;
-            return;
-        }
-        if (float.IsNaN(_noFootSince))
-        {
-            _noFootSince = now;
-        }
-        if (now - _noFootSince < HoldLateCharge.RecallSeconds)
+        if (!_recall.NoFootFor(now, _engagedAt, nearestFoot))
         {
             return;
         }
         Recall(now, farFromPosition,
             "recall " + word + " charge: no enemy foot within " + TerrainHedgehog.Fmt0(HoldLateCharge.RecallFootGap) + "m for "
-            + TerrainHedgehog.Fmt0(HoldLateCharge.RecallSeconds) + "s (nearest foot=" + FootText(nearestFoot, nearestFootOld) + ")" + MountedText(enemyMounted, plan)
+            + TerrainHedgehog.Fmt0(HoldLateCharge.RecallSeconds) + "s (nearest foot=" + FootText(nearestFoot) + ")" + MountedText(enemyMounted, plan)
             + ReformText(farFromPosition, toHold), true);
     }
 
@@ -433,21 +428,12 @@ public class RBMTacticHedgehog : TacticComponent
         if (_engagedReason != "outshot" || _mainInfantry.CountOfUnits < HoldLateCharge.LineGoneMen || float.IsNaN(_engagedAt)
             || now - _engagedAt < HoldLateCharge.RecallMinCharge)
         {
-            _noFootSince = float.NaN;
+            _recall.ResetCalm();
             return;
         }
         // Out-shot charge: re-form once no significant enemy foot is within RecallFootGap and no shooters within OutshotStandoff for RecallSeconds.
-        string calm = HoldLateCharge.CalmReason(mission, _mainInfantry, true);
-        if (calm == null)
-        {
-            _noFootSince = float.NaN;
-            return;
-        }
-        if (float.IsNaN(_noFootSince))
-        {
-            _noFootSince = now;
-        }
-        if (now - _noFootSince >= HoldLateCharge.RecallSeconds)
+        string calm = _recall.CalmFor(now, _engagedAt, HoldLateCharge.CalmReason(mission, _mainInfantry, true));
+        if (calm != null)
         {
             Recall(now, farFromPosition, "recall outshot engage: calm " + calm + " for " + TerrainHedgehog.Fmt0(HoldLateCharge.RecallSeconds) + "s"
                 + MountedText(enemyMounted, plan) + ReformText(farFromPosition, toHold), true);
@@ -456,9 +442,9 @@ public class RBMTacticHedgehog : TacticComponent
 
     private const string PlayerLineWord = "playerLine";
 
-    private static string FootText(float nearestFoot, float old)
+    private static string FootText(float nearestFoot)
     {
-        return FormationGeometry.Shadow(nearestFoot, old);
+        return FormationGeometry.GapText(nearestFoot);
     }
 
     private static string MountedText(float enemyMounted, TerrainHedgehog.SidePlan plan)
@@ -478,7 +464,7 @@ public class RBMTacticHedgehog : TacticComponent
         _engaged = false;
         _engagedReason = null;
         _engagedAt = float.NaN;
-        _noFootSince = float.NaN;
+        _recall.Reset();
         _chargeStart = Vec2.Invalid;
         _recalledAt = quiet ? now : float.NaN;
         _applyGeneration++;

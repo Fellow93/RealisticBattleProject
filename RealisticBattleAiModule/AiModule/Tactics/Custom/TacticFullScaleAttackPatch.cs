@@ -26,6 +26,13 @@ namespace RBMAI.AiModule.RbmTactics
                 ____archers.AI.SetBehaviorWeight<BehaviorSkirmishLine>(0f);
                 ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 ____archers.AI.SetBehaviorWeight<BehaviorRegroup>(1.25f);
+                // No melee-infantry main: native's screened skirmish weighs 0 without a main formation; the archers skirmish on their own (and may take the initiative).
+                if (FormationCohesion.TeamMain(__instance.Team) == null)
+                {
+                    ____archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(0f);
+                    ____archers.AI.SetBehaviorWeight<RBMBehaviorArcherSkirmish>(1f);
+                    ArmyComposition.Note(__instance.Team, ____archers, ArmyComposition.KindTactic, "noMainArchers", "FullScaleAttack Advance: ArcherSkirmish for ScreenedSkirmish");
+                }
             }
             if (____rightCavalry != null)
             {
@@ -109,16 +116,30 @@ namespace RBMAI.AiModule.RbmTactics
             {
                 __result = 0.01f;
             }
-            // All-mounted army: every option weighs ~0 (native uses the infantry share), so ride out as a full-scale attack unless the wedge weighs more.
+            // Mostly mounted army: every option weighs ~0 (native uses the infantry share), so ride out as a full-scale attack unless the wedge weighs more.
+            // Ramped from MountedArmyStart to MountedArmyShare (full floor), no step.
             TeamQuerySystem q = currentTeam.QuerySystem;
-            if (q != null && q.MemberCount > 0 && q.CavalryRatio + q.RangedCavalryRatio >= MountedArmyShare)
+            if (q != null && q.MemberCount > 0)
             {
-                __result = TaleWorlds.Library.MathF.Max(__result,
-                    MountedArmyWeight * TaleWorlds.Library.MathF.Sqrt(TaleWorlds.Library.MathF.Max(q.RemainingPowerRatio, 0.05f)));
+                // ArmyComposition's weighted-men team share (tokens out, dismounted riders as foot); native's unweighted ratio before the first snapshot
+                float share = ArmyComposition.PeekTeamMountedShare(currentTeam);
+                string source = "composition";
+                if (float.IsNaN(share))
+                {
+                    share = q.CavalryRatio + q.RangedCavalryRatio;
+                    source = "native";
+                }
+                float floorK = ArmyComposition.Ramp(share, ArmyComposition.MountedArmyStart, ArmyComposition.MountedArmyShare);
+                float floor = 0f;
+                if (floorK > 0f)
+                {
+                    floor = floorK * MountedArmyWeight * TaleWorlds.Library.MathF.Sqrt(TaleWorlds.Library.MathF.Max(q.RemainingPowerRatio, 0.05f));
+                    __result = TaleWorlds.Library.MathF.Max(__result, floor);
+                }
+                ArmyComposition.NoteMountedFloor(currentTeam, floorK, share, source, floor);
             }
         }
 
-        private const float MountedArmyShare = 0.9f; // cavalry + horse archers
         private const float MountedArmyWeight = 0.5f;
 
         /// <summary>Per tactic instance: last re-deal time; whether the current ManageFormationCounts call is refresh-only.</summary>
@@ -157,11 +178,11 @@ namespace RBMAI.AiModule.RbmTactics
             }
             state.RefreshOnly = true;
             List<Formation> formations = team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList();
-            ____mainInfantry = Strongest(formations, (Formation f) => f.QuerySystem.IsInfantryFormation, null, null);
-            ____archers = Strongest(formations, (Formation f) => f.QuerySystem.IsRangedFormation, ____mainInfantry, null);
-            ____leftCavalry = Strongest(formations, (Formation f) => f.QuerySystem.IsCavalryFormation, null, null);
-            ____rightCavalry = Strongest(formations, (Formation f) => f.QuerySystem.IsCavalryFormation, ____leftCavalry, null);
-            ____rangedCavalry = Strongest(formations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, ____leftCavalry, ____rightCavalry);
+            ____mainInfantry = ArmyComposition.Strongest(formations, (Formation f) => f.QuerySystem.IsInfantryFormation, null, null);
+            ____archers = ArmyComposition.Strongest(formations, (Formation f) => f.QuerySystem.IsRangedFormation, ____mainInfantry, null);
+            ____leftCavalry = ArmyComposition.Strongest(formations, (Formation f) => f.QuerySystem.IsCavalryFormation, null, null);
+            ____rightCavalry = ArmyComposition.Strongest(formations, (Formation f) => f.QuerySystem.IsCavalryFormation, ____leftCavalry, null);
+            ____rangedCavalry = ArmyComposition.Strongest(formations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, ____leftCavalry, ____rightCavalry);
             if (____mainInfantry != null)
             {
                 ____mainInfantry.AI.IsMainFormation = true;
@@ -183,25 +204,6 @@ namespace RBMAI.AiModule.RbmTactics
             return false;
         }
 
-        /// <summary>The strongest formation meeting <paramref name="test"/>, AI-controlled ones first, other than the two excluded.</summary>
-        private static Formation Strongest(List<Formation> formations, System.Func<Formation, bool> test, Formation exclude1, Formation exclude2)
-        {
-            Formation best = null;
-            foreach (Formation f in formations)
-            {
-                if (f == exclude1 || f == exclude2 || !test(f))
-                {
-                    continue;
-                }
-                if (best == null || (f.IsAIControlled && !best.IsAIControlled)
-                    || (f.IsAIControlled == best.IsAIControlled && f.QuerySystem.FormationPower > best.QuerySystem.FormationPower))
-                {
-                    best = f;
-                }
-            }
-            return best;
-        }
-
         [HarmonyPostfix]
         [HarmonyPatch("ManageFormationCounts")]
         private static void PostfixManageFormationCounts(TacticFullScaleAttack __instance, ref Formation ____leftCavalry, ref Formation ____rightCavalry)
@@ -212,7 +214,7 @@ namespace RBMAI.AiModule.RbmTactics
                 // References-only refresh: the riders stay where they are.
                 return;
             }
-            if (____leftCavalry != null && ____rightCavalry != null && ____leftCavalry.IsAIControlled && ____rightCavalry.IsAIControlled)
+            if (____leftCavalry != null && ____rightCavalry != null && ____leftCavalry.IsAIOwned && ____rightCavalry.IsAIOwned)
             {
                 List<Agent> mountedSkirmishersList = new List<Agent>();
                 List<Agent> mountedMeleeList = new List<Agent>();

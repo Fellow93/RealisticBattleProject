@@ -75,13 +75,10 @@ namespace RBMAI
 
         private const int MaxShooters = 4;
 
-        private static volatile SidePlan _attacker;
+        // attacker side only
+        private static readonly PlanSlot<SidePlan> Plans = new PlanSlot<SidePlan>();
 
-        private static int _generation;
-        private static Task<BattleTerrain.ApproachResult> _replan;
-        private static int _replanGeneration;
-        private static string _replanReason;
-        private static long _replanStartTicks;
+        private static readonly ReplanJob<BattleTerrain.ApproachResult> Replan = new ReplanJob<BattleTerrain.ApproachResult>("approach re-plan canceled");
         private static float _nextCheckAt;
         private static float _lastAttemptAt = float.NegativeInfinity;
         private static int _replans;
@@ -141,43 +138,30 @@ namespace RBMAI
         /// <summary>The attacker's plan as the advance reads it: null with terrainTacticsEnabled off, before the publish, under ArmyScale.NoPlans, or for the defender. Any thread.</summary>
         public static SidePlan ForSide(BattleSideEnum side)
         {
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || side != BattleSideEnum.Attacker || ArmyScale.NoPlans(side))
-            {
-                return null;
-            }
-            return _attacker;
+            return Plans.ForSide(side);
         }
 
         public static SidePlan ForTeam(Team team)
         {
-            return (team != null) ? ForSide(team.Side) : null;
+            return Plans.ForTeam(team);
         }
 
         /// <summary>Whatever the toggle (log and map).</summary>
-        internal static SidePlan Published => _attacker;
+        internal static SidePlan Published => Plans.Attacker;
 
         /// <summary>Main thread, at the terrain publish (and a re-plan's finish).</summary>
         internal static void Publish(SidePlan attacker)
         {
-            _attacker = attacker;
+            Plans.Set(BattleSideEnum.Attacker, attacker);
         }
 
-        /// <summary>Main thread: mission end and MissionStartReset. Drops the use states, queued events and the re-plan state (a running re-plan is abandoned by generation).</summary>
+        /// <summary>Main thread: mission end and MissionStartReset. Drops the use states, queued log lines and the re-plan state (a running re-plan is abandoned by generation).</summary>
         public static void Clear()
         {
-            _attacker = null;
+            Plans.Clear();
             States.Clear();
-            UseEvent ignored;
-            while (UseEvents.TryDequeue(out ignored))
-            {
-            }
-            _generation++;
-            if (_replan != null)
-            {
-                _replan.ContinueWith(t => { var unused = t.Exception; }, TaskContinuationOptions.OnlyOnFaulted);
-                _replan = null;
-            }
-            _replanReason = null;
+            TerrainLog.Clear();
+            Replan.Clear();
             _nextCheckAt = 0f;
             _lastAttemptAt = float.NegativeInfinity;
             _replans = 0;
@@ -263,13 +247,13 @@ namespace RBMAI
             {
                 return;
             }
-            if (_replan != null)
+            if (Replan.Running)
             {
                 FinishReplan(mission, terrain, lines);
                 return;
             }
-            SidePlan plan = _attacker;
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || plan == null || ArmyScale.NoPlans(BattleSideEnum.Attacker) || _stopped || now < _nextCheckAt)
+            SidePlan plan = Plans.Attacker;
+            if (!TerrainPlans.Active(BattleSideEnum.Attacker) || plan == null || _stopped || now < _nextCheckAt)
             {
                 return;
             }
@@ -328,43 +312,32 @@ namespace RBMAI
             }
             _replans++;
             _lastAttemptAt = now;
-            _replanGeneration = _generation;
-            _replanStartTicks = DateTime.UtcNow.Ticks;
-            _replanReason = why + " def moved " + Fmt0(defMoved) + "m turned " + Fmt0(turned) + "deg atk moved " + Fmt0(atkMoved) + "m gap " + Fmt0(gap)
+            string reason = why + " def moved " + Fmt0(defMoved) + "m turned " + Fmt0(turned) + "deg atk moved " + Fmt0(atkMoved) + "m gap " + Fmt0(gap)
                 + "m after " + Fmt0(since) + "s n=" + _replans.ToString(CultureInfo.InvariantCulture) + "/" + ReplanMax.ToString(CultureInfo.InvariantCulture)
                 + (armies.KeepKind.HasValue ? " keep=" + BattleTerrain.ApproachKindName(armies.KeepKind.Value) : "");
             // background: pure grid work over the immutable snapshot
-            _replan = Task.Run(() => terrain.ReplanApproach(armies));
+            Replan.Start(reason, () => terrain.ReplanApproach(armies));
         }
 
         private static void FinishReplan(Mission mission, BattleTerrain terrain, List<string> lines)
         {
-            Task<BattleTerrain.ApproachResult> task = _replan;
-            if (!task.IsCompleted)
+            BattleTerrain.ApproachResult result;
+            string ms;
+            string failure;
+            ReplanJob<BattleTerrain.ApproachResult>.Outcome outcome = Replan.TryFinish(out result, out ms, out failure);
+            if (outcome == ReplanJob<BattleTerrain.ApproachResult>.Outcome.Failed)
+            {
+                lines.Add("APPROACH\treplan\t" + BattleSideEnum.Attacker + "\tfailed=" + failure + "\treason=" + Replan.Reason + "\twallMs=" + ms);
+                return;
+            }
+            if (outcome != ReplanJob<BattleTerrain.ApproachResult>.Outcome.Done || result == null || mission.Scene == null)
             {
                 return;
             }
-            _replan = null;
-            if (_replanGeneration != _generation)
-            {
-                return;
-            }
-            string ms = ((DateTime.UtcNow.Ticks - _replanStartTicks) / (double)TimeSpan.TicksPerMillisecond).ToString("0", CultureInfo.InvariantCulture);
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                Exception e = (task.Exception != null) ? task.Exception.GetBaseException() : new OperationCanceledException("approach re-plan canceled");
-                lines.Add("APPROACH\treplan\t" + BattleSideEnum.Attacker + "\tfailed=" + e.GetType().Name + ":" + BattleTerrainRead.Sanitize(e.Message) + "\treason=" + _replanReason + "\twallMs=" + ms);
-                return;
-            }
-            BattleTerrain.ApproachResult result = task.Result;
-            if (result == null || mission.Scene == null)
-            {
-                return;
-            }
-            SidePlan old = _attacker;
+            SidePlan old = Plans.Attacker;
             SidePlan plan = Build(mission, terrain, result, (old != null) ? old.Version + 1 : 1, "replan");
-            _attacker = plan;
-            lines.Add("APPROACH\treplan\t" + BattleSideEnum.Attacker + "\treason=" + _replanReason + "\twallMs=" + ms + "\t" + Describe(result, plan));
+            Publish(plan);
+            lines.Add("APPROACH\treplan\t" + BattleSideEnum.Attacker + "\treason=" + Replan.Reason + "\twallMs=" + ms + "\t" + Describe(result, plan));
         }
 
         /// <summary>Main thread: the armies now. The defender's battle position while its main is within PositionLeftDistance of the hold, else its main's own line; the choke only while held.</summary>
@@ -491,30 +464,12 @@ namespace RBMAI
             public Vec2 SamplePos = Vec2.Invalid;
             public float SampleAt;
             public float LastCallAt = float.NegativeInfinity;
-            public WorldPosition Target = WorldPosition.Invalid;
-            public Vec2 TargetPoint = Vec2.Invalid;
-            public float BuiltAt = float.NegativeInfinity;
+            public readonly CachedMovePoint Target = new CachedMovePoint();
             public int TargetIndex = -1;
             public int TargetVersion = -1;
         }
 
         private static readonly ConcurrentDictionary<Formation, UseState> States = new ConcurrentDictionary<Formation, UseState>();
-
-        internal sealed class UseEvent
-        {
-            public Team Team;
-            public int FormationIndex;
-            public float Time;
-            public string What;
-            public string Why;
-        }
-
-        private static readonly ConcurrentQueue<UseEvent> UseEvents = new ConcurrentQueue<UseEvent>();
-
-        internal static bool TryDequeueUse(out UseEvent e)
-        {
-            return UseEvents.TryDequeue(out e);
-        }
 
         /// <summary>
         /// AI thread, from OverrideBehaviorAdvance.CalculateCurrentOrder: true with the Move point (front-centre) and facing of the
@@ -632,8 +587,7 @@ namespace RBMAI
                 s.Following = true;
                 s.Version = plan.Version;
                 s.Index = index;
-                s.Target = WorldPosition.Invalid;
-                s.TargetPoint = Vec2.Invalid;
+                s.Target.Reset();
                 if (!adopt)
                 {
                     s.TakenAt = now;
@@ -709,22 +663,14 @@ namespace RBMAI
             }
             float reach = Math.Max(3f, advanceOffset);
             Vec2 wanted = (distance <= reach) ? w.Position : centre + toWaypoint * reach;
-            if (s.TargetIndex != s.Index || s.TargetVersion != plan.Version || !s.TargetPoint.IsValid
-                || (s.TargetPoint.DistanceSquared(wanted) > RebuildDistance * RebuildDistance && now - s.BuiltAt >= RebuildSeconds))
+            // a copy of the waypoint's cached WorldPosition, forced on a new waypoint / version
+            bool rebuilt;
+            s.Target.TryGet(wanted, now, w.World, s.TargetIndex != s.Index || s.TargetVersion != plan.Version, RebuildDistance, RebuildSeconds, out target, out rebuilt);
+            if (rebuilt)
             {
-                // ONE SetVec2MT on a fresh copy of the waypoint's cached WorldPosition, kept until the next rebuild
-                WorldPosition built = w.World;
-                if (wanted != w.Position)
-                {
-                    built.SetVec2MT(wanted);
-                }
-                s.Target = built;
-                s.TargetPoint = wanted;
-                s.BuiltAt = now;
                 s.TargetIndex = s.Index;
                 s.TargetVersion = plan.Version;
             }
-            target = s.Target;
             facing = toWaypoint;
             return target.IsValid;
         }
@@ -826,8 +772,7 @@ namespace RBMAI
         private static void Drop(Formation formation, UseState s, SidePlan plan, float now, string why, bool battle)
         {
             s.Following = false;
-            s.Target = WorldPosition.Invalid;
-            s.TargetPoint = Vec2.Invalid;
+            s.Target.Reset();
             if (battle)
             {
                 s.BattleDrop = why;
@@ -848,18 +793,11 @@ namespace RBMAI
         private static void Enqueue(Formation formation, float time, string what, string why)
         {
             DecisionTrace.Note(formation, "Approach", what, why);
-            if (!RBMConfig.RBMConfig.battleTerrainLoggingEnabled || formation == null)
+            if (formation == null)
             {
                 return;
             }
-            UseEvents.Enqueue(new UseEvent
-            {
-                Team = formation.Team,
-                FormationIndex = (int)formation.FormationIndex,
-                Time = time,
-                What = what,
-                Why = why
-            });
+            TerrainLog.Enqueue(new TerrainLog.Event { Tag = TerrainLog.Tag.Approach, Team = formation.Team, FormationIndex = (int)formation.FormationIndex, Time = time, What = what, Why = why });
         }
 
         private static float Now()
@@ -874,7 +812,7 @@ namespace RBMAI
         internal static string Describe(BattleTerrain.ApproachResult result, SidePlan plan)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("applied=").Append(RBMConfig.RBMConfig.terrainTacticsEnabled && !ArmyScale.NoPlans(BattleSideEnum.Attacker) ? 1 : 0);
+            sb.Append("applied=").Append(TerrainPlans.Active(BattleSideEnum.Attacker) ? 1 : 0);
             sb.Append("\tv=").Append((plan != null) ? plan.Version.ToString(CultureInfo.InvariantCulture) : "-");
             sb.Append("\tchosen=").Append((plan != null) ? plan.KindName : "-");
             if (result == null)

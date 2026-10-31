@@ -30,13 +30,14 @@ namespace RBMAI
     ///
     /// Move point: target centre - u x (its half extent along u + StandOff), u = own centre -> target centre (the order position is the
     /// FRONT-centre). ONE SetVec2MT on a copy of the target's cached median WorldPosition (native caches the order position by its exact
-    /// Vec2), rebuilt after RebuildDistance m and RebuildSeconds or a target change. Facing LookAtDirection(u), re-aimed after ~10 degrees;
+    /// Vec2), rebuilt after CachedMovePoint's RebuildDistance m and RebuildSeconds or a target change. Facing LookAtDirection(u), re-aimed after ~10 degrees;
     /// behaviors that set their own facing keep theirs; when the intent ends a facing still ours goes back to LookAtEnemy.
     ///
     /// Safety net: a Formation.Tick postfix re-applies the active behavior's own CurrentOrder every RecheckSeconds while advancing (for
     /// behaviors that do not re-issue their charge, and for a target that died).
     ///
-    /// Readers: <see cref="IsAdvancingToCharge"/> / <see cref="IsChargeIntent"/> let code that asks "is it charging" treat the advance as one.
+    /// Readers: <see cref="IsAdvancingToCharge"/> / <see cref="IsChargeIntent"/> let code that asks "is it charging" treat the advance as one;
+    /// they also count AI riders' own formed approach (FormedApproach.Target: CavalryCharge, React strikes), which this guard never touches.
     ///
     /// THREADING: SetMovementOrder runs on the async AI thread or the main thread (control changes); Formation.Tick on the AI thread.
     /// Cached formation data only; one SetVec2MT on a fresh copy of a cached WorldPosition; no engine spatial query, no WorldPosition
@@ -44,8 +45,8 @@ namespace RBMAI
     /// </summary>
     internal static class ChargeGuard
     {
-        // User rule: real charge only within 50 m (edge gap). A released charge is kept until the gap stays above ChargeKeepDistance for ChargeKeepSeconds.
-        internal const float ChargeStartDistance = 50f; // m
+        // User rule: real charge only within 40 m (edge gap; was 50 until 2026-10-30). A released charge is kept until the gap stays above ChargeKeepDistance for ChargeKeepSeconds.
+        internal const float ChargeStartDistance = 40f; // m
         internal const float ChargeKeepDistance = 75f; // m
         internal const float ChargeKeepSeconds = 3f;
 
@@ -64,10 +65,6 @@ namespace RBMAI
                 || arrangement == ArrangementOrder.ArrangementOrderEnum.Square
                 || arrangement == ArrangementOrder.ArrangementOrderEnum.Circle;
         }
-
-        // The Move point is rebuilt only after both have passed.
-        internal const float RebuildDistance = 5f; // m
-        internal const float RebuildSeconds = 2f;
 
         private const float FacingTurnCos = 0.985f; // ~10 degrees
 
@@ -95,9 +92,7 @@ namespace RBMAI
             public MovementOrder ReleasedOrder;
             public bool HasReleasedOrder;
 
-            public WorldPosition Point = WorldPosition.Invalid;
-            public Vec2 PointVec = Vec2.Invalid;
-            public float PointAt = float.NegativeInfinity;
+            public readonly CachedMovePoint Point = new CachedMovePoint();
             public Formation PointTarget;
             public Vec2 Facing = Vec2.Invalid;
             public float MeleeAt = float.NegativeInfinity;
@@ -135,11 +130,12 @@ namespace RBMAI
             States.Clear();
         }
 
-        // Any thread. Its actual order is our Move.
+        // Any thread. Its actual order is our Move (or AI riders' own formed approach, FormedApproach.Target).
         internal static bool IsAdvancingToCharge(Formation formation)
         {
             State state;
-            return formation != null && States.TryGetValue(formation, out state) && state.Advancing;
+            return formation != null && ((States.TryGetValue(formation, out state) && state.Advancing)
+                || FormedApproach.Target(formation) != null);
         }
 
         // Any thread: under a Charge / ChargeWithTarget order, or advancing to one.
@@ -160,7 +156,7 @@ namespace RBMAI
             {
                 return state.Target;
             }
-            return null;
+            return FormedApproach.Target(formation);
         }
 
         /// <summary>
@@ -454,7 +450,7 @@ namespace RBMAI
                 state.PlayerOrder = input;
                 state.HasPlayerOrder = true;
             }
-            input = MovementOrder.MovementOrderMove(state.Point);
+            input = MovementOrder.MovementOrderMove(state.Point.Point);
             FacingOrder facing = formation.FacingOrder;
             if (facing.OrderEnum != FacingOrder.FacingOrderEnum.LookAtDirection || facing.GetDirection(formation).DotProduct(state.Facing) < 0.9999f)
             {
@@ -535,26 +531,16 @@ namespace RBMAI
                 state.Facing = toTarget;
             }
             Vec2 point = targetCentre - toTarget * (HalfExtent(target, toTarget) + (IsCloseOrder(formation) ? ClosedStandOff : StandOff));
-            if (state.PointVec.IsValid && state.PointTarget == target
-                && (state.PointVec.DistanceSquared(point) <= RebuildDistance * RebuildDistance || now - state.PointAt < RebuildSeconds))
+            // a new target rebuilds at once and never keeps the old target's point
+            if (state.PointTarget != target)
             {
-                return true;
+                state.Point.Reset();
             }
-            WorldPosition source = target.CachedMedianPosition;
-            if (!source.AsVec2.IsValid)
+            WorldPosition built;
+            if (!state.Point.TryGet(point, now, target.CachedMedianPosition, formation.CachedMedianPosition, false, true, false, out built))
             {
-                source = formation.CachedMedianPosition;
-                if (!source.AsVec2.IsValid)
-                {
-                    return state.PointVec.IsValid && state.PointTarget == target;
-                }
+                return false;
             }
-            // ONE SetVec2MT on a fresh copy, kept until a rebuild: native caches the order position by its Vec2.
-            WorldPosition built = source;
-            built.SetVec2MT(point);
-            state.Point = built;
-            state.PointVec = point;
-            state.PointAt = now;
             state.PointTarget = target;
             return true;
         }

@@ -10,18 +10,40 @@ public class RBMTacticAttackSplitArchers : TacticComponent
     private Formation rightArchers;
     private bool _hasBattleBeenJoined;
     // Never reassigns agent.Formation, so no one-time-split latch is needed.
+    private bool _archersSplit;
 
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 30;
+
+    // USER RULE 2026-10-30: fewer AI foot archers than this stay one block.
+    internal const int MinArchersToSplit = 30;
 
     public RBMTacticAttackSplitArchers(Team team)
         : base(team)
     {
     }
 
+    /// <summary>Two archer blocks: enough AI foot archers, or the split this tactic made still stands (no merge mid-battle as men fall).</summary>
+    internal static bool ShouldSplitArchers(Team team, bool splitBefore)
+    {
+        int men = 0;
+        int blocks = 0;
+        foreach (Formation f in team.FormationsIncludingEmpty)
+        {
+            if (f.CountOfUnits <= 0 || !f.IsAIControlled || !f.QuerySystem.IsRangedFormation)
+            {
+                continue;
+            }
+            men += f.CountOfUnits;
+            blocks++;
+        }
+        return men >= MinArchersToSplit || (splitBefore && blocks >= 2);
+    }
+
     protected void AssignTacticFormations()
     {
-        ManageFormationCounts(1, 2, 2, 1);
+        _archersSplit = ShouldSplitArchers(Team, _archersSplit);
+        ManageFormationCounts(1, _archersSplit ? 2 : 1, 2, 1);
         _mainInfantry = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
         if (_mainInfantry != null)
         {

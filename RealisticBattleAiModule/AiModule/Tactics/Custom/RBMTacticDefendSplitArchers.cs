@@ -10,6 +10,7 @@ public class RBMTacticDefendSplitArchers : TacticComponent
     private Formation rightArchers;
     private bool _hasBattleBeenJoined;
     // Never reassigns agent.Formation, so no one-time-split latch is needed.
+    private bool _archersSplit;
 
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 25;
@@ -26,11 +27,13 @@ public class RBMTacticDefendSplitArchers : TacticComponent
     {
         base.OnApply();
         _applyGeneration++;
+        RBMBehaviorHoldPosition.ResetEngage(this);
     }
 
     protected void AssignTacticFormations()
     {
-        ManageFormationCounts(1, 2, 2, 1);
+        _archersSplit = RBMTacticAttackSplitArchers.ShouldSplitArchers(Team, _archersSplit);
+        ManageFormationCounts(1, _archersSplit ? 2 : 1, 2, 1);
         _mainInfantry = ChooseAndSortByPriority(FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0), (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
         if (_mainInfantry != null)
         {
@@ -93,7 +96,10 @@ public class RBMTacticDefendSplitArchers : TacticComponent
         {
             SoundTacticalHorn(TacticComponent.MoveHornSoundIndex);
         }
-        if (_mainInfantry != null)
+        // No melee-infantry main: the archer anchor stands (RBMBehaviorArcherStand owns it in both phases).
+        Formation line = ArmyComposition.LineHolder(Team);
+        bool archerLine = line != null;
+        if (_mainInfantry != null && !archerLine)
         {
             if (waitCountMainFormation < waitCountMainFormationMax)
             {
@@ -111,6 +117,12 @@ public class RBMTacticDefendSplitArchers : TacticComponent
                 IsTacticReapplyNeeded = false;
             }
         }
+        else if (_mainInfantry != null)
+        {
+            // token infantry beside an archer line: defaults; RBMBehaviorArcherStand's escort outweighs them
+            _mainInfantry.AI.ResetBehaviorWeights();
+            TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
+        }
         if (leftArchers != null)
         {
             leftArchers.AI.ResetBehaviorWeights();
@@ -122,6 +134,17 @@ public class RBMTacticDefendSplitArchers : TacticComponent
             rightArchers.AI.ResetBehaviorWeights();
             TacticComponent.SetDefaultBehaviorWeights(rightArchers);
             rightArchers.AI.SetBehaviorWeight<RBMBehaviorArcherFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+        }
+        if (archerLine && RBMBehaviorHoldPosition.YieldToArcherStand(Team, this, _applyGeneration, _mainInfantry, null))
+        {
+            if (leftArchers != null && leftArchers != line)
+            {
+                RBMBehaviorHoldPosition.TryAssign(leftArchers, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Archers);
+            }
+            if (rightArchers != null && rightArchers != line)
+            {
+                RBMBehaviorHoldPosition.TryAssign(rightArchers, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Archers);
+            }
         }
         if (_leftCavalry != null)
         {
@@ -270,10 +293,19 @@ public class RBMTacticDefendSplitArchers : TacticComponent
     protected override float GetTacticWeight()
     {
         float fit;
-        if (!TacticSelection.TryGetArcherFit(Team, out fit))
+        bool fits = TacticSelection.TryGetArcherFit(Team, out fit);
+        // no melee-infantry main: native DefensiveLine / DefensiveEngagement weigh 0 without infantry, so this tactic hosts the archer stand
+        if (ArmyComposition.LineHolder(Team) != null)
+        {
+            fit = MathF.Max(fits ? fit : 0f, NoMainFit);
+            fits = true;
+        }
+        if (!fits)
         {
             return TacticSelection.UnfitWeight;
         }
         return fit * 1.1f / MathF.Sqrt(MathF.Max(Team.QuerySystem.RemainingPowerRatio, 0.05f));
     }
+
+    private const float NoMainFit = 0.5f;
 }

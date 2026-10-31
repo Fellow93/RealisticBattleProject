@@ -280,16 +280,20 @@ namespace RBMAI
         /// <summary>A charge run-up: walkable ground flatter than 15 deg (cap 250 m) back from three points of a line, crossing bumps up to 8 m.</summary>
         internal sealed class RunUp
         {
-            internal RunUp(float max, float min, End minEnd, int maxBumps, int minBumps)
+            internal RunUp(float max, float min, End minEnd, int maxBumps, int minBumps, float centre)
             {
                 Max = max;
                 Min = min;
                 MinEnd = minEnd;
                 MaxBumps = maxBumps;
                 MinBumps = minBumps;
+                Centre = centre;
             }
 
             public float Max { get; }
+
+            /// <summary>The run-up back from the line's centre along the axis: straight ahead of the charger's main body (the wedge forms in front of its main infantry).</summary>
+            public float Centre { get; }
 
             public float Min { get; }
 

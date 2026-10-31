@@ -24,11 +24,11 @@ namespace RBMAI
     /// Friendly overlap (FriendlyOverlap; friends where they stand AND are heading): a run-up point is not taken when more than
     /// TakeMaxShare of the riders' footprint (front-centre at the point, facing the target, kept in Hold.Facing) overlaps a friendly
     /// formation, and is let go above KeepMaxShare.
-    /// Re-plan: Tick (MAIN thread) asks its TerrainPlanRefresh, then runs BattleTerrain.ReplanCavalry on a background Task (generation
-    /// token) and publishes both sides' next SidePlan versions (bad-ground mask kept). A lane approach of an OLD version, on the AI
+    /// Re-plan: TerrainArmyReplan (one job with the archer spots) hands ApplyReplan the worker's result, which publishes both sides'
+    /// next SidePlan versions (bad-ground mask kept). A lane approach of an OLD version, on the AI
     /// thread at the holder's next tick, moves to the new lane onto the same target nearest its old run-up point (LaneAdoptShift,
     /// take rules, Rebase) else is released and the formation charges from where it is. PruneOld drops claims of old points.
-    /// THREADING: Build / Publish / Tick / FinishReplan / PruneOld run on the MAIN thread (Build creates and navmesh-checks the
+    /// THREADING: Build / Publish / ApplyReplan / PruneOld run on the MAIN thread (Build creates and navmesh-checks the
     /// WorldPositions). Every other helper runs on the async AI thread: volatile reads of immutable plans, array reads (IsBadGround),
     /// cached formation positions, concurrent-dictionary claims and a queue; no engine call, no WorldPosition construction (the cached
     /// ones are copied), no MBRandom. BEHAVIOR events are queued and written on the main thread; the overlay reads holds through
@@ -75,17 +75,8 @@ namespace RBMAI
         public const float LaneAdoptShift = 60f; // re-plan: old lane approach moves to a new run-up point only this close to its old one
 
 
-        private static volatile SidePlan _attacker;
-        private static volatile SidePlan _defender;
+        private static readonly PlanSlot<SidePlan> Plans = new PlanSlot<SidePlan>();
         private static volatile BattleTerrain.CavalryInfo _ground;
-
-
-        private static readonly TerrainPlanRefresh Refresh = new TerrainPlanRefresh("cavalry");
-        private static int _generation; // bumped in Clear: an older re-plan is dropped
-        private static Task<BattleTerrain.CavalryInfo> _replan;
-        private static int _replanGeneration;
-        private static string _replanReason;
-        private static long _replanStartTicks;
 
         /// <summary>FromAim in metres; World built on the main thread. Immutable.</summary>
         internal sealed class LaneEntry
@@ -146,34 +137,23 @@ namespace RBMAI
                 }
                 return false;
             }
-
-            public bool ContainsPoint(object point)
-            {
-                Lane lane = point as Lane;
-                return lane != null && Contains(lane);
-            }
         }
 
         /// <summary>The side's plan as the behaviors read it: null with terrainTacticsEnabled off, before the publish, or for another side. Any thread.</summary>
         public static SidePlan ForSide(BattleSideEnum side)
         {
-            // None for a side without terrain plans (ArmyScale).
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || ArmyScale.NoPlans(side))
-            {
-                return null;
-            }
-            return Published(side);
+            return Plans.ForSide(side);
         }
 
         public static SidePlan ForTeam(Team team)
         {
-            return (team != null) ? ForSide(team.Side) : null;
+            return Plans.ForTeam(team);
         }
 
         /// <summary>Whatever the toggle (log and map).</summary>
         internal static SidePlan Published(BattleSideEnum side)
         {
-            return (side == BattleSideEnum.Attacker) ? _attacker : (side == BattleSideEnum.Defender) ? _defender : null;
+            return Plans.Published(side);
         }
 
         /// <summary>Bad ground under p (steep, wet / deep, no navmesh, cramped among obstacles, as a share of the cells around it). False with terrainTacticsEnabled off, before the publish or outside the map. Any thread: a volatile read and array reads.</summary>
@@ -240,119 +220,48 @@ namespace RBMAI
         /// <summary>Main thread, at the terrain publish.</summary>
         internal static void Publish(SidePlan attacker, SidePlan defender, BattleTerrain.CavalryInfo ground)
         {
-            _attacker = attacker;
-            _defender = defender;
+            Plans.Publish(attacker, defender);
             _ground = (ground != null && ground.BadMask != null) ? ground : null;
         }
 
         /// <summary>Main thread: mission end and MissionStartReset. Also drops the holds, claims, queued events and the re-plan state (a running re-plan is abandoned by generation).</summary>
         public static void Clear()
         {
-            _attacker = null;
-            _defender = null;
+            Plans.Clear();
             _ground = null;
             Holds.Clear();
             Owners.Clear();
             LaneCooldownUntil.Clear();
             LoggedKeys.Clear();
-            UseEvent ignored;
-            while (UseEvents.TryDequeue(out ignored))
-            {
-            }
-            _generation++;
-            if (_replan != null)
-            {
-                // Observe a late fault so it is never reported as an unobserved task exception.
-                _replan.ContinueWith(t => { var unused = t.Exception; }, TaskContinuationOptions.OnlyOnFaulted);
-                _replan = null;
-            }
-            _replanReason = null;
-            Refresh.Clear();
+            TerrainLog.Clear();
         }
 
-        // re-plan (MAIN thread)
+        // re-plan (MAIN thread, TerrainArmyReplan)
 
-        /// <summary>MAIN thread, every tick after the publish: finishes a running re-plan or starts one when TerrainPlanRefresh says it is due. Adds the log lines' fields to lines; runs whether or not the log is on. Nothing with terrainTacticsEnabled off or without a published plan.</summary>
-        internal static void Tick(Mission mission, BattleTerrain terrain, float now, List<string> lines)
-        {
-            if (mission == null || terrain == null)
-            {
-                return;
-            }
-            if (_replan != null)
-            {
-                FinishReplan(mission, terrain, lines);
-                return;
-            }
-            // No re-plan work when neither side uses the cavalry ground (ArmyScale).
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || (_attacker == null && _defender == null)
-                || (ArmyScale.NoPlans(BattleSideEnum.Attacker) && ArmyScale.NoPlans(BattleSideEnum.Defender)))
-            {
-                return;
-            }
-            TerrainPlanRefresh.Armies armies;
-            string note;
-            string reason = Refresh.Check(mission, now, out armies, out note);
-            if (note != null)
-            {
-                lines.Add("CAVALRY\t" + note);
-            }
-            if (reason == null)
-            {
-                return;
-            }
-            Refresh.Started(now, armies);
-            _replanGeneration = _generation;
-            _replanStartTicks = DateTime.UtcNow.Ticks;
-            _replanReason = reason;
-            Vec2 attacker = armies.Attacker;
-            Vec2 defender = armies.Defender;
-            Vec2 attackerAcross = armies.AttackerAcross;
-            Vec2 defenderAcross = armies.DefenderAcross;
-            // Background: the read's FindCavalry over the immutable snapshot only (no engine call).
-            _replan = Task.Run(() => terrain.ReplanCavalry(attacker, defender, attackerAcross, defenderAcross));
-        }
+        /// <summary>No re-plan work for the cavalry ground without a plan for either side.</summary>
+        internal static bool HasPlan => !Plans.IsEmpty;
 
-        /// <summary>Main thread: builds and publishes a finished re-plan (WorldPositions here, as Build), then prunes old claims.</summary>
-        private static void FinishReplan(Mission mission, BattleTerrain terrain, List<string> lines)
+        /// <summary>Main thread: builds and publishes a finished re-plan (WorldPositions here, as Build), then prunes old claims; CAVALRY replan lines into lines.</summary>
+        internal static void ApplyReplan(Mission mission, BattleTerrain terrain, BattleTerrain.CavalryInfo info, string reason, string ms, List<string> lines)
         {
-            Task<BattleTerrain.CavalryInfo> task = _replan;
-            if (!task.IsCompleted)
+            if (info == null || mission == null || mission.Scene == null || terrain == null)
             {
                 return;
             }
-            _replan = null;
-            if (_replanGeneration != _generation)
-            {
-                return;
-            }
-            string ms = ((DateTime.UtcNow.Ticks - _replanStartTicks) / (double)TimeSpan.TicksPerMillisecond).ToString("0", CultureInfo.InvariantCulture);
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                Exception e = (task.Exception != null) ? task.Exception.GetBaseException() : new OperationCanceledException("cavalry re-plan canceled");
-                lines.Add("CAVALRY\treplan\tfailed=" + e.GetType().Name + ":" + BattleTerrainRead.Sanitize(e.Message) + "\treason=" + _replanReason + "\twallMs=" + ms);
-                return;
-            }
-            BattleTerrain.CavalryInfo info = task.Result;
-            if (info == null || mission.Scene == null)
-            {
-                return;
-            }
-            SidePlan oldAttacker = _attacker;
-            SidePlan oldDefender = _defender;
+            SidePlan oldAttacker = Plans.Attacker;
+            SidePlan oldDefender = Plans.Defender;
             // A side the worker could not plan keeps its current version.
             SidePlan attacker = (info.Attacker != null)
-                ? BuildSide(mission, terrain, BattleSideEnum.Attacker, info.Attacker, (oldAttacker != null) ? oldAttacker.Version + 1 : 1, "replan") : oldAttacker;
+                ? BuildSide(mission, terrain, BattleSideEnum.Attacker, info.Attacker, (oldAttacker != null) ? oldAttacker.Version + 1 : 2, "replan") : oldAttacker;
             SidePlan defender = (info.Defender != null)
-                ? BuildSide(mission, terrain, BattleSideEnum.Defender, info.Defender, (oldDefender != null) ? oldDefender.Version + 1 : 1, "replan") : oldDefender;
-            _attacker = attacker;
-            _defender = defender;
+                ? BuildSide(mission, terrain, BattleSideEnum.Defender, info.Defender, (oldDefender != null) ? oldDefender.Version + 1 : 2, "replan") : oldDefender;
+            Plans.Publish(attacker, defender);
             int pruned = PruneOld();
             foreach (BattleSideEnum side in new[] { BattleSideEnum.Attacker, BattleSideEnum.Defender })
             {
                 BattleTerrain.SideCavalry data = (side == BattleSideEnum.Attacker) ? info.Attacker : info.Defender;
                 SidePlan plan = (side == BattleSideEnum.Attacker) ? attacker : defender;
-                lines.Add("CAVALRY\treplan\t" + side + "\treason=" + _replanReason + "\twallMs=" + ms + "\tpruned=" + pruned.ToString(CultureInfo.InvariantCulture) + "\t"
+                lines.Add("CAVALRY\treplan\t" + side + "\treason=" + reason + "\twallMs=" + ms + "\tpruned=" + pruned.ToString(CultureInfo.InvariantCulture) + "\t"
                     + ((data != null) ? Describe(info, data, plan) : "failed=" + (info.Error ?? "?") + " kept v" + ((plan != null) ? plan.Version.ToString(CultureInfo.InvariantCulture) : "-")));
             }
         }
@@ -360,8 +269,8 @@ namespace RBMAI
         /// <summary>MAIN thread, after a re-plan's publish: drops claims on points of no current version that no hold uses, and holds of old points whose formation is empty or whose behavior is no longer active. Conditional removes only, so a concurrent take / move on the AI thread is never undone. Returns how many were dropped.</summary>
         private static int PruneOld()
         {
-            SidePlan attacker = _attacker;
-            SidePlan defender = _defender;
+            SidePlan attacker = Plans.Attacker;
+            SidePlan defender = Plans.Defender;
             int dropped = 0;
             float now = Now();
             foreach (KeyValuePair<Formation, Hold> entry in Holds)
@@ -398,26 +307,20 @@ namespace RBMAI
             return dropped;
         }
 
-        private static bool IsCurrent(Team team, object point, SidePlan attacker, SidePlan defender)
+        private static bool IsCurrent(Team team, Lane lane, SidePlan attacker, SidePlan defender)
         {
             SidePlan plan = (team == null) ? null : (team.Side == BattleSideEnum.Attacker) ? attacker : (team.Side == BattleSideEnum.Defender) ? defender : null;
-            return plan != null && plan.ContainsPoint(point);
+            return plan != null && plan.Contains(lane);
         }
 
         // holds and claims (async AI thread)
-
-        internal enum HoldKind
-        {
-            Lane
-        }
 
         /// <summary>A formation's lane approach. Immutable once added.</summary>
         internal sealed class Hold
         {
             public Formation Formation;
             public Team Team;
-            public HoldKind Kind;
-            public object Point; // the Lane
+            public Lane Point;
             public string Id;
             public Vec2 Position;
             public Vec2 Facing; // friendly-overlap footprint, same at take and keep
@@ -430,9 +333,9 @@ namespace RBMAI
         private struct ClaimKey : IEquatable<ClaimKey>
         {
             public readonly Team Team;
-            public readonly object Point;
+            public readonly Lane Point;
 
-            public ClaimKey(Team team, object point)
+            public ClaimKey(Team team, Lane point)
             {
                 Team = team;
                 Point = point;
@@ -460,24 +363,6 @@ namespace RBMAI
         private static readonly ConcurrentDictionary<ClaimKey, Formation> Owners = new ConcurrentDictionary<ClaimKey, Formation>();
         private static readonly ConcurrentDictionary<Formation, float> LaneCooldownUntil = new ConcurrentDictionary<Formation, float>();
         private static readonly ConcurrentDictionary<string, byte> LoggedKeys = new ConcurrentDictionary<string, byte>();
-        private static readonly ConcurrentQueue<UseEvent> UseEvents = new ConcurrentQueue<UseEvent>();
-
-        internal sealed class UseEvent
-        {
-            public Team Team;
-            public int FormationIndex;
-            public float Time;
-            public string Behavior;
-            public string What;
-            public string PointId;
-            public string Why;
-        }
-
-        /// <summary>Main thread (terrain log).</summary>
-        internal static bool TryDequeueUse(out UseEvent e)
-        {
-            return UseEvents.TryDequeue(out e);
-        }
 
         /// <summary>Main thread (the map): every current hold of a non-empty formation whose behavior is still its active one.</summary>
         internal static void CopyHolds(List<Hold> into)
@@ -493,11 +378,11 @@ namespace RBMAI
             }
         }
 
-        internal static Hold HeldBy(BehaviorComponent behavior, HoldKind kind)
+        internal static Hold HeldBy(BehaviorComponent behavior)
         {
             Formation formation = behavior?.Formation;
             Hold hold;
-            if (formation == null || !Holds.TryGetValue(formation, out hold) || hold == null || hold.Behavior != behavior || hold.Kind != kind)
+            if (formation == null || !Holds.TryGetValue(formation, out hold) || hold == null || hold.Behavior != behavior)
             {
                 return null;
             }
@@ -524,15 +409,12 @@ namespace RBMAI
                 return;
             }
             ((ICollection<KeyValuePair<ClaimKey, Formation>>)Owners).Remove(new KeyValuePair<ClaimKey, Formation>(new ClaimKey(hold.Team, hold.Point), hold.Formation));
-            if (hold.Kind == HoldKind.Lane)
-            {
-                LaneCooldownUntil[hold.Formation] = now + LaneRetakeCooldown;
-            }
-            Enqueue(hold.Team, hold.Formation, now, hold.BehaviorName, "release" + KindName(hold.Kind), hold.Id, why + " held=" + Fmt0(now - hold.Since) + "s");
+            LaneCooldownUntil[hold.Formation] = now + LaneRetakeCooldown;
+            Enqueue(hold.Team, hold.Formation, now, hold.BehaviorName, "releaseLane", hold.Id, why + " held=" + Fmt0(now - hold.Since) + "s");
         }
 
         /// <summary>True when another formation of the team really uses the point; a stale owner loses it here.</summary>
-        private static bool ClaimedByOther(Team team, object point, Formation formation, float now)
+        private static bool ClaimedByOther(Team team, Lane point, Formation formation, float now)
         {
             ClaimKey key = new ClaimKey(team, point);
             Formation owner;
@@ -554,7 +436,7 @@ namespace RBMAI
             return false;
         }
 
-        private static bool Take(BehaviorComponent behavior, string behaviorName, HoldKind kind, object point, string id, Vec2 position, Vec2 facing, LaneEntry entry, float now, string why)
+        private static bool Take(BehaviorComponent behavior, string behaviorName, Lane point, string id, Vec2 position, Vec2 facing, LaneEntry entry, float now, string why)
         {
             Formation formation = behavior.Formation;
             Team team = formation.Team;
@@ -576,7 +458,6 @@ namespace RBMAI
             {
                 Formation = formation,
                 Team = team,
-                Kind = kind,
                 Point = point,
                 Id = id,
                 Position = position,
@@ -586,12 +467,12 @@ namespace RBMAI
                 BehaviorName = behaviorName,
                 Since = now
             };
-            Enqueue(team, formation, now, behaviorName, "take" + KindName(kind), id, why);
+            Enqueue(team, formation, now, behaviorName, "takeLane", id, why);
             return true;
         }
 
         /// <summary>AI thread: moves a hold of an OLD plan version onto a point of the current one (same kind, behavior and Since; claim moved with it). Null (old hold released, "replan claimed") when another formation really uses the new point; null without a release when the hold changed meanwhile.</summary>
-        private static Hold Rebase(Hold old, object point, string id, Vec2 position, Vec2 facing, LaneEntry entry, float now, string why)
+        private static Hold Rebase(Hold old, Lane point, string id, Vec2 position, Vec2 facing, LaneEntry entry, float now, string why)
         {
             Formation formation = old.Formation;
             Team team = old.Team;
@@ -612,7 +493,6 @@ namespace RBMAI
             {
                 Formation = formation,
                 Team = team,
-                Kind = old.Kind,
                 Point = point,
                 Id = id,
                 Position = position,
@@ -631,14 +511,14 @@ namespace RBMAI
                 return null;
             }
             ((ICollection<KeyValuePair<ClaimKey, Formation>>)Owners).Remove(new KeyValuePair<ClaimKey, Formation>(new ClaimKey(team, old.Point), formation));
-            Enqueue(team, formation, now, old.BehaviorName, "rebase" + KindName(old.Kind), id, why + " was=" + old.Id + " shift=" + Fmt0(old.Position.Distance(position)) + "m");
+            Enqueue(team, formation, now, old.BehaviorName, "rebaseLane", id, why + " was=" + old.Id + " shift=" + Fmt0(old.Position.Distance(position)) + "m");
             return next;
         }
 
         /// <summary>A re-plan replaced the hold's point. False without a plan.</summary>
         private static bool IsOldVersion(Hold hold, SidePlan plan)
         {
-            return hold != null && plan != null && !plan.ContainsPoint(hold.Point);
+            return hold != null && plan != null && !plan.Contains(hold.Point);
         }
 
         private static bool IsActive(BehaviorComponent behavior)
@@ -817,7 +697,7 @@ namespace RBMAI
                 {
                     string text = "target=" + FormationName(target) + " run=" + Fmt0(best.Position.Distance(targetAt)) + "m shift=" + Fmt0(us.Distance(best.Position))
                         + "m len=" + Fmt0(candidate.Data.Length) + " drop=" + Fmt1(candidate.Data.Drop);
-                    if (Take(behavior, behaviorName, HoldKind.Lane, candidate, candidate.Id, best.Position, Bearing(best.Position, targetAt), best, now, text))
+                    if (Take(behavior, behaviorName, candidate, candidate.Id, best.Position, Bearing(best.Position, targetAt), best, now, text))
                     {
                         lane = candidate;
                         entry = best;
@@ -841,7 +721,7 @@ namespace RBMAI
         /// <summary>AI thread, every tick of a lane approach: true to keep riding to the run-up point; false (lane released, why logged) when it is over: arrived, timeout, enemy close, target gone or moved off the lane, lane stale (LaneFit), inactive, no plan.</summary>
         internal static bool CheckLaneApproach(BehaviorComponent behavior, Formation target, bool inMelee)
         {
-            Hold hold = HeldBy(behavior, HoldKind.Lane);
+            Hold hold = HeldBy(behavior);
             if (hold == null)
             {
                 return false;
@@ -859,7 +739,7 @@ namespace RBMAI
                     return false;
                 }
             }
-            Lane lane = hold.Point as Lane;
+            Lane lane = hold.Point;
             int staleCode;
             float staleGap, staleLimit, staleAngle;
             Vec2 us = RBMAI.Utilities.GetFormationCenter(formation);
@@ -1063,26 +943,7 @@ namespace RBMAI
 
         private static void Enqueue(Team team, Formation formation, float now, string behavior, string what, string pointId, string why)
         {
-            DecisionTrace.Note(formation, behavior, what, why);
-            if (!RBMConfig.RBMConfig.battleTerrainLoggingEnabled)
-            {
-                return;
-            }
-            UseEvents.Enqueue(new UseEvent
-            {
-                Team = team,
-                FormationIndex = (int)formation.FormationIndex,
-                Time = now,
-                Behavior = behavior,
-                What = what,
-                PointId = pointId,
-                Why = why
-            });
-        }
-
-        private static string KindName(HoldKind kind)
-        {
-            return "Lane";
+            TerrainLog.Behavior(team, formation, now, behavior, what, "point", pointId, why);
         }
 
         // log text (main thread)

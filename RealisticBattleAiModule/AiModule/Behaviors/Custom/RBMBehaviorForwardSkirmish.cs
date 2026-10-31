@@ -108,9 +108,8 @@ namespace RBMAI
                 float flankRange = 25f;
 
                 Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
-                // anchor = main melee infantry (AI- or player-led), else the nearest other own infantry; never itself
-                Formation allyFormation = FormationCohesion.MainInfantry(base.Formation)
-                    ?? RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+                // position anchor (main melee infantry, else the strongest AI foot formation); never itself
+                Formation allyFormation = ArmyComposition.AnchorFor(base.Formation);
 
                 if (base.Formation != null && base.Formation.QuerySystem.IsInfantryFormation)
                 {

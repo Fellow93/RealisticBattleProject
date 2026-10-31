@@ -57,63 +57,133 @@ namespace RBMAI
     {
         private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorScreenedSkirmish).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
 
+        // The flank side flips at 60 deg and only back inside ~45 deg, at most once per FlankHoldSeconds.
+        private const float FlankEnterDot = 0.5f;
+        private const float FlankExitDot = 0.7f;
+        private const float FlankHoldSeconds = 10f;
+        private const float FacingKeepDot = 0.985f; // 10 deg
+        private const float MoveKeepMin = 5f; // m; native re-orders only after the point moved its own depth
+
+        private sealed class ScreenState
+        {
+            public readonly CachedMovePoint Move = new CachedMovePoint();
+            public bool Flanked;
+            public float FlankChangedAt = float.NegativeInfinity;
+            public Vec2 Facing = Vec2.Invalid;
+        }
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorScreenedSkirmish, ScreenState> States =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorScreenedSkirmish, ScreenState>();
+
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
         private static void PostfixCalculateCurrentOrder(ref Formation ____mainFormation, ref BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            if (____mainFormation != null && (____mainFormation.CountOfUnits == 0 || !____mainFormation.QuerySystem.IsInfantryFormation))
+            Compute(__instance, ref ____mainFormation, ref ____currentOrder, ref ___CurrentFacingOrder);
+        }
+
+        /// <summary>AI thread: the screen point behind the main infantry. Cached data only, one SetVec2MT per rebuild (CachedMovePoint).
+        /// False when there is no infantry main (native's own order then stands).</summary>
+        private static bool Compute(BehaviorScreenedSkirmish behavior, ref Formation main, ref MovementOrder currentOrder, ref FacingOrder facingOrder)
+        {
+            Formation formation = behavior.Formation;
+            if (formation == null)
             {
-                ____mainFormation = __instance.Formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
+                return false;
             }
-            if (____mainFormation != null && __instance.Formation != null && ____mainFormation.CountOfUnits > 0 && ____mainFormation.QuerySystem.IsInfantryFormation)
+            if (main != null && (main.CountOfUnits == 0 || !main.QuerySystem.IsInfantryFormation))
             {
-                // Screen direction (gap audit R1, native's idea): the main's facing while the closest enemy is in front of
-                // the main (within 60 deg of its facing), else the bearing main -> that enemy, so flanked archers face it
-                // and stand on the main's far side from it. (Always the main's facing put flanked archers on the exposed
-                // side, facing away.) Measured from the main, not from the archers as native does, so the archers' own move
-                // cannot flip it back and forth.
-                Vec2 screen = ____mainFormation.Direction.Normalized();
-                FormationQuerySystem closestEnemy = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                if (closestEnemy != null && closestEnemy.Formation != null)
-                {
-                    Vec2 toEnemy = closestEnemy.Formation.CachedMedianPosition.AsVec2 - ____mainFormation.CachedMedianPosition.AsVec2;
-                    if (toEnemy.LengthSquared > 1f)
-                    {
-                        toEnemy = toEnemy.Normalized();
-                        if (screen.DotProduct(toEnemy) < 0.5f)
-                        {
-                            screen = toEnemy;
-                        }
-                    }
-                }
-                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(screen);
-                WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(____mainFormation);
-                Vec2 calcPosition;
-                if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
-                {
-                    calcPosition = medianPosition.AsVec2 - screen * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 15f);
-                }
-                else
-                {
-                    calcPosition = medianPosition.AsVec2 - screen * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f);
-                }
-                medianPosition.SetVec2(calcPosition);
-                if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || medianPosition.GetNavMesh() == UIntPtr.Zero)
-                {
-                    medianPosition = ____mainFormation.QuerySystem.Formation.CachedMedianPosition;
-                }
-                ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
+                main = formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
             }
+            if (main == null || main.CountOfUnits <= 0 || !main.QuerySystem.IsInfantryFormation)
+            {
+                return false;
+            }
+            ScreenState state = States.GetOrCreateValue(behavior);
+            float now = Mission.Current.CurrentTime;
+
+            // Screen direction (gap audit R1): the main's facing, or the bearing main -> the closest enemy once that enemy is off
+            // the main's front, so flanked archers stand on the main's far side from it. Measured from the main so the archers' own
+            // move cannot flip it. Horse archers circle and never set the side.
+            Vec2 front = main.Direction.Normalized();
+            Vec2 toEnemy = Vec2.Invalid;
+            FormationQuerySystem closestEnemy = formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+            if (closestEnemy != null && closestEnemy.Formation != null && !closestEnemy.IsRangedCavalryFormation)
+            {
+                Vec2 d = closestEnemy.Formation.CachedMedianPosition.AsVec2 - main.CachedMedianPosition.AsVec2;
+                if (d.LengthSquared > 1f)
+                {
+                    toEnemy = d.Normalized();
+                }
+            }
+            bool wantFlanked = toEnemy.IsValid && front.DotProduct(toEnemy) < (state.Flanked ? FlankExitDot : FlankEnterDot);
+            bool sideChanged = false;
+            if (wantFlanked != state.Flanked && now - state.FlankChangedAt >= FlankHoldSeconds)
+            {
+                state.Flanked = wantFlanked;
+                state.FlankChangedAt = now;
+                sideChanged = true;
+            }
+            Vec2 screen = (state.Flanked && toEnemy.IsValid) ? toEnemy : front;
+
+            if (!state.Facing.IsValid || state.Facing.DotProduct(screen) < FacingKeepDot)
+            {
+                state.Facing = screen;
+            }
+            facingOrder = FacingOrder.FacingOrderLookAtDirection(state.Facing);
+
+            Vec2 centre = RBMAI.Utilities.GetFormationCenter(main);
+            float gap = formation.QuerySystem.IsRangedCavalryFormation ? 15f : 5f;
+            Vec2 desired = centre - screen * (main.Depth / 2f + formation.Depth / 2f + gap);
+            float keep = Math.Max(MoveKeepMin, formation.Depth);
+            if ((sideChanged || !state.Move.IsFresh(desired, now, false, keep, 0f)) && !Mission.Current.IsPositionInsideBoundaries(desired))
+            {
+                // off the map: keep the held point, else stand on the main
+                desired = state.Move.Desired.IsValid ? state.Move.Desired : centre;
+            }
+            WorldPosition point;
+            bool rebuilt;
+            if (!state.Move.TryGet(desired, now, main.CachedMedianPosition, sideChanged, keep, 0f, out point, out rebuilt))
+            {
+                return false;
+            }
+            currentOrder = MovementOrder.MovementOrderMove(point);
+            return true;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch("TickOccasionally")]
-        private static bool PrefixTickOccasionally(Formation ____mainFormation, BehaviorScreenedSkirmish __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        private static bool PrefixTickOccasionally(BehaviorScreenedSkirmish __instance, ref Formation ____mainFormation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            CalculateCurrentOrderMethod.Invoke(__instance, new object[] { });
+            if (!Compute(__instance, ref ____mainFormation, ref ____currentOrder, ref ___CurrentFacingOrder))
+            {
+                CalculateCurrentOrderMethod.Invoke(__instance, new object[] { });
+            }
             __instance.Formation.SetMovementOrder(____currentOrder);
             __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
             RBMAI.Utilities.TryApplyRangedArrangement(__instance.Formation, ArrangementOrder.ArrangementOrderEnum.Loose);
+            return false;
+        }
+
+        // A fresh activation places the screen anew (no held point, side or facing from an earlier stint). Foot ranged under RBM's
+        // arrangement rule skip native's activation: its Scatter + Wide right before the postfix's Line / Loose + width reshaped them twice.
+        [HarmonyPrefix]
+        [HarmonyPatch("OnBehaviorActivatedAux")]
+        private static bool PrefixOnBehaviorActivatedAux(BehaviorScreenedSkirmish __instance, ref Formation ____mainFormation, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        {
+            States.Remove(__instance);
+            Formation formation = __instance.Formation;
+            if (!RBMAI.Utilities.IsRangedArrangementSubject(formation))
+            {
+                return true;
+            }
+            if (!Compute(__instance, ref ____mainFormation, ref ____currentOrder, ref ___CurrentFacingOrder))
+            {
+                CalculateCurrentOrderMethod.Invoke(__instance, new object[] { });
+            }
+            formation.SetMovementOrder(____currentOrder);
+            formation.SetFacingOrder(___CurrentFacingOrder);
+            formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
             return false;
         }
 
@@ -126,6 +196,8 @@ namespace RBMAI
             {
                 __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
             }
+            // ~4 ranks deep for foot archers instead of native Wide (Utilities.TrySetRangedWidth).
+            RBMAI.Utilities.TrySetRangedWidth(__instance.Formation);
         }
     }
 
@@ -1809,6 +1881,11 @@ namespace RBMAI
         [HarmonyPatch("GetAiWeight")]
         private static void PostfixGetAiWeight(ref BehaviorMountedSkirmish __instance, ref float __result, ref bool ____isEnemyReachable)
         {
+            if (RBMBehaviorArcherStand.MountedEscorts(__instance.Formation))
+            {
+                __result = 0f; // a token mounted force rides with the main body
+                return;
+            }
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsCavalryFormation)
             {
                 if (RBMAI.Utilities.CheckIfMountedSkirmishFormation(__instance.Formation, 0.6f))

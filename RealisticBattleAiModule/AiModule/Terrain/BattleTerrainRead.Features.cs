@@ -483,7 +483,7 @@ namespace RBMAI
             return low;
         }
 
-        /// <summary>Regions of clearance >= 50 m (8-connected), TRIMMED: cells within EdgeMargin of the map edge leave the mask before labelling (a field touching the edge may split); >= OpenFieldMinArea, largest first. Trimmed labels stay on the frame (Frame.OpenFieldLabels) for the outlines and cavalry orbit. Dropped = untrimmed regions with no listed-size part left.</summary>
+        /// <summary>Regions of clearance >= 50 m (8-connected), TRIMMED: cells within EdgeMargin of the map edge leave the mask before labelling (a field touching the edge may split); >= OpenFieldMinArea, largest first. Trimmed labels stay on the frame (Frame.OpenFieldLabels) for the outlines. Dropped = untrimmed regions with no listed-size part left.</summary>
         private static List<BattleTerrain.OpenFieldFeature> FindOpenFields(Frame f, Dictionary<string, int> dropped)
         {
             List<BattleTerrain.OpenFieldFeature> fields = new List<BattleTerrain.OpenFieldFeature>();

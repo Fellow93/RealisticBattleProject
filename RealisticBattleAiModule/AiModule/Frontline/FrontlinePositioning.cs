@@ -425,6 +425,7 @@ namespace RBMAI
                                             closeUpMindset.aheadAlly = null;
                                             closeUpMindset.closingUp = false;
                                             closeUpMindset.closeUpWaitSince = float.MinValue;
+                                            closeUpMindset.closeUpHeldSince = float.MinValue;
                                             return true;
                                         }
                                         Vec2 toAlly = aheadAlly.Position.AsVec2 - unitPosition;
@@ -453,7 +454,32 @@ namespace RBMAI
                                             float stopGap = CloseUpGap + CloseUpGapJitter * IndexJitter(unit.Index);
                                             // An ally ahead who started moving is followed at once (no resume margin).
                                             PaceThresholds(aheadAlly, out float allyStill, out float allyMoving);
-                                            bool allyAdvancing = aheadAlly.AverageVelocity.AsVec2.DotProduct(direction) >= allyStill;
+                                            float allyForwardSpeed = aheadAlly.AverageVelocity.AsVec2.DotProduct(direction);
+                                            bool allyAdvancing = allyForwardSpeed >= allyStill;
+                                            // Ally running forward: follow at his pace toward the stop point he is heading for, the lead easing off as the
+                                            // gap closes, so he slows before touching instead of braking to a walk in 0.5 m steps or running into him.
+                                            if (forwardGap > stopGap && allyForwardSpeed >= allyMoving)
+                                            {
+                                                float ease = MathF.Clamp((forwardGap - stopGap) / CloseUpFollowEase, 0f, 1f);
+                                                float followDistance = MathF.Min(forwardGap - stopGap + allyForwardSpeed * CloseUpFollowLead * ease, forwardGap - CloseUpTouchGap);
+                                                if (followDistance > CloseUpStep)
+                                                {
+                                                    Vec2 followVec2 = unitPosition + direction * followDistance;
+                                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.Attack, unitPosition, followVec2)
+                                                        || IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.Attack, unitPosition, followVec2))
+                                                    {
+                                                        return true;
+                                                    }
+                                                    closeUpMindset.closingUp = true;
+                                                    closeUpMindset.closeUpWaitSince = float.MinValue;
+                                                    closeUpMindset.closeUpHeldSince = float.MinValue;
+                                                    WorldPosition followPosition = unit.GetWorldPosition();
+                                                    followPosition.SetVec2MT(followVec2);
+                                                    __result = followPosition;
+                                                    unit.SetTargetPosition(followVec2);
+                                                    return false;
+                                                }
+                                            }
                                             if (forwardGap <= stopGap
                                                 || (!closeUpMindset.closingUp && !allyAdvancing && forwardGap <= stopGap + CloseUpResumeExtra))
                                             {
@@ -475,6 +501,7 @@ namespace RBMAI
                                                 return false;
                                             }
                                             closeUpMindset.closeUpWaitSince = float.MinValue;
+                                            closeUpMindset.closeUpHeldSince = float.MinValue;
                                             closeUpMindset.closingUp = true;
                                             WorldPosition closeUpPosition = unit.GetWorldPosition();
                                             closeUpPosition.SetVec2MT(closeUpVec2);
@@ -484,6 +511,7 @@ namespace RBMAI
                                         }
                                     }
                                     closeUpMindset.closingUp = false;
+                                    closeUpMindset.closeUpHeldSince = float.MinValue;
                                     return true;
                                 }
                             case AIMindset.AIDecision.BackStep:
@@ -722,13 +750,16 @@ namespace RBMAI
                         ScanAhead(mission, unit, unitPosition, direction, out standingAhead, out nearestAhead);
                     }
                     mindset.aheadAlly = nearestAhead;
+                    mindset.closeUpCrowdAhead = standingAhead;
                 }
                 else
                 {
                     mindset.aheadAlly = null;
+                    mindset.closeUpCrowdAhead = 0;
                     mindset.closingUp = false;
                     mindset.closeUpWaitSince = float.MinValue;
                     mindset.closeUpShoveUntil = float.MinValue;
+                    mindset.closeUpHeldSince = float.MinValue;
                 }
             }
 
@@ -920,23 +951,35 @@ namespace RBMAI
             private const float CloseUpLaneHalfWidth = 1.1f;
             private const float CloseUpMaxRange = 9f;
             private const float CloseUpMinCos = 0.7f;
-            private const float CloseUpGap = 0.8f;
-            private const float CloseUpGapJitter = 0.4f;
+            // USER RULE 2026-10-30: stops just short of the man ahead (centre gap 0.9-1.2 m), not shoulder to back.
+            private const float CloseUpGap = 0.9f;
+            private const float CloseUpGapJitter = 0.3f;
             private const float CloseUpResumeExtra = 1f;
             private const float CloseUpStep = 0.5f;
             // Impatience: after waiting CloseUpPatience (+ jitter), presses forward for CloseUpShoveSeconds, then waits again.
             private const float CloseUpPatience = 3f;
             private const float CloseUpPatienceJitter = 3f;
             private const float CloseUpShoveSeconds = 1.5f;
+            // Following a running ally: aims CloseUpFollowLead s of the ally's pace past the stop point, full lead from CloseUpFollowEase m out.
+            private const float CloseUpFollowLead = 0.6f;
+            private const float CloseUpFollowEase = 1.5f;
+            // Never aims closer than this to the ally's current spot (centres nearer touch).
+            private const float CloseUpTouchGap = 0.8f;
 
-            // A close-up frame spent waiting: starts the wait clock, and a shove once his patience has run out.
+            // A close-up frame spent waiting: starts the wait and held (AI log only) clocks, and a shove once his patience has run out.
+            // USER RULE 2026-10-30: no shove inside a crowd (ClumpMinStanding+ allies standing ahead); he just waits.
             private static void TickCloseUpPatience(AIMindset mindset, float now, int index)
             {
+                if (mindset.closeUpHeldSince == float.MinValue || now < mindset.closeUpHeldSince)
+                {
+                    mindset.closeUpHeldSince = now;
+                }
                 if (mindset.closeUpWaitSince == float.MinValue || now < mindset.closeUpWaitSince)
                 {
                     mindset.closeUpWaitSince = now;
                 }
-                else if (now - mindset.closeUpWaitSince >= CloseUpPatience + CloseUpPatienceJitter * IndexJitter(index * 7 + 3))
+                else if (mindset.closeUpCrowdAhead < ClumpMinStanding
+                    && now - mindset.closeUpWaitSince >= CloseUpPatience + CloseUpPatienceJitter * IndexJitter(index * 7 + 3))
                 {
                     mindset.closeUpWaitSince = float.MinValue;
                     mindset.closeUpShoveUntil = now + CloseUpShoveSeconds;
@@ -971,7 +1014,9 @@ namespace RBMAI
                             standing++;
                         }
                     }
-                    if (forward >= CloseUpMinAhead && lateral <= CloseUpLaneHalfWidth)
+                    // Queues only behind his own formation's AI men (never the player or another formation's men).
+                    if (forward >= CloseUpMinAhead && lateral <= CloseUpLaneHalfWidth
+                        && ally.Formation == unit.Formation && !ally.IsPlayerControlled)
                     {
                         float distanceSquared = offset.LengthSquared;
                         if (distanceSquared < nearestDistanceSquared)

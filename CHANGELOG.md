@@ -4,6 +4,34 @@
 
 ### Campaign
 - Fixed: your caravans' income was stuck at 0. They pay out from the first day again and no longer sink all their money into cargo, and RBM's supply caravans are no longer listed among your caravans.
+- Fixed: after you win a field battle, enemies killed or routed no longer add extra wounded and prisoners to the defeated party.
+
+### AI
+- AI cavalry stays together after the lines meet: it pulls back to regroup instead of re-charging every few seconds, and stops switching targets mid-fight.
+- AI cavalry sent after a threat returns to its army sooner.
+- Charging AI cavalry now rides in formation until close to its target and only then breaks into the charge, instead of scattering from far away.
+- AI cavalry sent to deal with a threat also rides in formation until close before charging.
+- Defending cavalry reserves wait behind their line where it actually stands, and no longer ride ahead before the infantry is in place.
+- Fixed: AI cavalry guarding a flank or held in reserve stood idle once its own infantry was gone; it now attacks. (Thanks to order_without_power.)
+- The AI handles armies with little or no infantry, or heavy on cavalry and horse archers, much better. Normal mixed armies fight as before.
+- Archers in armies with few infantry hold their ground instead of backing away endlessly, and their infantry stays with them.
+- The infantry guarding those archers now charges enemy infantry that comes within 40 m, instead of standing still and being cut down.
+- An attacking army whose arrows can't hurt an enemy shield wall eventually attacks instead of shooting forever.
+- AI infantry now braces against charging cavalry, but no longer for a handful of riders.
+- AI infantry no longer chases enemy cavalry it can't catch and scatter across the field: it holds its formation facing the riders and fights them when they come in.
+- AI infantry keeps its formation a little longer, breaking into the charge at 40 m from its target instead of 50 m.
+- Charging infantry no longer slows to a walk behind comrades who are running ahead of them; it keeps pace with them instead.
+- Infantry stops a step short of the comrade in front instead of bumping into him, and no longer shoves forward when packed in a crowd.
+- The AI judges the distance to scattered enemies (charging troops, cavalry) by where most of their men are, instead of by a few stragglers far apart.
+- Attacking archers face the way their army advances while out of range, instead of walking sideways.
+- Archers screening behind their infantry no longer shuffle with every step the infantry takes or swing around it when horse archers ride past, and form about 4 ranks deep instead of a very wide, thin line.
+- AI archers switch between tight and loose ranks far less often, so they spend less time re-forming.
+- Fewer than 30 AI archers stay in one group instead of splitting into two tiny ones.
+- Smaller armies no longer split their infantry into several small blocks.
+- Formations react to enemy movement more steadily and turn less often; choke-point lines hold and return more reliably.
+- The Reserve Plug battle plan is disabled for now.
+- Cavalry charge horns sound less often.
+- Fixed: commanding a formation as a sergeant, the AI could take your men away, leaving you with "no units under your command".
 
 ## v4.8.0 (changes since v4.7.0)
 

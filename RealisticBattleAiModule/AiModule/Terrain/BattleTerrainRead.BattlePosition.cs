@@ -59,7 +59,8 @@ namespace RBMAI
         private const float PosRunUpShort = 40f;
         private const float PosRunUpLong = 150f;
         private const float PosCoverSteep = 25f;
-        private const int PosCoverCells = 3;
+        private const int PosCoverCells = 3; // in a row
+        private const float PosCoverDepth = 30f; // m; the cover must also be there this far ahead of and behind the line
         private const float PosCaughtFull = 60f;
         private const float PosArcherFull = 0.2f;
         private const float PosCavalryFull = 0.3f;
@@ -739,8 +740,8 @@ namespace RBMAI
 
             string leftCover = "choke";
             string rightCover = "choke";
-            bool leftCovered = bothCovered || FlankCovered(ctx, hold, lineDir, lineWidth, out leftCover);
-            bool rightCovered = bothCovered || FlankCovered(ctx, hold, -lineDir, lineWidth, out rightCover);
+            bool leftCovered = bothCovered || FlankCovered(ctx, hold, facing, lineDir, lineWidth, out leftCover);
+            bool rightCovered = bothCovered || FlankCovered(ctx, hold, facing, -lineDir, lineWidth, out rightCover);
             cand.LeftCovered = leftCovered;
             cand.RightCovered = rightCovered;
             cand.LeftCover = leftCover;
@@ -850,8 +851,25 @@ namespace RBMAI
                 - w.Caught * cand.TermCaught;
         }
 
-        /// <summary>One line end covered: water / no navmesh within one line width of the end, or at least PosCoverCells cells of woods, steep or bad ground. The map edge does not cover.</summary>
-        private static bool FlankCovered(PositionContext ctx, Vec2 hold, Vec2 dir, float lineWidth, out string cover)
+        /// <summary>One line end covered: the end's cover (LateralCover) also PosCoverDepth ahead of and behind the line. A patch riders ride round
+        /// is "shallow-" + its kind, not covered (a no-navmesh patch beside the line covered an open 1000 m field, log 2026-10-30 12:13).</summary>
+        private static bool FlankCovered(PositionContext ctx, Vec2 hold, Vec2 facing, Vec2 dir, float lineWidth, out string cover)
+        {
+            if (!LateralCover(ctx, hold, dir, lineWidth, out cover))
+            {
+                return false;
+            }
+            string other;
+            if (LateralCover(ctx, hold + facing * PosCoverDepth, dir, lineWidth, out other) && LateralCover(ctx, hold - facing * PosCoverDepth, dir, lineWidth, out other))
+            {
+                return true;
+            }
+            cover = "shallow-" + cover;
+            return false;
+        }
+
+        /// <summary>Across from start: water / no navmesh within one line width of the end, or a run of PosCoverCells cells of woods, steep or bad ground. The map edge does not cover.</summary>
+        private static bool LateralCover(PositionContext ctx, Vec2 hold, Vec2 dir, float lineWidth, out string cover)
         {
             Grid grid = ctx.Grid;
             float half = lineWidth * 0.5f;
@@ -864,6 +882,7 @@ namespace RBMAI
                 return true;
             }
             int woods = 0, steep = 0, rough = 0;
+            int run = 0, longest = 0;
             float limit = Math.Min(reach, distance);
             for (float s = half; s <= limit; s += grid.Step)
             {
@@ -873,6 +892,7 @@ namespace RBMAI
                 {
                     break;
                 }
+                bool bad = true;
                 if (ctx.Woods != null && ctx.Woods[k])
                 {
                     woods++;
@@ -885,8 +905,15 @@ namespace RBMAI
                 {
                     rough++;
                 }
+                else
+                {
+                    bad = false;
+                }
+                // a band, not cells scattered over broken ground
+                run = bad ? run + 1 : 0;
+                longest = Math.Max(longest, run);
             }
-            if (woods + steep + rough >= PosCoverCells)
+            if (longest >= PosCoverCells)
             {
                 cover = (woods >= steep && woods >= rough) ? "woods" : (steep >= rough) ? "steep" : "rough";
                 return true;
@@ -898,86 +925,36 @@ namespace RBMAI
         /// <summary>The winner's archer place; left invalid when none fits.</summary>
         private static void PlacePositionArchers(PositionContext ctx, BattleTerrain.PositionCandidate c)
         {
-            Grid grid = ctx.Grid;
-            float holdHeight = grid.HeightAt(c.Hold);
-            BattleTerrain.ArcherSpot bestSpot = null;
-            if (ctx.Terrain != null && ctx.Terrain.Spots != null && ctx.Terrain.Spots.Defender != null)
+            HoldArcherRules rules = new HoldArcherRules
             {
-                foreach (BattleTerrain.ArcherSpot spot in ctx.Terrain.Spots.Defender.Spots)
-                {
-                    Vec2 rel = spot.Position - c.Hold;
-                    if (rel.Length > PosArcherSpotRange || Vec2.DotProduct(rel, c.Facing) > PosArcherMaxAhead)
-                    {
-                        continue;
-                    }
-                    if (bestSpot == null || spot.Score > bestSpot.Score)
-                    {
-                        bestSpot = spot;
-                    }
-                }
-            }
-            if (bestSpot != null)
+                SpotRange = PosArcherSpotRange,
+                SpotMaxAhead = PosArcherMaxAhead,
+                SpotBehindOf = Vec2.Invalid,
+                Behind = PosArcherBehind,
+                Search = PosArcherSearch,
+                MaxSlope = PosMaxSlope,
+                MinBehind = PosArcherMinBehind
+            };
+            IReadOnlyList<BattleTerrain.ArcherSpot> spots = (ctx.Terrain != null && ctx.Terrain.Spots != null && ctx.Terrain.Spots.Defender != null)
+                ? ctx.Terrain.Spots.Defender.Spots : null;
+            Vec2 archer;
+            string source;
+            float gain;
+            if (PlaceHoldArchers(ctx.Grid, spots, c.Hold, c.Facing, rules, out archer, out source, out gain))
             {
-                c.Archer = bestSpot.Position;
-                c.ArcherSource = bestSpot.Id;
-                c.ArcherGain = IsPlausible(holdHeight) ? bestSpot.Height - holdHeight : float.NaN;
-                return;
-            }
-            Vec2 centre = c.Hold - c.Facing * PosArcherBehind;
-            int bestCell = -1;
-            float bestHeight = float.NegativeInfinity;
-            ForCellsWithin(grid, centre, PosArcherSearch, k =>
-            {
-                if (!grid.IsWalkable(k) || grid.Wet[k] || grid.NearEdge(k) || !IsPlausible(grid.Heights[k]))
-                {
-                    return;
-                }
-                float slope = grid.Slopes[k];
-                if (float.IsNaN(slope) || slope > PosMaxSlope)
-                {
-                    return;
-                }
-                if (Vec2.DotProduct(grid.CellCentre(k) - c.Hold, c.Facing) > -PosArcherMinBehind)
-                {
-                    return;
-                }
-                if (grid.Heights[k] > bestHeight)
-                {
-                    bestHeight = grid.Heights[k];
-                    bestCell = k;
-                }
-            });
-            if (bestCell >= 0)
-            {
-                c.Archer = grid.CellCentre(bestCell);
-                c.ArcherSource = "behind";
-                c.ArcherGain = IsPlausible(holdHeight) ? bestHeight - holdHeight : float.NaN;
+                c.Archer = archer;
+                c.ArcherSource = source;
+                c.ArcherGain = gain;
             }
         }
 
         /// <summary>The winner's cavalry reserve: the dry walkable cell nearest the point PosReserveBehind m behind its hold.</summary>
         private static void PlacePositionReserve(PositionContext ctx, BattleTerrain.PositionCandidate c)
         {
-            Grid grid = ctx.Grid;
-            Vec2 centre = c.Hold - c.Facing * PosReserveBehind;
-            int bestCell = -1;
-            float bestDistance = float.MaxValue;
-            ForCellsWithin(grid, centre, PosReserveSearch, k =>
+            Vec2 reserve = PlaceHoldReserve(ctx.Grid, c.Hold, c.Facing, PosReserveBehind, PosReserveSearch);
+            if (reserve.IsValid)
             {
-                if (!grid.IsWalkable(k) || grid.Wet[k] || grid.NearEdge(k))
-                {
-                    return;
-                }
-                float d = grid.CellCentre(k).Distance(centre);
-                if (d < bestDistance)
-                {
-                    bestDistance = d;
-                    bestCell = k;
-                }
-            });
-            if (bestCell >= 0)
-            {
-                c.Reserve = grid.CellCentre(bestCell);
+                c.Reserve = reserve;
             }
         }
 

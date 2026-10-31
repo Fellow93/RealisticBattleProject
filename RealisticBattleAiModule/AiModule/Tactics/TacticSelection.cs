@@ -142,8 +142,63 @@ namespace RBMAI
 
         public const float TerrainRepickMargin = 1.1f; // best weight ÷ current's (native's x1.5 current-tactic bonus is skipped once)
 
-        /// <summary>Set on the main thread at the terrain publish, taken by the MakeDecision prefix.</summary>
-        private static readonly ConcurrentDictionary<Team, byte> TerrainRepick = new ConcurrentDictionary<Team, byte>();
+        /// <summary>Who asked for a re-pick; also the priority (lower first) when several wait for one decision.</summary>
+        internal enum RepickSource
+        {
+            Terrain = 0,
+            Reason = 1,
+            Balance = 2
+        }
+
+        /// <summary>One pending tactic re-pick. The MakeDecision prefix takes the highest-priority one per decision and writes the outcome back (Done / Switched / Outcome).</summary>
+        internal sealed class RepickRequest
+        {
+            public RepickSource Source;
+            public string Why;
+            public bool Huge; // balance: may switch away from a defensive hold whose line is fighting
+            public volatile bool Done;
+            public bool Switched;
+            public string Outcome;
+            /// <summary>Mission time a decision last ran another (higher-priority) re-pick while this one waited; NegativeInfinity = never.</summary>
+            public float DeferredAt = float.NegativeInfinity;
+        }
+
+        private struct RepickKey : IEquatable<RepickKey>
+        {
+            public readonly Team Team;
+            public readonly RepickSource Source;
+
+            public RepickKey(Team team, RepickSource source)
+            {
+                Team = team;
+                Source = source;
+            }
+
+            public bool Equals(RepickKey other)
+            {
+                return ReferenceEquals(Team, other.Team) && Source == other.Source;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is RepickKey && Equals((RepickKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return ((Team != null) ? Team.GetHashCode() : 0) * 3 + (int)Source;
+            }
+        }
+
+        /// <summary>Written by the terrain publish (main thread), the reaction monitor and the tactics (AI thread); taken by the MakeDecision prefix.</summary>
+        private static readonly ConcurrentDictionary<RepickKey, RepickRequest> Repicks = new ConcurrentDictionary<RepickKey, RepickRequest>();
+
+        private static readonly RepickSource[] RepickOrder = { RepickSource.Terrain, RepickSource.Reason, RepickSource.Balance };
+
+        private static void Request(Team team, RepickRequest request)
+        {
+            Repicks[new RepickKey(team, request.Source)] = request;
+        }
 
         /// <summary>Queued on the AI thread, drained on the main thread for the terrain log.</summary>
         private static readonly ConcurrentQueue<RepickEvent> RepickEvents = new ConcurrentQueue<RepickEvent>();
@@ -179,31 +234,14 @@ namespace RBMAI
 
         public const float BalanceRepickMargin = 1.1f; // best weight ÷ current's
 
-        /// <summary>R6 request. Written by the monitor and the MakeDecision prefix, both in the team's AI tick: no lock.</summary>
-        internal sealed class BalanceRequest
-        {
-            public string Why;
-            public bool Huge; // may switch away from a defensive hold whose line is fighting
-            public volatile bool Done;
-            public bool Switched;
-            public string Outcome;
-        }
-
-        // Set by the monitor, taken by the MakeDecision prefix (both AI thread).
-        private static readonly ConcurrentDictionary<Team, BalanceRequest> BalanceRepick = new ConcurrentDictionary<Team, BalanceRequest>();
-
-
-        // Set by any AI-thread caller, taken by the MakeDecision prefix.
-        private static readonly ConcurrentDictionary<Team, string> ReasonRepick = new ConcurrentDictionary<Team, string>();
-
-        /// <summary>AI thread: the team's next decision re-judges its tactic at once (ReasonRepickOnce: best option without the x1.5 bonus, switched at BalanceRepickMargin, TacticDwell restarted), logged REPICK reason=... False for a team RBM did not set up.</summary>
+        /// <summary>AI thread: the team's next decision re-judges its tactic at once (best option without the x1.5 bonus, switched at BalanceRepickMargin, TacticDwell restarted), logged REPICK reason=... False for a team RBM did not set up.</summary>
         internal static bool RequestRepick(Team team, string reason)
         {
             if (!IsRegistered(team))
             {
                 return false;
             }
-            ReasonRepick[team] = reason ?? "-";
+            Request(team, new RepickRequest { Source = RepickSource.Reason, Why = reason ?? "-" });
             return true;
         }
 
@@ -213,38 +251,43 @@ namespace RBMAI
             return team != null && Teams.ContainsKey(team);
         }
 
-        /// <summary>AI thread (R6): next decision runs BalanceRepickOnce. False for a team RBM did not set up.</summary>
-        internal static bool RequestBalanceRepick(Team team, BalanceRequest request)
+        /// <summary>AI thread (R6): a balance re-pick (request.Source must be Balance) for the next decision free of a higher-priority one. False for a team RBM did not set up.</summary>
+        internal static bool RequestBalanceRepick(Team team, RepickRequest request)
         {
-            if (request == null || !IsRegistered(team))
+            if (request == null || request.Source != RepickSource.Balance || !IsRegistered(team))
             {
                 return false;
             }
-            BalanceRepick[team] = request;
+            Request(team, request);
             return true;
         }
 
-        /// <summary>AI thread (R6): drops the request when it is still this one.</summary>
-        internal static void CancelBalanceRepick(Team team, BalanceRequest request)
+        /// <summary>AI thread (R6): drops the request when it is still the pending one.</summary>
+        internal static void CancelRepick(Team team, RepickRequest request)
         {
             if (team != null && request != null)
             {
-                ((ICollection<KeyValuePair<Team, BalanceRequest>>)BalanceRepick).Remove(new KeyValuePair<Team, BalanceRequest>(team, request));
+                ((ICollection<KeyValuePair<RepickKey, RepickRequest>>)Repicks).Remove(new KeyValuePair<RepickKey, RepickRequest>(new RepickKey(team, request.Source), request));
             }
         }
 
+        /// <summary>Drops every pending balance re-pick (ReactionMonitor.Clear).</summary>
         internal static void ClearBalanceRepicks()
         {
-            BalanceRepick.Clear();
+            foreach (KeyValuePair<RepickKey, RepickRequest> entry in Repicks)
+            {
+                if (entry.Key.Source == RepickSource.Balance)
+                {
+                    ((ICollection<KeyValuePair<RepickKey, RepickRequest>>)Repicks).Remove(entry);
+                }
+            }
         }
 
         public static void Clear()
         {
             Weights.Clear();
             Teams.Clear();
-            TerrainRepick.Clear();
-            BalanceRepick.Clear();
-            ReasonRepick.Clear();
+            Repicks.Clear();
             KeyValuePair<Team, Vec2> ignored;
             while (RoutEvents.TryDequeue(out ignored))
             {
@@ -266,9 +309,9 @@ namespace RBMAI
             foreach (Team team in mission.Teams)
             {
                 // A side without terrain plans (ArmyScale) has no terrain re-pick.
-                if (team != null && team.HasTeamAi && Teams.ContainsKey(team) && !ArmyScale.NoPlans(team))
+                if (team != null && team.HasTeamAi && Teams.ContainsKey(team) && TerrainPlans.Active(team))
                 {
-                    TerrainRepick[team] = 1;
+                    Request(team, new RepickRequest { Source = RepickSource.Terrain });
                     marked++;
                 }
             }
@@ -443,7 +486,7 @@ namespace RBMAI
         private static float TerrainFactorFor(TacticComponent tactic, Weighting w)
         {
             // No terrain factor for a side without terrain plans (ArmyScale.NoPlans).
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || ArmyScale.NoPlans(w.Side))
+            if (!TerrainPlans.Active(w.Side))
             {
                 return 1f;
             }
@@ -573,36 +616,73 @@ namespace RBMAI
                     return;
                 }
                 RoutCavalryRemnant(___Team, state);
-                byte ignored;
-                BalanceRequest balance;
-                string reason;
-                if (TerrainRepick.TryRemove(___Team, out ignored))
+                RepickRequest request = TakeRepick(___Team);
+                if (request != null)
                 {
-                    TerrainRepickOnce(__instance, ___Team);
-                }
-                else if (ReasonRepick.TryRemove(___Team, out reason))
-                {
-                    ReasonRepickOnce(__instance, ___Team, reason);
-                }
-                else if (BalanceRepick.TryRemove(___Team, out balance))
-                {
-                    BalanceRepickOnce(__instance, ___Team, balance);
+                    RunRepick(__instance, ___Team, request);
                 }
                 // A newer flank plan version re-applies the current tactic when it changes one of its side choices.
                 TerrainFlankPlan.FollowPlan(CurrentTacticRef(__instance), ___Team);
             }
 
-            /// <summary>The first decision after the ground is read: the highest-weight option (terrain included, no current-tactic bonus) replaces the current tactic when it beats it by TerrainRepickMargin, through native's private setter, and TacticDwell restarts. Otherwise the tactic is kept and re-applied only when the flank plan changes one of its side choices. AI thread, once per team per battle.</summary>
-            private static void TerrainRepickOnce(TeamAIComponent ai, Team team)
+            /// <summary>The highest-priority pending re-pick (at most one per decision); the ones left waiting behind it are marked deferred (their requesters' timeouts restart).</summary>
+            private static RepickRequest TakeRepick(Team team)
             {
-                RepickResult r;
-                if (!RepickOnce(ai, team, TerrainRepickMargin, false, out r))
+                RepickRequest taken = null;
+                foreach (RepickSource source in RepickOrder)
                 {
+                    RepickKey key = new RepickKey(team, source);
+                    RepickRequest pending;
+                    if (taken == null)
+                    {
+                        Repicks.TryRemove(key, out taken);
+                    }
+                    else if (Repicks.TryGetValue(key, out pending) && pending != null)
+                    {
+                        Mission mission = Mission.Current;
+                        pending.DeferredAt = (mission != null) ? mission.CurrentTime : float.NegativeInfinity;
+                    }
+                }
+                return taken;
+            }
+
+            /// <summary>
+            /// One re-pick through the shared core (RepickOnce). Terrain (the first decision after the ground is read): margin
+            /// TerrainRepickMargin; a kept tactic is re-applied once only when the flank plan changes one of its side choices.
+            /// Reason (e.g. the choke bypass): margin BalanceRepickMargin. Balance (ReactionMonitor R6): margin
+            /// BalanceRepickMargin, never away from a DEFENSIVE tactic while its line fights unless the shift is huge; the
+            /// outcome goes back on the request. Each writes one REPICK line. AI thread.
+            /// </summary>
+            private static void RunRepick(TeamAIComponent ai, Team team, RepickRequest request)
+            {
+                float margin = (request.Source == RepickSource.Terrain) ? TerrainRepickMargin : BalanceRepickMargin;
+                bool holdLineBlocks = request.Source == RepickSource.Balance && !request.Huge;
+                RepickResult r;
+                bool ran = RepickOnce(ai, team, margin, holdLineBlocks, out r);
+                if (!ran)
+                {
+                    request.Outcome = "noOptions";
+                    request.Done = true;
                     return;
                 }
-                // Kept: its side choices predate the ground read; re-applied once (IsTacticReapplyNeeded) only when the flank plan changes one of them.
-                bool flankReapply = !r.Switched && TerrainFlankPlan.RequestReapplyIfChanged(r.Current, team);
-                EnqueueRepick(team, r, flankReapply, null);
+                request.Switched = r.Switched;
+                request.Outcome = r.Switched ? "switched" : (r.Blocked != null) ? "blocked(" + r.Blocked + ")" : "kept";
+                request.Done = true;
+                switch (request.Source)
+                {
+                    case RepickSource.Terrain:
+                        // kept: its side choices predate the ground read
+                        EnqueueRepick(team, r, !r.Switched && TerrainFlankPlan.RequestReapplyIfChanged(r.Current, team), null);
+                        break;
+                    case RepickSource.Reason:
+                        string reason = request.Why ?? "-";
+                        EnqueueRepick(team, r, false,
+                            (reason.Split(' ')[0]) + " " + (r.Switched ? "switched" : "kept") + " " + (reason.IndexOf(' ') >= 0 ? reason.Substring(reason.IndexOf(' ') + 1) : "-"));
+                        break;
+                    default:
+                        EnqueueRepick(team, r, false, "balance " + request.Outcome + " " + (request.Why ?? "-"));
+                        break;
+                }
             }
 
             private struct RepickResult
@@ -703,34 +783,6 @@ namespace RBMAI
                         best = option;
                     }
                 }
-            }
-
-            /// <summary>A balance re-pick (ReactionMonitor R6): the highest-weight option replaces the current tactic when it beats it by BalanceRepickMargin (the terrain re-pick's mechanism). Not away from a DEFENSIVE tactic while its line fights (ReactionMonitor.HoldLineFighting) unless the shift is huge. Each outcome goes back on the request and into a REPICK line. AI thread.</summary>
-            private static void BalanceRepickOnce(TeamAIComponent ai, Team team, BalanceRequest request)
-            {
-                RepickResult r;
-                if (!RepickOnce(ai, team, BalanceRepickMargin, !request.Huge, out r))
-                {
-                    request.Outcome = "noOptions";
-                    request.Done = true;
-                    return;
-                }
-                request.Switched = r.Switched;
-                request.Outcome = r.Switched ? "switched" : (r.Blocked != null) ? "blocked(" + r.Blocked + ")" : "kept";
-                request.Done = true;
-                EnqueueRepick(team, r, false, "balance " + request.Outcome + " " + (request.Why ?? "-"));
-            }
-
-            /// <summary>A re-pick for a named reason (RequestRepick, e.g. the choke bypass): as the balance re-pick, one REPICK line "reason switched|kept". AI thread.</summary>
-            private static void ReasonRepickOnce(TeamAIComponent ai, Team team, string reason)
-            {
-                RepickResult r;
-                if (!RepickOnce(ai, team, BalanceRepickMargin, false, out r))
-                {
-                    return;
-                }
-                EnqueueRepick(team, r, false,
-                    (reason.Split(' ')[0]) + " " + (r.Switched ? "switched" : "kept") + " " + (reason.IndexOf(' ') >= 0 ? reason.Substring(reason.IndexOf(' ') + 1) : "-"));
             }
 
             private static bool IsDefensive(TacticComponent tactic)

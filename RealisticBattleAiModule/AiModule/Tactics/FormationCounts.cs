@@ -16,7 +16,7 @@ namespace RBMAI
 {
     public static partial class Tactics
     {
-        /// <summary>Merges unreferenced AI formations (stray reinforcements, leftover slots) into the referenced one of their kind; never under IsFormationReshufflingUnsafe, a dismount order or player formations.</summary>
+        /// <summary>Merges unreferenced AI formations (stray reinforcements, leftover slots) into the referenced one of their kind; never under IsFormationReshufflingUnsafe, a dismount order or player formations (IsAIOwned: a player-owned formation stays out even when delegated).</summary>
         internal static void MergeStrayFormations(Team team, Formation main, Formation archers, Formation cavalry, Formation rangedCavalry, params Formation[] alsoReferenced)
         {
             if (team == null || IsFormationReshufflingUnsafe)
@@ -25,7 +25,7 @@ namespace RBMAI
             }
             foreach (Formation f in team.FormationsIncludingEmpty.ToList())
             {
-                if (f == null || f.CountOfUnits <= 0 || !f.IsAIControlled || f.RidingOrder.OrderEnum == RidingOrder.RidingOrderEnum.Dismount
+                if (f == null || f.CountOfUnits <= 0 || !f.IsAIOwned || f.RidingOrder.OrderEnum == RidingOrder.RidingOrderEnum.Dismount
                     || f == main || f == archers || f == cavalry || f == rangedCavalry || (alsoReferenced != null && alsoReferenced.Contains(f)))
                 {
                     continue;
@@ -36,7 +36,7 @@ namespace RBMAI
                     Formation target = a.HasMount
                         ? (a.IsRangedCached ? (rangedCavalry ?? cavalry) : (cavalry ?? rangedCavalry))
                         : (a.IsRangedCached ? (archers ?? main) : (main ?? archers));
-                    if (target != null && target != f && target.IsAIControlled)
+                    if (target != null && target != f && target.IsAIOwned)
                     {
                         a.Formation = target;
                         if (!targets.Contains(target))
@@ -103,28 +103,28 @@ namespace RBMAI
                             bool isRanged = HasLauncherWithAmmo(agent);
                             if (agent.HasMount && isRanged)
                             {
-                                if (__instance.Team.GetFormation(FormationClass.HorseArcher) != null && __instance.Team.GetFormation(FormationClass.HorseArcher).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                                if (__instance.Team.GetFormation(FormationClass.HorseArcher) != null && __instance.Team.GetFormation(FormationClass.HorseArcher).IsAIOwned && agent.Formation != null && agent.Formation.IsAIOwned)
                                 {
                                     agent.Formation = __instance.Team.GetFormation(FormationClass.HorseArcher);
                                 }
                             }
                             if (agent.HasMount && !isRanged)
                             {
-                                if (__instance.Team.GetFormation(FormationClass.Cavalry) != null && __instance.Team.GetFormation(FormationClass.Cavalry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                                if (__instance.Team.GetFormation(FormationClass.Cavalry) != null && __instance.Team.GetFormation(FormationClass.Cavalry).IsAIOwned && agent.Formation != null && agent.Formation.IsAIOwned)
                                 {
                                     agent.Formation = __instance.Team.GetFormation(FormationClass.Cavalry);
                                 }
                             }
                             if (!agent.HasMount && isRanged)
                             {
-                                if (__instance.Team.GetFormation(FormationClass.Ranged) != null && __instance.Team.GetFormation(FormationClass.Ranged).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                                if (__instance.Team.GetFormation(FormationClass.Ranged) != null && __instance.Team.GetFormation(FormationClass.Ranged).IsAIOwned && agent.Formation != null && agent.Formation.IsAIOwned)
                                 {
                                     agent.Formation = __instance.Team.GetFormation(FormationClass.Ranged);
                                 }
                             }
                             if (!agent.HasMount && !isRanged)
                             {
-                                if (__instance.Team.GetFormation(FormationClass.Infantry) != null && __instance.Team.GetFormation(FormationClass.Infantry).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
+                                if (__instance.Team.GetFormation(FormationClass.Infantry) != null && __instance.Team.GetFormation(FormationClass.Infantry).IsAIOwned && agent.Formation != null && agent.Formation.IsAIOwned)
                                 {
                                     agent.Formation = __instance.Team.GetFormation(FormationClass.Infantry);
                                 }

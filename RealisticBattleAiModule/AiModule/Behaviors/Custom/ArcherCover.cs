@@ -120,18 +120,17 @@ namespace RBMAI
         private float _calmSince = float.NaN;
         private bool _engaged;
         private int _steps;
-        private Vec2 _point = Vec2.Invalid;
+        private const float ApplyKeepDistance = 0.5f; // m: Apply keeps the built point this close
+        /// <summary>The cover Move point: rebuilt whenever Apply moves it (the callers gate how often).</summary>
+        private readonly CachedMovePoint _move = new CachedMovePoint();
         private Vec2 _facing = Vec2.Invalid;
-        private WorldPosition _target = WorldPosition.Invalid;
         private Formation _probe;
         /// <summary>CENTRE distance (a width change is no closing speed).</summary>
         private float _probeDistance;
         private float _probeAt = float.NegativeInfinity;
-        // own block this tick (StableRanged); centre / radius kept for the shadow log's old measure
+        // own block this tick (StableRanged)
         private Footprint _own;
         private bool _ownValid;
-        private Vec2 _ownCentre = Vec2.Invalid;
-        private float _ownRadius;
         private Formation _refusedThreat;
         /// <summary>Log once per threat.</summary>
         private Formation _stayThreat;
@@ -190,8 +189,6 @@ namespace RBMAI
                 // size as in Line: going Loose doubles the width and must not bring an enemy "closer"
                 float ownRadius = RBMAI.Utilities.RangedStableRadius(formation);
                 _ownValid = FormationGeometry.TryGet(formation, FootprintMode.StableRanged, out _own);
-                _ownCentre = centre;
-                _ownRadius = ownRadius;
                 float gap = float.MaxValue;
                 float closing = 0f;
                 Formation nearest = null;
@@ -381,7 +378,7 @@ namespace RBMAI
                 return false;
             }
 
-            bool arrived = SupportFire.ArrivedAt(formation, centre, _point, _facing, ArriveDistance);
+            bool arrived = SupportFire.ArrivedAt(formation, centre, _move.Desired, _facing, ArriveDistance);
             if (_kind == Kind.Fallback)
             {
                 if (now - _builtAt >= RebuildMinSeconds && now - _changedAt >= MinChangeSeconds)
@@ -446,7 +443,7 @@ namespace RBMAI
                 if (Place(formation, _cover, _kind, FrozenThreatCentre(trackedCentre), out front, out f))
                 {
                     float limit = _engaged ? EngagedRebuildDistance : RebuildDistance;
-                    if (front.DistanceSquared(_point) > limit * limit)
+                    if (front.DistanceSquared(_move.Desired) > limit * limit)
                     {
                         // same cover and side, moved with the infantry / threat (held point: KeepMaxShare)
                         string fail = Validate(mission, formation, terrain, centre, front, f, _threat, trackedCentre, _cover, true, EdgeMin, FriendlyOverlap.KeepMaxShare, true);
@@ -520,8 +517,7 @@ namespace RBMAI
             _steps = 0;
             _calmSince = float.NaN;
             _changedAt = now;
-            _target = WorldPosition.Invalid;
-            _point = Vec2.Invalid;
+            _move.Clear();
             _facing = Vec2.Invalid;
         }
 
@@ -554,9 +550,9 @@ namespace RBMAI
 
         private bool Current(out WorldPosition target, out Vec2 facing)
         {
-            target = _target;
+            target = _move.Point;
             facing = _facing;
-            return _active && _point.IsValid && _facing.IsValid;
+            return _active && _move.Desired.IsValid && _facing.IsValid;
         }
 
         /// <summary>Sets the candidate as the target: a copy of a cached WorldPosition with ONE SetVec2MT, kept while the point stays put.</summary>
@@ -571,14 +567,10 @@ namespace RBMAI
             {
                 return false;
             }
-            if (!(_active && _point.IsValid && _point.DistanceSquared(c.Front) < 0.25f))
-            {
-                // ONE SetVec2MT on a fresh copy: native caches the order position by its Vec2
-                WorldPosition target = source;
-                target.SetVec2MT(c.Front);
-                _target = target;
-                _point = c.Front;
-            }
+            // kept while it stays put (native caches the order position by its Vec2); a new cover always rebuilds
+            WorldPosition target;
+            bool rebuilt;
+            _move.TryGet(c.Front, now, source, !_active || !_move.Desired.IsValid, ApplyKeepDistance, 0f, out target, out rebuilt);
             _facing = c.Facing;
             _cover = c.Cover;
             _kind = c.Kind;
@@ -603,9 +595,8 @@ namespace RBMAI
                 }
                 foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
                 {
-                    bool cavalry;
                     // stand vs mounted: melee cavalry is no threat to take cover from
-                    if (enemy == null || enemy.CountOfUnits <= 0 || !IsMeleeThreat(enemy, out cavalry) || cavalry
+                    if (enemy == null || enemy.CountOfUnits <= 0 || !IsMeleeThreat(enemy) || enemy.QuerySystem.IsCavalryFormation
                         || !ThreatSignificance.IsSignificant(formation, enemy))
                     {
                         continue;
@@ -694,9 +685,8 @@ namespace RBMAI
         }
 
         /// <summary>Enemy foot that is not mostly ranged, or melee cavalry (not horse archers); not retreating.</summary>
-        private static bool IsMeleeThreat(Formation enemy, out bool cavalry)
+        private static bool IsMeleeThreat(Formation enemy)
         {
-            cavalry = false;
             if (enemy.GetReadonlyMovementOrderReference().OrderType == OrderType.Retreat)
             {
                 return false;
@@ -708,13 +698,12 @@ namespace RBMAI
             }
             if (q.IsCavalryFormation)
             {
-                cavalry = true;
                 return true;
             }
             return !RBMAI.Utilities.IsRangedForArrangement(enemy);
         }
 
-        /// <summary>Edge gap to the archers and closing speed: cached velocity toward them or the gap's shrink rate, whichever is larger.</summary>
+        /// <summary>Edge gap to the archers and closing speed: sampled velocity (EnemyMotion) toward them or the gap's shrink rate, whichever is larger.</summary>
         private bool Measure(Formation enemy, Vec2 centre, float ownRadius, float now, out float gap, out float closing, out Vec2 enemyCentre)
         {
             gap = float.MaxValue;
@@ -735,8 +724,8 @@ namespace RBMAI
             gap = (_ownValid && FormationGeometry.TryGet(enemy, FootprintMode.ScatterAware, out shape))
                 ? FormationGeometry.Gap(_own, shape)
                 : distance - MathF.Max(enemy.Width, enemy.Depth) * 0.5f - ownRadius;
-            Vec2 velocity = enemy.CachedCurrentVelocity;
-            if (velocity.IsValid && distance > 0.01f)
+            Vec2 velocity;
+            if (EnemyMotion.TryVelocity(enemy, out velocity) && distance > 0.01f)
             {
                 closing = velocity.DotProduct(toUs);
             }
@@ -1215,8 +1204,7 @@ namespace RBMAI
                 }
                 foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
                 {
-                    bool cavalry;
-                    if (enemy == null || enemy == threat || enemy.CountOfUnits <= 0 || !IsMeleeThreat(enemy, out cavalry) || !ThreatSignificance.IsSignificant(formation, enemy))
+                    if (enemy == null || enemy == threat || enemy.CountOfUnits <= 0 || !IsMeleeThreat(enemy) || !ThreatSignificance.IsSignificant(formation, enemy))
                     {
                         continue;
                     }
@@ -1256,7 +1244,7 @@ namespace RBMAI
 
         private string ThreatCoverText(float gap)
         {
-            return FormationGeometry.Shadow(gap, FormationGeometry.ShadowOn ? FormationGeometry.OldCircleGap(_threat, _cover) : float.NaN);
+            return FormationGeometry.GapText(gap);
         }
 
         private static float SegmentDistance(Vec2 a, Vec2 b, Vec2 p)
@@ -1273,19 +1261,9 @@ namespace RBMAI
                 + " gap=" + GapText(threat, gap) + " closing=" + Fmt1(closing) + "m/s d=" + Fmt0(c.Travel) + "m";
         }
 
-        /// <summary>"Xm(old Ym)": the old measure is the circle gap from this tick's own centre and stable radius.</summary>
-        private string GapText(Formation enemy, float gap)
+        private static string GapText(Formation enemy, float gap)
         {
-            float old = float.NaN;
-            if (FormationGeometry.ShadowOn && enemy != null && _ownCentre.IsValid)
-            {
-                Vec2 c = RBMAI.Utilities.GetFormationCenter(enemy);
-                if (c.IsValid)
-                {
-                    old = c.Distance(_ownCentre) - MathF.Max(enemy.Width, enemy.Depth) * 0.5f - _ownRadius;
-                }
-            }
-            return FormationGeometry.Shadow(gap, old);
+            return FormationGeometry.GapText(gap);
         }
 
         private static string Fmt0(float value)

@@ -254,6 +254,13 @@
     <Compile Include="AiModule\Behaviors\Custom\ChargeTargetChoice.cs" />
     <Compile Include="AiModule\Behaviors\Custom\FriendlyOverlap.cs" />
     <Compile Include="AiModule\Behaviors\Custom\FormationCohesion.cs" />
+    <Compile Include="AiModule\Behaviors\Custom\ArmyComposition.cs" />
+    <Compile Include="AiModule\Behaviors\Custom\CavalryWearDown.cs" />
+    <Compile Include="AiModule\Behaviors\Custom\CachedMovePoint.cs" />
+    <Compile Include="AiModule\Behaviors\Custom\FormedApproach.cs" />
+    <Compile Include="AiModule\Behaviors\Custom\EnemyMotion.cs" />
+    <Compile Include="AiModule\Behaviors\Custom\RBMBehaviorFollowCavalry.cs" />
+    <Compile Include="AiModule\Behaviors\Custom\RBMBehaviorArcherStand.cs" />
     <Compile Include="AiModule\Behaviors\Custom\FormationGeometry.cs" />
     <Compile Include="AiModule\Behaviors\Custom\ArcherCover.cs" />
     <Compile Include="AiModule\Behaviors\Custom\SupportFire.cs" />
@@ -295,6 +302,9 @@
     <Compile Include="AiModule\Tactics\TerrainSpots.cs" />
     <Compile Include="AiModule\Tactics\TerrainCavalry.cs" />
     <Compile Include="AiModule\Tactics\TerrainPlanRefresh.cs" />
+    <Compile Include="AiModule\Tactics\TerrainPlans.cs" />
+    <Compile Include="AiModule\Tactics\TerrainLog.cs" />
+    <Compile Include="AiModule\Tactics\TerrainArmyReplan.cs" />
     <Compile Include="AiModule\Tactics\TerrainChokeHold.cs" />
     <Compile Include="AiModule\Tactics\TerrainBattlePosition.cs" />
     <Compile Include="AiModule\Tactics\TerrainApproach.cs" />

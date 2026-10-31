@@ -58,6 +58,11 @@ namespace RBMAI
             OverrideBehaviorProtectFlank.closePostUntil.Clear();
             // Flank guards' cohesion-pull log latch.
             FormationCohesion.Clear();
+            EnemyMotion.Clear();
+            ArmyComposition.Clear();
+            RBMBehaviorHoldPosition.ClearStatics();
+            RBMAI.AiModule.RbmBehaviors.HorseArcherPush.Clear();
+            RBMBehaviorArcherSkirmish.ClearInitiative();
             OverrideBehaviorHoldHighGround.commits.Clear();
             OverrideMovementOrder.positionsStorage.Clear();
             AiModule.RbmBehaviors.OverrideBehaviorCharge.cavHoldPositions.Clear();

@@ -341,7 +341,7 @@ namespace RBMAI
             public int[] OpenLabels;
             public List<int> OpenSizes;
 
-            // left by Features for Cavalry / Outlines: open-field labels with near-edge cells taken out before labelling (-1 = none)
+            // left by Features for Outlines: open-field labels with near-edge cells taken out before labelling (-1 = none)
             public int[] OpenFieldLabels;
 
             // left by Features for Spots / Cavalry / Outlines: the woods mask (null when the cover step failed) and the cells of density areas its rays vetoed
@@ -400,8 +400,7 @@ namespace RBMAI
                 Left = left,
                 ZoneWidth = zoneWidth,
                 Search = new PathSearch(grid),
-                WoodsMask = terrain.WoodsMap.Mask,
-                OpenFieldLabels = terrain.Cavalry.OpenFieldLabels
+                WoodsMask = terrain.WoodsMap.Mask
             };
         }
 

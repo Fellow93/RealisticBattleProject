@@ -41,7 +41,12 @@ namespace RBMAI
                 formation.AI.AddAiBehavior(new RBMBehaviorReservePlug(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorHedgehog(formation));
                 // Dormant (WeightFactor 0) until the team's ReactionMonitor gives the formation a task.
-                formation.AI.AddAiBehavior(new RBMBehaviorReact(formation));            }
+                formation.AI.AddAiBehavior(new RBMBehaviorReact(formation));
+                // WeightFactor 0 unless the team is cavalry-heavy (kMount > 0) and the formation melee foot
+                formation.AI.AddAiBehavior(new RBMBehaviorFollowCavalry(formation));
+                // WeightFactor 0 unless the formation is the defender's archer stand holder (ArmyComposition.LineHolder) or an escort (no infantry main)
+                formation.AI.AddAiBehavior(new RBMBehaviorArcherStand(formation));
+            }
         }
 
         //private static float originalDefenderPower = 0f;
@@ -80,7 +85,8 @@ namespace RBMAI
                                 AddTacticOption(team, new TacticDefensiveLine(team), leader);
                                 AddTacticOption(team, new RBMTacticDefendSplitInfantry(team), leader);
                                 AddTacticOption(team, new RBMTacticHoldChoke(team), leader);
-                                AddTacticOption(team, new RBMTacticReservePlug(team), leader);
+                                // reserve plug disabled for now (user decision 2026-10-30)
+                                //AddTacticOption(team, new RBMTacticReservePlug(team), leader);
                                 AddTacticOption(team, new RBMTacticHedgehog(team), leader);
                                 AddTacticOption(team, new TacticFullScaleAttack(team), leader);
                             }

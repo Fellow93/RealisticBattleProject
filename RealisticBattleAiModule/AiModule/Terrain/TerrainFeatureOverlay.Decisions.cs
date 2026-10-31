@@ -832,6 +832,16 @@ namespace RBMAI
             {
                 return "React(" + react.StateName + ")";
             }
+            RBMBehaviorFollowCavalry follow = behavior as RBMBehaviorFollowCavalry;
+            if (follow != null)
+            {
+                return "FollowCavalry(" + follow.StateName + ")";
+            }
+            RBMBehaviorArcherStand stand = behavior as RBMBehaviorArcherStand;
+            if (stand != null)
+            {
+                return "ArcherStand(" + stand.StateName + ")";
+            }
             // support fire once the frontlines connect (SupportFire)
             RBMBehaviorArcherSkirmish skirmish = behavior as RBMBehaviorArcherSkirmish;
             if (skirmish != null && skirmish.SupportLabel != null)

@@ -19,8 +19,11 @@ namespace RBMAI
     ///    place toward the enemy's main concentration (> 35 deg off for 5 s, at most one turn per 10 s); the local turn wins until the next plan version.
     ///  - Archers: Move to the archer place (a spot near the line, or the highest ground behind it), facing as the line, Line at the post, Loose under
     ///    fire / broken ground (ChooseRangedArrangement), fire at will.
-    ///  - Reserve (cavalry, when both line ends are covered): Move to the reserve place behind the line. RELEASED (weight 0, the tactic's fallback takes over)
-    ///    while ReserveRelease.Threat holds and FreeSeconds after.
+    ///  - Reserve (cavalry, when both line ends are covered): Move to the reserve place behind the line. Weight 0 (the tactic's flank guard) until the owner's
+    ///    Line holds at its point, and again once it leaves, engages or is gone (LineReady, ReserveReadySeconds both ways). RELEASED (weight 0, the tactic's
+    ///    fallback takes over) while ReserveRelease.Threat holds and FreeSeconds after.
+    ///  No infantry main (ArmyComposition.LineHolder): the archer anchor is RBMBehaviorArcherStand's, never a Line here; other foot ranged take the Archers role.
+    ///  A Line is infantry and counts only while the infantry leads (IsCurrentLine; user rule: infantry under the main rule never holds the line); otherwise it weighs 0.
     ///  Archers / Reserve: the place turns with a re-faced line (HoldReface.TurnedPlace); a place overlapping a friend's destination by more than
     ///  TakeMaxShare is moved ONCE along the facing (PlaceShift).
     ///  Archers: a place beyond the FormationCohesion limit is pulled toward the main infantry (Pull; the cavalry Reserve is exempt); ArcherCover when a
@@ -29,13 +32,13 @@ namespace RBMAI
     ///
     /// ENGAGE (user rule: the defender must still fight when the enemy comes close), Line role only (the choke and hedgehog charge late; this keeps the early
     /// engage). Every trigger counts only enemy FOOT SIGNIFICANT to the line (ThreatSignificance): all-mounted enemies never pull the line out:
-    ///  - battleJoined: a significant enemy MELEE foot formation within BattleJoinRange (centre distance - both half depths);
+    ///  - battleJoined: a significant enemy MELEE foot formation (foot ranged too while ArmyComposition.FootRangedEngage) within BattleJoinRange (centre distance - both half depths);
     ///  - enemyNear: one within EngageDistance (edge gap) of the hold point;
     ///  - melee: EngageMeleeRatio of the line in melee with a significant enemy foot formation within ContactGap;
     ///  - allyFighting (AllyFightingReason): another friendly formation within AllyFightRange of the line in melee with enemy foot significant to the LINE;
     ///  - outshot (the strict shared HoldLateCharge.OutshotReason, at its point only).
-    /// Latched: the weight drops to 0 and the owning tactic reads EngagedFor. While a Line assignment holds (HoldsLineFor), the tactic's "battle joined" is this
-    /// engage alone (BattleJoinedFor). RELEASE: BattleJoinedFor un-latches it (TryRelease, "Engage->Hold recall") once the line, engaged at least RecallMinCharge and
+    /// Latched PER TACTIC (LineEngage, keyed by the owner: a line handed to another formation stays engaged): the weight drops to 0 and the owning tactic reads
+    /// EngagedFor. While a Line assignment holds (HoldsLineFor), the tactic's "battle joined" is this engage alone (BattleJoinedFor). RELEASE: BattleJoinedFor un-latches it (TryRelease, "Engage->Hold recall") once the line, engaged at least RecallMinCharge and
     /// within ReleaseReturnDistance of the hold, is calm (CalmReason) for RecallSeconds; for RecallQuietSeconds after, only melee engages it.
     /// A player-controlled line is never assigned (TryAssign sets nothing; the tactic keeps its old rule). Changes are BEHAVIOR lines (TerrainBattlePosition.Enqueue).
     ///
@@ -94,7 +97,6 @@ namespace RBMAI
         private float _widthAt = float.NegativeInfinity;
         private float _widthSet = float.NaN;
         private bool _shaped;
-        private volatile bool _engaged;
         /// <summary>Line role: only its shared out-shot window; its fight state stays Holding. AI thread.</summary>
         private readonly HoldLateCharge _outshot = new HoldLateCharge();
         /// <summary>Archers / Reserve roles. AI thread.</summary>
@@ -102,20 +104,32 @@ namespace RBMAI
         /// <summary>Archers role. AI thread.</summary>
         private readonly FormationCohesion.Pull _cohesion = new FormationCohesion.Pull();
         /// <summary>Archers role: cover, and support fire once the frontlines connect and the place no longer serves. AI thread.</summary>
-        private readonly CoverSupport _glue = new CoverSupport(CoverSupport.LogQueue.BattlePosition, null);
+        private readonly CoverSupport _glue = new CoverSupport("HoldPosition", "point");
         /// <summary>Line role: ReactionMonitor's line-answers handshake. AI thread.</summary>
         private Formation _allyAnswered;
         /// <summary>Line role: any angle; reset by a new plan version. AI thread.</summary>
         private readonly HoldReface _reface = new HoldReface();
-        // Line role engage state (AI thread): when it latched, its trigger word, since when the line is calm (TryRelease), the quiet window after a release.
-        private float _engagedAt = float.NaN;
-        private string _engagedWord;
-        private float _calmSince = float.NaN;
-        private float _quietUntil = float.NegativeInfinity;
         /// <summary>Archers / Reserve roles. AI thread.</summary>
         private readonly HoldReface.TurnedPlace _turnedPlace = new HoldReface.TurnedPlace();
         /// <summary>Reserve role. AI thread.</summary>
         private readonly ReserveRelease _reserveRelease = new ReserveRelease();
+        /// <summary>Reserve role: the owner's Line holds at its point (debounced, ReserveReadySeconds). AI thread.</summary>
+        private bool _lineReady;
+        private float _lineReadyPendingSince = float.NaN;
+
+        // DYNAMIC RESERVE (user rule 2026-10-30): the cavalry reserve stands ReserveGap behind the owner's line as it actually stands and faces, its
+        // side's half (Left / Right by AI.Side), not the plan's fixed cell; rebuilt only past ReserveRebuildMove m / ReserveRebuildCos; outside the
+        // mission boundaries = the plan's cell. _shift still steps it off a friend standing there.
+        private const float ReserveGap = 40f;
+        private const float ReserveSideShare = 0.25f; // x the line's width to its side
+        private const float ReserveRebuildMove = 15f;
+        private const float ReserveRebuildCos = 0.94f; // ~20 degrees
+        private Vec2 _dynReserve = Vec2.Invalid;
+        private WorldPosition _dynReserveWorld = WorldPosition.Invalid;
+        private Vec2 _dynLineCentre = Vec2.Invalid;
+        private Vec2 _dynLineFacing = Vec2.Invalid;
+        private bool _reserveDynamic;
+        private const float ReserveReadySeconds = 3f;
         private volatile string _stateName = "wait";
 
         public RBMBehaviorHoldPosition(Formation formation)
@@ -131,19 +145,31 @@ namespace RBMAI
 
         internal Role CurrentRole => _role;
 
-        /// <summary>Line role engage latched (any owner). AI thread.</summary>
-        internal bool Engaged => _engaged;
+        /// <summary>Line role engage latched (its tactic's). AI thread.</summary>
+        internal bool Engaged => LineEngaged;
 
         /// <summary>AI thread.</summary>
-        internal Formation AllyAnswered => _engaged ? _allyAnswered : null;
+        internal Formation AllyAnswered => LineEngaged ? _allyAnswered : null;
 
         /// <summary>AI thread: after a recall only melee engages the line (ReactionMonitor's handshake must not wait for it).</summary>
-        internal bool InQuiet => Mission.Current != null && Mission.Current.CurrentTime < _quietUntil;
+        internal bool InQuiet
+        {
+            get
+            {
+                LineEngage e = EngageOf(_owner);
+                return e != null && Mission.Current != null && Mission.Current.CurrentTime < e.QuietUntil;
+            }
+        }
 
-        /// <summary>AI thread, from a tactic's Defend (weight 1; LiveWeight while it has a place). False without a plan or behavior, or for a player-controlled formation (its behaviors never tick; the tactic's old rule runs).</summary>
+        /// <summary>AI thread, from a tactic's Defend (weight 1; LiveWeight while it has a place). False without a plan or behavior, for a player-controlled
+        /// formation (its behaviors never tick; the tactic's old rule runs), and for a Line that would not be the current one (IsCurrentLine).</summary>
         internal static bool TryAssign(Formation formation, TacticComponent owner, int generation, Role role)
         {
             if (formation == null || formation.AI == null || !formation.IsAIControlled || TerrainBattlePosition.PlanFor(formation.Team) == null)
+            {
+                return false;
+            }
+            if (role == Role.Line && (ArmyComposition.IsArchers(formation) || !IsCurrentLine(formation)))
             {
                 return false;
             }
@@ -157,6 +183,17 @@ namespace RBMAI
             return true;
         }
 
+        /// <summary>AI thread: a Line held by this formation counts while the team's infantry leads.</summary>
+        private static bool IsCurrentLine(Formation formation)
+        {
+            return ArmyComposition.InfantryLeads(formation?.Team);
+        }
+
+        private bool IsCurrentLine()
+        {
+            return _role == Role.Line && IsCurrentLine(base.Formation);
+        }
+
         /// <summary>AI thread: the line assigned by owner has engaged (latched): the tactic should engage.</summary>
         internal static bool EngagedFor(Formation formation, TacticComponent owner)
         {
@@ -165,7 +202,54 @@ namespace RBMAI
                 return false;
             }
             RBMBehaviorHoldPosition behavior = formation.AI.GetBehavior<RBMBehaviorHoldPosition>();
-            return behavior != null && behavior._owner == owner && behavior._role == Role.Line && behavior._engaged;
+            return behavior != null && behavior._owner == owner && behavior.IsCurrentLine() && behavior.LineEngaged;
+        }
+
+        /// <summary>AI thread, from a defend tactic's Defend: the plan's archer line holder stands (RBMBehaviorArcherStand): the main infantry's hold weight is dropped and
+        /// archers, when another formation, take the Archers role (with a published plan). False = no archer stand; the tactic assigns its infantry Line as before.</summary>
+        internal static bool YieldToArcherStand(Team team, TacticComponent owner, int generation, Formation mainInfantry, Formation archers)
+        {
+            Formation line = ArmyComposition.LineHolder(team);
+            if (line == null || !RBMBehaviorArcherStand.Owns(line))
+            {
+                return false;
+            }
+            if (mainInfantry != null && mainInfantry != line && mainInfantry.AI != null)
+            {
+                mainInfantry.AI.SetBehaviorWeight<RBMBehaviorHoldPosition>(0f);
+            }
+            if (archers != null && archers != line)
+            {
+                TryAssign(archers, owner, generation, Role.Archers);
+            }
+            return true;
+        }
+
+        /// <summary>AI thread: the team has a live current Line hold (assigned, weight factor on, AI, plan published); engaged = its tactic's engage latch (a recall clears it).</summary>
+        internal static bool TeamLineHold(Team team, out bool engaged)
+        {
+            engaged = false;
+            if (team == null || TerrainBattlePosition.PlanFor(team) == null)
+            {
+                return false;
+            }
+            bool found = false;
+            MBList<Formation> formations = team.FormationsIncludingEmpty;
+            for (int i = 0; i < formations.Count; i++)
+            {
+                Formation f = formations[i];
+                if (f == null || f.CountOfUnits <= 0 || f.AI == null || !f.IsAIControlled)
+                {
+                    continue;
+                }
+                RBMBehaviorHoldPosition behavior = f.AI.GetBehavior<RBMBehaviorHoldPosition>();
+                if (behavior != null && behavior._owner != null && behavior.IsCurrentLine() && behavior.WeightFactor > 0f)
+                {
+                    found = true;
+                    engaged |= behavior.LineEngaged;
+                }
+            }
+            return found;
         }
 
         /// <summary>AI thread: owner's Line assignment holds the formation (plan, not engaged): the hold's own engage is the only "battle joined".</summary>
@@ -176,29 +260,135 @@ namespace RBMAI
                 return false;
             }
             RBMBehaviorHoldPosition behavior = formation.AI.GetBehavior<RBMBehaviorHoldPosition>();
-            return behavior != null && behavior._owner == owner && behavior._role == Role.Line && !behavior._engaged
+            return behavior != null && behavior._owner == owner && behavior.IsCurrentLine() && !behavior.LineEngaged
                 && behavior.WeightFactor > 0f && formation.IsAIControlled && TerrainBattlePosition.PlanFor(formation.Team) != null;
         }
 
-        /// <summary>AI thread, the defend tactics' "battle joined": while owner's Line assignment holds the main infantry (HoldsLineFor) only the hold's engage (EngagedFor); otherwise the old rule (Utilities.HasBattleBeenJoined) or the latch. An engaged line of this owner that is calm again is released here (TryRelease): false, so the tactic holds again.</summary>
+        /// <summary>AI thread, the defend tactics' "battle joined": owner's line engage (whichever formation holds the line now); while owner's Line assignment holds
+        /// (HoldsLineFor) nothing else; otherwise the old rule (Utilities.HasBattleBeenJoined) or the latch. An engaged line of this owner that is calm again is
+        /// released here (TryRelease): false, so the tactic holds again. A team whose archers stand (RBMBehaviorArcherStand): the stand's latched joined.
+        /// The engage is dropped on a re-entry (not asked for StaleSeconds, ResetEngage) and when no formation holds owner's Line any more.</summary>
         internal static bool BattleJoinedFor(Formation main, TacticComponent owner, bool hasBattleBeenJoined, float battleJoinRange = 75f)
         {
-            if (main != null && main.AI != null && owner != null)
+            bool standJoined;
+            if (RBMBehaviorArcherStand.TeamStand(owner?.Team, out standJoined))
             {
-                RBMBehaviorHoldPosition line = main.AI.GetBehavior<RBMBehaviorHoldPosition>();
-                if (line != null && line._owner == owner && line._role == Role.Line && line._engaged && line.TryRelease())
+                return standJoined;
+            }
+            Formation lineFormation = main;
+            LineEngage e = EngageOf(owner);
+            if (e != null && e.Engaged)
+            {
+                float now = (Mission.Current != null) ? Mission.Current.CurrentTime : float.NaN;
+                // native reuses tactic instances (generation 0): a gap in these calls means the tactic was off and is re-entered
+                bool stale = !float.IsNaN(e.SeenAt) && now - e.SeenAt > StaleSeconds;
+                e.SeenAt = now;
+                RBMBehaviorHoldPosition line = stale ? null : LineOf(owner, main);
+                if (line != null)
+                {
+                    return !line.TryRelease(e);
+                }
+                ResetEngage(owner);
+            }
+            if (HoldsLineFor(lineFormation, owner))
+            {
+                return false;
+            }
+            return RBMAI.Utilities.HasBattleBeenJoined(owner?.Team, main, hasBattleBeenJoined, battleJoinRange);
+        }
+
+        /// <summary>A tactic's line engage: when it latched, its trigger word, the calm recall's timer (TryRelease), the quiet window after a release. AI thread.</summary>
+        private sealed class LineEngage
+        {
+            public volatile bool Engaged;
+            public float At = float.NaN;
+            public string Word;
+            public readonly HoldRecall Recall = new HoldRecall();
+            public float QuietUntil = float.NegativeInfinity;
+            /// <summary>Last BattleJoinedFor while engaged (the tactic ticks it about every second while current).</summary>
+            public float SeenAt = float.NaN;
+        }
+
+        /// <summary>Longer than the tactic's ~1 s tick, shorter than native's 5 s decision period (the soonest a tactic switched away comes back).</summary>
+        private const float StaleSeconds = 4f;
+
+        /// <summary>Tactic -> its line engage; cleared in MissionStartReset.</summary>
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<TacticComponent, LineEngage> Engages = new System.Collections.Concurrent.ConcurrentDictionary<TacticComponent, LineEngage>();
+
+        internal static void ClearStatics()
+        {
+            Engages.Clear();
+        }
+
+        /// <summary>AI thread, from a tactic's OnApply (and BattleJoinedFor): a new application starts un-engaged.</summary>
+        internal static void ResetEngage(TacticComponent owner)
+        {
+            LineEngage removed;
+            if (owner != null)
+            {
+                Engages.TryRemove(owner, out removed);
+            }
+        }
+
+        /// <summary>AI thread: the formation holding owner's Line assignment (main first, else any of the team's), engaged or not; null without one.</summary>
+        private static RBMBehaviorHoldPosition LineOf(TacticComponent owner, Formation main)
+        {
+            RBMBehaviorHoldPosition line = main?.AI?.GetBehavior<RBMBehaviorHoldPosition>();
+            if (line != null && line._owner == owner && line._role == Role.Line && main.CountOfUnits > 0)
+            {
+                return line;
+            }
+            MBList<Formation> formations = owner?.Team?.FormationsIncludingEmpty;
+            if (formations == null)
+            {
+                return null;
+            }
+            for (int i = 0; i < formations.Count; i++)
+            {
+                Formation f = formations[i];
+                if (f == null || f == main || f.CountOfUnits <= 0 || f.AI == null)
+                {
+                    continue;
+                }
+                line = f.AI.GetBehavior<RBMBehaviorHoldPosition>();
+                if (line != null && line._owner == owner && line._role == Role.Line)
+                {
+                    return line;
+                }
+            }
+            return null;
+        }
+
+        private static LineEngage EngageOf(TacticComponent owner)
+        {
+            LineEngage e;
+            return (owner != null && Engages.TryGetValue(owner, out e)) ? e : null;
+        }
+
+        private bool LineEngaged
+        {
+            get
+            {
+                if (_role != Role.Line)
                 {
                     return false;
                 }
+                LineEngage e = EngageOf(_owner);
+                return e != null && e.Engaged;
             }
-            if (HoldsLineFor(main, owner))
-            {
-                return EngagedFor(main, owner);
-            }
-            return RBMAI.Utilities.HasBattleBeenJoined(main, hasBattleBeenJoined, battleJoinRange) || EngagedFor(main, owner);
         }
 
-        /// <summary>AI thread, from the tactic: a new instance, generation or role restarts from Wait (un-latches the engage); the same keeps the state.</summary>
+        private float QuietUntil
+        {
+            get
+            {
+                LineEngage e = EngageOf(_owner);
+                return (e != null) ? e.QuietUntil : float.NegativeInfinity;
+            }
+        }
+
+        /// <summary>AI thread, from the tactic: a new instance, generation or role restarts from Wait; the same keeps the state. The line engage is the tactic's
+        /// (cleared on its re-entry, ResetEngage / BattleJoinedFor), not this formation's.</summary>
         internal void Assign(TacticComponent owner, int generation, Role role)
         {
             if (owner == _owner && generation == _ownerGeneration && role == _role)
@@ -214,11 +404,6 @@ namespace RBMAI
             _widthAt = float.NegativeInfinity;
             _arrangedAt = float.NegativeInfinity;
             _shaped = false;
-            _engaged = false;
-            _engagedAt = float.NaN;
-            _engagedWord = null;
-            _calmSince = float.NaN;
-            _quietUntil = float.NegativeInfinity;
             _allyAnswered = null;
             _outshot.Reset(base.Formation);
             _shift.Reset();
@@ -226,53 +411,50 @@ namespace RBMAI
             _reface.Reset();
             _turnedPlace.Reset();
             _reserveRelease.Reset();
+            _lineReady = false;
+            _lineReadyPendingSince = float.NaN;
+            _dynReserve = Vec2.Invalid;
+            _dynReserveWorld = WorldPosition.Invalid;
+            _dynLineCentre = Vec2.Invalid;
+            _dynLineFacing = Vec2.Invalid;
             ReleaseCover("assigned");
             SetState(HoldState.Wait, float.NaN, null);
         }
 
-        /// <summary>AI thread, from BattleJoinedFor while engaged: true once it un-latched the engage (calm for RecallSeconds, hold within ReleaseReturnDistance). Quiet for RecallQuietSeconds after.</summary>
-        private bool TryRelease()
+        /// <summary>AI thread, from BattleJoinedFor while engaged: true once it un-latched its tactic's engage (calm for RecallSeconds, hold within ReleaseReturnDistance). Quiet for RecallQuietSeconds after.</summary>
+        private bool TryRelease(LineEngage e)
         {
             Formation formation = base.Formation;
             Mission mission = Mission.Current;
             if (mission == null || formation == null || formation.Team == null || !formation.IsAIControlled || formation.CountOfUnits < HoldLateCharge.LineGoneMen)
             {
-                _calmSince = float.NaN;
+                e.Recall.Reset();
                 return false;
             }
             float now = mission.CurrentTime;
             TerrainBattlePosition.Plan plan = TerrainBattlePosition.PlanFor(formation.Team);
             Vec2 centre = RBMAI.Utilities.GetFormationCenter(formation);
-            if (plan == null || !centre.IsValid || float.IsNaN(_engagedAt) || now - _engagedAt < HoldLateCharge.RecallMinCharge)
+            if (plan == null || !centre.IsValid || float.IsNaN(e.At) || now - e.At < HoldLateCharge.RecallMinCharge)
             {
-                _calmSince = float.NaN;
+                e.Recall.Reset();
                 return false;
             }
             float toHold = centre.Distance(plan.Hold);
-            string calm = (toHold <= ReleaseReturnDistance) ? HoldLateCharge.CalmReason(mission, formation, _engagedWord == "outshot") : null;
+            // beyond the return distance the engage stands (the plain battle position has no local charge)
+            string calm = e.Recall.CalmFor(now, e.At, (toHold <= ReleaseReturnDistance) ? HoldLateCharge.CalmReason(mission, formation, e.Word == "outshot") : null);
             if (calm == null)
             {
-                _calmSince = float.NaN;
                 return false;
             }
-            if (float.IsNaN(_calmSince))
-            {
-                _calmSince = now;
-                return false;
-            }
-            if (now - _calmSince < HoldLateCharge.RecallSeconds)
-            {
-                return false;
-            }
-            string word = _engagedWord ?? "-";
-            float engagedFor = now - _engagedAt;
-            _engaged = false;
-            _engagedAt = float.NaN;
-            _engagedWord = null;
-            _calmSince = float.NaN;
+            string word = e.Word ?? "-";
+            float engagedFor = now - e.At;
+            e.Engaged = false;
+            e.At = float.NaN;
+            e.Word = null;
+            e.Recall.Reset();
+            e.QuietUntil = now + HoldLateCharge.RecallQuietSeconds;
             _allyAnswered = null;
-            _quietUntil = now + HoldLateCharge.RecallQuietSeconds;
-            _outshot.Reset(formation, _quietUntil);
+            _outshot.Reset(formation, e.QuietUntil);
             SetState(HoldState.Wait, now, null);
             TerrainBattlePosition.Enqueue(formation.Team, formation, now, "Engage->Hold", "hold",
                 "recall " + word + " engage after " + TerrainBattlePosition.Fmt0(engagedFor) + "s: calm " + calm + " for "
@@ -298,7 +480,7 @@ namespace RBMAI
                     continue;
                 }
                 RBMBehaviorHoldPosition line = f.AI.GetBehavior<RBMBehaviorHoldPosition>();
-                if (line != null && line._owner == owner && line._role == Role.Line && !line._engaged)
+                if (line != null && line._owner == owner && line.IsCurrentLine() && !line.LineEngaged)
                 {
                     facing = line._reface.Facing;
                     depth = f.Depth;
@@ -343,9 +525,10 @@ namespace RBMAI
             Vec2 point;
             WorldPosition world;
             string pointName;
-            if (_engaged || !TryGetPoint(plan, out point, out world, out pointName))
+            bool engaged = LineEngaged;
+            if (engaged || !TryGetPoint(plan, out point, out world, out pointName))
             {
-                if (_state != HoldState.Wait && !_engaged)
+                if (_state != HoldState.Wait && !engaged)
                 {
                     SetState(HoldState.Wait, now, (plan == null) ? "noPlan" : "noPlace");
                 }
@@ -361,7 +544,15 @@ namespace RBMAI
                 // the line turned (HoldReface): the place turns with it round the line's pivot and faces its way
                 Vec2 lineFacing;
                 float lineDepth;
-                if (LineTurn(formation.Team, _owner, out lineFacing, out lineDepth))
+                if (_role == Role.Reserve && _reserveDynamic)
+                {
+                    // already behind the line as it stands and faces
+                    if (_dynLineFacing.IsValid)
+                    {
+                        placeFacing = _dynLineFacing;
+                    }
+                }
+                else if (LineTurn(formation.Team, _owner, out lineFacing, out lineDepth))
                 {
                     Vec2 pivot = plan.Hold - plan.Facing.Normalized() * (MathF.Max(lineDepth, 1f) * 0.5f);
                     string turnWhat;
@@ -393,7 +584,7 @@ namespace RBMAI
             {
                 // holding at its point, the line turns in place toward the enemy's main concentration; a new plan version brings back the plan's facing; only the active behavior turns
                 bool mayTurn = formation.IsAIControlled && formation.AI != null && formation.AI.ActiveBehavior == this
-                    && _state == HoldState.Holding && !_engaged && (_planVersion == 0 || _planVersion == plan.Version);
+                    && _state == HoldState.Holding && !engaged && (_planVersion == 0 || _planVersion == plan.Version);
                 string refaceWhy;
                 string reface = _reface.Update(mission, formation, plan.Version, plan.Facing, now, mayTurn, 180f, out refaceWhy);
                 if (reface != null)
@@ -537,6 +728,14 @@ namespace RBMAI
                     point = plan.Data.Reserve;
                     world = plan.ReserveWorld;
                     name = "reserve";
+                    Vec2 dynamic;
+                    WorldPosition dynamicWorld;
+                    _reserveDynamic = DynamicReserve(out dynamic, out dynamicWorld);
+                    if (_reserveDynamic)
+                    {
+                        point = dynamic;
+                        world = dynamicWorld;
+                    }
                     return true;
                 default:
                     point = plan.Hold;
@@ -546,9 +745,53 @@ namespace RBMAI
             }
         }
 
+        /// <summary>AI thread, Reserve role: the place behind the owner's current line (DYNAMIC RESERVE), false without one (the plan's cell then).</summary>
+        private bool DynamicReserve(out Vec2 point, out WorldPosition world)
+        {
+            point = Vec2.Invalid;
+            world = WorldPosition.Invalid;
+            Formation formation = base.Formation;
+            Mission mission = Mission.Current;
+            RBMBehaviorHoldPosition line = (formation?.Team != null) ? LineOf(_owner, null) : null;
+            Formation lineFormation = line?.Formation;
+            if (mission == null || lineFormation == null || lineFormation == formation)
+            {
+                return false;
+            }
+            Vec2 centre = RBMAI.Utilities.GetFormationCenter(lineFormation);
+            Vec2 facing = lineFormation.Direction;
+            if (!centre.IsValid || !facing.IsValid || facing.LengthSquared < 0.01f)
+            {
+                return false;
+            }
+            facing = facing.Normalized();
+            bool rebuild = !_dynReserve.IsValid || !_dynLineCentre.IsValid || _dynLineCentre.Distance(centre) > ReserveRebuildMove
+                || _dynLineFacing.DotProduct(facing) < ReserveRebuildCos;
+            if (rebuild)
+            {
+                float side = (formation.AI.Side == FormationAI.BehaviorSide.Left) ? -1f : (formation.AI.Side == FormationAI.BehaviorSide.Right) ? 1f : 0f;
+                Vec2 desired = centre - facing * (lineFormation.Depth * 0.5f + ReserveGap + formation.Depth * 0.5f)
+                    + facing.RightVec() * (side * lineFormation.Width * ReserveSideShare);
+                WorldPosition source = lineFormation.CachedMedianPosition;
+                if (!source.IsValid || !mission.IsPositionInsideBoundaries(desired))
+                {
+                    _dynReserve = Vec2.Invalid;
+                    return false;
+                }
+                source.SetVec2MT(desired);
+                _dynReserve = desired;
+                _dynReserveWorld = source;
+                _dynLineCentre = centre;
+                _dynLineFacing = facing;
+            }
+            point = _dynReserve;
+            world = _dynReserveWorld;
+            return point.IsValid;
+        }
+
         private void CheckEngage()
         {
-            if (_engaged || _role != Role.Line || _plan == null || _state == HoldState.Wait)
+            if (_role != Role.Line || _owner == null || LineEngaged || _plan == null || _state == HoldState.Wait || !IsCurrentLine())
             {
                 return;
             }
@@ -563,11 +806,13 @@ namespace RBMAI
             {
                 return;
             }
-            _engaged = true;
-            _engagedAt = mission.CurrentTime;
-            _engagedWord = why.Split(' ')[0];
-            _calmSince = float.NaN;
-            _stateName = "engaged";
+            LineEngage e = Engages.GetOrAdd(_owner, o => new LineEngage());
+            e.At = mission.CurrentTime;
+            e.Word = why.Split(' ')[0];
+            e.SeenAt = e.At;
+            e.Recall.Reset();
+            e.Engaged = true;
+            _stateName = RolePrefix() + "engaged";
             TerrainBattlePosition.Enqueue(formation.Team, formation, mission.CurrentTime, "Hold->Engage", "hold", why);
         }
 
@@ -580,15 +825,13 @@ namespace RBMAI
             }
             Team own = formation.Team;
             // quiet after a release: only melee engages the line again (allyFighting re-engaged it 0.3 s after a recall, log 2026-10-23 22:09)
-            bool quiet = mission.CurrentTime < _quietUntil;
-            Vec2 lineCentre = RBMAI.Utilities.GetFormationCenter(formation);
-            float ownHalfDepth = formation.Depth * 0.5f;
+            bool quiet = mission.CurrentTime < QuietUntil;
             Footprint lineShape;
             FormationGeometry.TryGet(formation, FootprintMode.Current, out lineShape);
-            bool shadow = FormationGeometry.ShadowOn;
             Formation contactFoot = null;
             float contactGap = float.MaxValue;
-            float contactGapOld = float.NaN;
+            // an enemy with (almost) no melee foot: its archers are the army that comes, so they engage the line too
+            bool rangedEngage = ArmyComposition.FootRangedEngage(own);
             foreach (Team team in mission.Teams)
             {
                 if (team == null || !team.IsEnemyOf(own))
@@ -610,35 +853,34 @@ namespace RBMAI
                         continue;
                     }
                     float lineGap = FormationGeometry.Gap(lineShape, shape);
-                    // the former measure: centre distance minus both half depths
-                    float lineGapOld = (shadow && lineCentre.IsValid) ? MathF.Max(0f, centre.Distance(lineCentre) - ownHalfDepth - enemy.Depth * 0.5f) : float.NaN;
                     if (lineGap <= HoldLateCharge.ContactGap && lineGap < contactGap)
                     {
                         contactGap = lineGap;
-                        contactGapOld = lineGapOld;
                         contactFoot = enemy;
                     }
                     // enemy archers standing off and shooting are no reason to leave (outshot below is); melee foot is
-                    if (RBMAI.Utilities.IsRangedForArrangement(enemy) || quiet)
+                    bool ranged = RBMAI.Utilities.IsRangedForArrangement(enemy);
+                    if ((ranged && !rangedEngage) || quiet)
                     {
                         continue;
                     }
+                    string kNote = ranged ? " rangedEngage " + ArmyComposition.DescribeK(own) : "";
                     if (lineGap <= BattleJoinRange)
                     {
-                        return "battleJoined " + ThreatSignificance.Describe(formation, enemy) + " gap=" + FormationGeometry.Shadow(lineGap, lineGapOld);
+                        return "battleJoined " + ThreatSignificance.Describe(formation, enemy) + " gap=" + FormationGeometry.GapText(lineGap) + kNote;
                     }
                     float gap = FormationGeometry.GapToPoint(shape, plan.Hold);
                     if (gap <= EngageDistance)
                     {
                         return "enemyNear " + ThreatSignificance.Describe(formation, enemy) + " gap="
-                            + FormationGeometry.Shadow(gap, shadow ? centre.Distance(plan.Hold) - MathF.Max(enemy.Width, enemy.Depth) * 0.5f : float.NaN);
+                            + FormationGeometry.GapText(gap) + kNote;
                     }
                 }
             }
             // melee only with significant enemy foot at the line (a fight with cavalry is not a reason to leave)
             if (contactFoot != null && RBMAI.Utilities.FormationFightingInMelee(formation, EngageMeleeRatio))
             {
-                return "melee " + ThreatSignificance.Describe(formation, contactFoot) + " gap=" + FormationGeometry.Shadow(contactGap, contactGapOld);
+                return "melee " + ThreatSignificance.Describe(formation, contactFoot) + " gap=" + FormationGeometry.GapText(contactGap);
             }
             // a friendly formation near the line (reserve, archers, flank guard) in melee with enemy foot significant to the line: the line goes in
             Formation answered = null;
@@ -658,7 +900,7 @@ namespace RBMAI
         {
             Formation formation = base.Formation;
             Mission mission = Mission.Current;
-            if (mission == null || formation == null || !formation.IsAIControlled || _plan == null || (_state == HoldState.Wait && !_glue.Covering) || _engaged)
+            if (mission == null || formation == null || !formation.IsAIControlled || _plan == null || (_state == HoldState.Wait && !_glue.Covering) || LineEngaged)
             {
                 return;
             }
@@ -694,12 +936,7 @@ namespace RBMAI
                         break;
                     }
                 case Role.Archers:
-                    // a fixed post behind the line (the cover point too): Line / Loose by the situation (ChooseRangedArrangement, every tick); a formation outside that rule keeps once-per-activation Loose
-                    if (!RBMAI.Utilities.TryApplyRangedArrangement(formation, ArrangementOrder.ArrangementOrderEnum.Line, true) && !_shaped)
-                    {
-                        formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
-                    }
-                    _shaped = true;
+                    ApplyRangedArrangement(formation);
                     break;
                 case Role.Reserve:
                     if (!_shaped)
@@ -709,6 +946,16 @@ namespace RBMAI
                     }
                     break;
             }
+        }
+
+        // a fixed post (the cover point too): Line / Loose by the situation (ChooseRangedArrangement, every tick); a formation outside that rule keeps once-per-activation Loose
+        private void ApplyRangedArrangement(Formation formation)
+        {
+            if (!RBMAI.Utilities.TryApplyRangedArrangement(formation, ArrangementOrder.ArrangementOrderEnum.Line, true) && !_shaped)
+            {
+                formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+            }
+            _shaped = true;
         }
 
         /// <summary>RBM's eligibility and under missile fire, each with hysteresis; never a ranged formation.</summary>
@@ -771,7 +1018,8 @@ namespace RBMAI
 
         protected override float GetAiWeight()
         {
-            if (base.Formation.CountOfUnits == 0 || _engaged)
+            // a Line that is no longer the current one (archer line handed over, infantry no longer leads) weighs 0 until the tactic re-applies
+            if (base.Formation.CountOfUnits == 0 || LineEngaged || (_role == Role.Line && !IsCurrentLine()) || RBMBehaviorArcherStand.Owns(base.Formation))
             {
                 return 0f;
             }
@@ -785,6 +1033,16 @@ namespace RBMAI
             Mission mission = Mission.Current;
             if (_role == Role.Reserve && mission != null && base.Formation.Team != null)
             {
+                // nothing left to be a reserve for: the tactic's fallback fights
+                if (!HasFootLeft(base.Formation.Team))
+                {
+                    return 0f;
+                }
+                // user rule: no reserve ahead of a line still on its way (or gone): the tactic's flank guard until it holds (log 2026-10-30 12:13)
+                if (!LineReady(mission.CurrentTime))
+                {
+                    return 0f;
+                }
                 // a threatened reserve goes to the tactic's fallback for a while
                 string what;
                 string why;
@@ -799,6 +1057,79 @@ namespace RBMAI
                 }
             }
             return LiveWeight;
+        }
+
+        /// <summary>AI thread, Reserve role: the owner's Line holds at its point, debounced both ways by ReserveReadySeconds. Changes are BEHAVIOR lines.</summary>
+        private bool LineReady(float now)
+        {
+            string why;
+            bool holding = LineHolding(base.Formation.Team, _owner, out why);
+            if (holding == _lineReady)
+            {
+                _lineReadyPendingSince = float.NaN;
+                return _lineReady;
+            }
+            if (float.IsNaN(_lineReadyPendingSince))
+            {
+                _lineReadyPendingSince = now;
+            }
+            if (now - _lineReadyPendingSince >= ReserveReadySeconds)
+            {
+                _lineReady = holding;
+                _lineReadyPendingSince = float.NaN;
+                TerrainBattlePosition.Enqueue(base.Formation.Team, base.Formation, now, holding ? "reserve ready" : "reserve wait", "reserve", why);
+            }
+            return _lineReady;
+        }
+
+        /// <summary>AI thread: a current, AI-controlled, un-engaged Line assigned by owner is the active behavior and Holding. why = its state.</summary>
+        private static bool LineHolding(Team team, TacticComponent owner, out string why)
+        {
+            why = "noLine";
+            if (team == null || owner == null)
+            {
+                return false;
+            }
+            MBList<Formation> formations = team.FormationsIncludingEmpty;
+            for (int i = 0; i < formations.Count; i++)
+            {
+                Formation f = formations[i];
+                if (f == null || f.CountOfUnits <= 0 || f.AI == null || !f.IsAIControlled)
+                {
+                    continue;
+                }
+                RBMBehaviorHoldPosition line = f.AI.GetBehavior<RBMBehaviorHoldPosition>();
+                if (line == null || line._owner != owner || !line.IsCurrentLine())
+                {
+                    continue;
+                }
+                if (line.LineEngaged)
+                {
+                    why = "line engaged";
+                    return false;
+                }
+                if (f.AI.ActiveBehavior != line || line.WeightFactor <= 0f)
+                {
+                    why = "line not holding the position";
+                    return false;
+                }
+                why = "line " + line._stateName;
+                return line._state == HoldState.Holding;
+            }
+            return false;
+        }
+
+        /// <summary>AI thread: the team still has a foot formation with men.</summary>
+        internal static bool HasFootLeft(Team team)
+        {
+            foreach (Formation f in team.FormationsIncludingSpecialAndEmpty)
+            {
+                if (f != null && f.CountOfUnits > 0 && !ArmyComposition.IsMounted(f))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>Cavalry Reserve release: while Threat holds, and FreeSeconds after, the behavior weighs 0 and the tactic's fallback takes the formation. Horse archers release it only when they hit the reserve itself hard and close (the fallback can only charge). One per behavior, AI thread (GetAiWeight): cached data and managed melee-hit times; no engine call.</summary>
@@ -864,7 +1195,6 @@ namespace RBMAI
                 {
                     return null;
                 }
-                float ownRadius = MathF.Max(reserve.Width, reserve.Depth) * 0.5f;
                 Footprint ownShape;
                 if (!FormationGeometry.TryGet(reserve, FootprintMode.Current, out ownShape))
                 {
@@ -900,21 +1230,19 @@ namespace RBMAI
                         {
                             continue;
                         }
-                        float gapOld = FormationGeometry.ShadowOn ? MathF.Max(0f, distance - MathF.Max(e.Width, e.Depth) * 0.5f - ownRadius) : float.NaN;
                         if (!horseArchers)
                         {
-                            Vec2 v = e.CachedCurrentVelocity;
-                            float closing = (v.IsValid && distance > 0.01f) ? Vec2.DotProduct(v, toUs) : 0f;
+                            float closing = (distance > 0.01f) ? Vec2.DotProduct(EnemyMotion.Velocity(e), toUs) : 0f;
                             if (gap <= CavalryCloseGap || (gap <= CavalryGap && closing >= HoldLateCharge.ClosingSpeed))
                             {
-                                return "cavalry " + ThreatSignificance.Describe(reserve, e) + " gap=" + FormationGeometry.Shadow(gap, gapOld)
+                                return "cavalry " + ThreatSignificance.Describe(reserve, e) + " gap=" + FormationGeometry.GapText(gap)
                                     + " closing=" + closing.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + "m/s";
                             }
                             continue;
                         }
                         if (reserve.QuerySystem.UnderRangedAttackRatio >= ShotRatio)
                         {
-                            return "horseArchers " + ThreatSignificance.Describe(reserve, e) + " gap=" + FormationGeometry.Shadow(gap, gapOld)
+                            return "horseArchers " + ThreatSignificance.Describe(reserve, e) + " gap=" + FormationGeometry.GapText(gap)
                                 + " hitting " + TerrainCavalry.FormationName(reserve) + " underFire=" + TerrainBattlePosition.Fmt2(reserve.QuerySystem.UnderRangedAttackRatio);
                         }
                     }

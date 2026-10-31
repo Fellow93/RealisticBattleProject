@@ -17,6 +17,7 @@ namespace RBMAI
             public ReactMode Mode;
             public StageSide Side;
             public bool StrikeAtOnce;
+            public bool PushOnly;
             public float Tta;
             public float Score;
             public Vec2 Home;
@@ -204,7 +205,7 @@ namespace RBMAI
                     bool enemyCavalry = f.QuerySystem.IsCavalryFormation && !f.QuerySystem.IsRangedCavalryFormation;
                     if ((cavalry && enemyCavalry && closing >= ThreatCavalryClosing) || (gap <= ThreatGap && closing >= ThreatClosing))
                     {
-                        return "threatened " + ThreatSignificance.Describe(responder, f) + " gap=" + FormationGeometry.Shadow(gap, OldGap(responder, f)) + " closing=" + Fmt1(closing) + "m/s";
+                        return "threatened " + ThreatSignificance.Describe(responder, f) + " gap=" + FormationGeometry.GapText(gap) + " closing=" + Fmt1(closing) + "m/s";
                     }
                 }
             }
@@ -677,7 +678,10 @@ namespace RBMAI
             {
                 return "retreat";
             }
-            if (r == main)
+            // the main also pushes at horse archers shooting it, but only against an enemy of (almost) no melee foot (nothing else to hold for)
+            bool haOnSelf = ev.Kind == ReactKind.R3 && ev.Victim == r && ev.Attacker != null && ev.Attacker.QuerySystem.IsRangedCavalryFormation
+                && ArmyComposition.FootRangedEngage(_team);
+            if (r == main && !haOnSelf)
             {
                 // The main infantry answers only its own archers attacked close by; a holding line is refused below by its behavior.
                 string mainWhy = MainHelpReason(mission, ev, r);
@@ -842,6 +846,7 @@ namespace RBMAI
             ReactMode mode;
             StageSide side = StageSide.None;
             bool strikeAtOnce = false;
+            bool pushOnly = false;
             Vec2 goal;
             string note = null;
             switch (ev.Kind)
@@ -856,7 +861,7 @@ namespace RBMAI
                         float gap = EdgeGap(r, attacker);
                         if (gap > HelpMaxGap)
                         {
-                            return "far(gap=" + FormationGeometry.Shadow(gap, OldGap(r, attacker)) + ")";
+                            return "far(gap=" + FormationGeometry.GapText(gap) + ")";
                         }
                         tta = gap / speed;
                         if (tta > R1MaxTtaInfantry)
@@ -914,9 +919,9 @@ namespace RBMAI
                             classFactor *= R2HeadOnFactor;
                             note = "headOn";
                         }
-                        if (r.AI.ActiveBehavior is BehaviorProtectFlank && _frameForward.IsValid && main != null)
+                        if (r.AI.ActiveBehavior is BehaviorProtectFlank && _frameForward.IsValid && _frameMain != null)
                         {
-                            Vec2 mc = RBMAI.Utilities.GetFormationCenter(main);
+                            Vec2 mc = RBMAI.Utilities.GetFormationCenter(_frameMain);
                             if (mc.IsValid)
                             {
                                 float lateral = (ac - mc).DotProduct(new Vec2(-_frameForward.y, _frameForward.x));
@@ -935,12 +940,12 @@ namespace RBMAI
                     {
                         bool deter;
                         string refused = PlanHunt(mission, r, attacker, ev.Victim, rc, cavalry, speed, out side, out strikeAtOnce, out goal, out tta, out classFactor,
-                            out note, out deter);
+                            out note, out deter, out pushOnly);
                         if (refused != null)
                         {
                             return refused;
                         }
-                        mode = deter ? ReactMode.Deter : ReactMode.Hunt;
+                        mode = pushOnly ? ReactMode.Help : deter ? ReactMode.Deter : ReactMode.Hunt;
                         break;
                     }
                 case ReactKind.R7:
@@ -1003,8 +1008,7 @@ namespace RBMAI
                     : (_team.Side == BattleSideEnum.Defender) ? RBMBehaviorReact.LeashFootDefender : RBMBehaviorReact.LeashFootAttacker;
                 if (goalGap > leash)
                 {
-                    float old = FormationGeometry.ShadowOn ? MathF.Max(0f, goal.Distance(mainCentre) - Radius(main) - rr) : float.NaN;
-                    return "leash(gap=" + FormationGeometry.Shadow(goalGap, old) + ")";
+                    return "leash(gap=" + FormationGeometry.GapText(goalGap) + ")";
                 }
             }
             // A hunt's goal (behind the enemy line, where archers stand) must also stay inside the cavalry leash past the
@@ -1041,10 +1045,12 @@ namespace RBMAI
             plan.Mode = mode;
             plan.Side = side;
             plan.StrikeAtOnce = strikeAtOnce;
+            plan.PushOnly = pushOnly;
             plan.Tta = tta;
             plan.Score = MathF.Max(tta, 0.5f) * classFactor / powerFactor * (mainHelp ? MainHelpFactor : 1f);
             plan.Home = (reserve || mainHelp) ? rc : Vec2.Invalid;
-            plan.HomeLeash = mainHelp ? MainHelpLeash : reserve ? ReserveLeash : float.NaN;
+            // the main pushing at horse archers shooting it: the push's own leash from where it started
+            plan.HomeLeash = mainHelp ? (pushOnly ? HaPushMainLeash : MainHelpLeash) : reserve ? ReserveLeash : float.NaN;
             plan.MainHelp = mainHelp;
             plan.Note = mainHelp ? ((note == null) ? "mainHelp" : note + " mainHelp") : note;
             return null;
@@ -1084,6 +1090,7 @@ namespace RBMAI
         private const float MainHelpFootClear = 80f;
 
         internal const float MainHelpLeash = 80f; // m from where it stood
+        internal const float HaPushMainLeash = RBMAI.AiModule.RbmBehaviors.HorseArcherPush.LeashDistance; // R3 haOnSelf push by the main
 
         internal const float MainHelpFightLeashFactor = 1.5f; // in Fight
 
@@ -1105,12 +1112,12 @@ namespace RBMAI
             float victimGap = EdgeGap(main, victim);
             if (victimGap > MainHelpVictimGap)
             {
-                return "farGap=" + FormationGeometry.Shadow(victimGap, OldGap(main, victim));
+                return "farGap=" + FormationGeometry.GapText(victimGap);
             }
             float attackerGap = EdgeGap(main, ev.Attacker);
             if (attackerGap > MainHelpAttackerGap)
             {
-                return "attackerFarGap=" + FormationGeometry.Shadow(attackerGap, OldGap(main, ev.Attacker));
+                return "attackerFarGap=" + FormationGeometry.GapText(attackerGap);
             }
             foreach (Team team in mission.Teams)
             {
@@ -1361,6 +1368,7 @@ namespace RBMAI
                 Reactor = Reactor(ev),
                 Side = plan.Side,
                 StrikeAtOnce = plan.StrikeAtOnce,
+                PushOnly = plan.PushOnly,
                 StartedAt = now,
                 StartMen = r.CountOfUnits,
                 StartClass = r.RepresentativeClass,

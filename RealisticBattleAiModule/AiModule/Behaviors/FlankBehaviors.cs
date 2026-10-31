@@ -51,6 +51,8 @@ namespace RBMAI
             public float SortieStartTime;
             public float ReturnStartTime;
             public float HoldStartTime = float.MinValue;
+            public float Scale = 1f; // SortieScale at the sortie's start
+            public bool Active; // grown by ActiveScale at the start: home leash applies
         }
 
         internal static readonly Dictionary<Formation, FlankSortieState> sortieStates = new Dictionary<Formation, FlankSortieState>();
@@ -92,7 +94,11 @@ namespace RBMAI
                 distanceOffsetFromMainFormation = 30f;
             }
 
-            if (____mainFormation == null || __instance.Formation == null || __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
+            RefreshMainFormation(__instance, ref ____mainFormation);
+            // the archers took the initiative (no infantry main): mounted guards charge with them
+            bool initiative = __instance.Formation != null && __instance.Formation.IsAIControlled && !__instance.Formation.QuerySystem.IsInfantryFormation
+                && RBMBehaviorArcherSkirmish.HasInitiative(__instance.Formation.Team);
+            if (initiative || ____mainFormation == null || __instance.Formation == null || __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
             {
                 FormationQuerySystem closestEnemy = __instance.Formation?.QuerySystem?.ClosestSignificantlyLargeEnemyFormation;
                 ____currentOrder = (closestEnemy?.Formation != null)
@@ -246,8 +252,12 @@ namespace RBMAI
                         case BehaviorState.HoldingFlank:
                             {
                                 bool rested = now - sortie.HoldStartTime >= ReengageCooldownSeconds;
+                                // outmatched by the enemy's melee cavalry: shorter sorties (kWeak); a cavalry-heavy defender: longer ones (kMount)
+                                float scale = SortieScale(formation);
+                                bool active = ActiveScale(formation) > 1f;
                                 Formation target = null;
                                 Formation protectedFormation = null;
+                                string exposed = null;
                                 FormationQuerySystem closestFormation = formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
                                 if (closestFormation != null && closestFormation.Formation != null)
                                 {
@@ -257,7 +267,7 @@ namespace RBMAI
                                     float gap = FormationGeometry.TryGet(closestFormation.Formation, FootprintMode.ScatterAware, out enemyShape)
                                         ? FormationGeometry.Gap(post, enemyShape) : float.MaxValue;
                                     bool closeThreat = gap < CloseThreatDistance;
-                                    bool cavThreat = closestFormation.IsCavalryFormation && gap < CavThreatDistance;
+                                    bool cavThreat = closestFormation.IsCavalryFormation && gap < CavThreatDistance * scale;
                                     if (closeThreat || (cavThreat && rested))
                                     {
                                         target = closestFormation.Formation;
@@ -267,13 +277,21 @@ namespace RBMAI
                                 {
                                     int sideSign = (____behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right) ? 1
                                         : (____behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left) ? -1 : 0;
-                                    target = FindHarasser(formation, ____mainFormation, sideSign, out protectedFormation);
+                                    target = FindHarasser(formation, ____mainFormation, sideSign, scale, position, active, out protectedFormation, out exposed);
                                 }
                                 if (target != null)
                                 {
                                     sortie.Target = target;
                                     sortie.Protected = protectedFormation;
                                     sortie.SortieStartTime = now;
+                                    sortie.Scale = scale;
+                                    sortie.Active = active;
+                                    if (scale != 1f || exposed != null)
+                                    {
+                                        DecisionTrace.Note(formation, "ProtectFlank", "sortie", "scale=" + ArmyComposition.F2(scale)
+                                            + ((exposed != null) ? " exposed=" + exposed + " " + TerrainCavalry.FormationName(target) : "")
+                                            + " " + ArmyComposition.DescribeK(formation.Team) + " " + ArmyComposition.DescribeOwnK(formation.Team));
+                                    }
                                     ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(target);
                                     ____currentOrder = ____chargeToTargetOrder;
                                     ____protectFlankState = BehaviorState.Charging;
@@ -317,32 +335,68 @@ namespace RBMAI
             return sortie;
         }
 
+        private const float ExposedScreenGap = 30f; // significant enemy melee foot this close to an exposed target screens it
+        private const float ExposedRangedWeight = 1.5f; // exposed targets' distance / weight (harassers 1)
+        private const float ExposedFlankWeight = 1.3f;
+        private const float ExposedStragglerWeight = 1.2f;
+        private const float ExposedFlankMargin = 10f; // m beyond the enemy main's half width / half depth
+
+        /// <summary>AI thread: (1 - ArmyComposition.WeakShrink x kWeak) x ActiveScale (1 for a normal army against a normal enemy).</summary>
+        private static float SortieScale(Formation formation)
+        {
+            return (1f - ArmyComposition.WeakShrink * ArmyComposition.KWeak(formation?.Team)) * ActiveScale(formation);
+        }
+
+        /// <summary>AI thread: a cavalry-heavy defender sorties farther and longer: Lerp(1, ArmyComposition.ActiveSortieGrowth, kMount); 1 for the attacker / kMount = 0.</summary>
+        private static float ActiveScale(Formation formation)
+        {
+            Team team = formation?.Team;
+            return (team != null && team.Side == BattleSideEnum.Defender) ? ArmyComposition.Lerp(1f, ArmyComposition.ActiveSortieGrowth, ArmyComposition.KMount(team)) : 1f;
+        }
+
+        /// <summary>Gap (m) from the team's position anchor to the point; MaxValue without an anchor.</summary>
+        private static float HomeGap(Formation guard, Vec2 point)
+        {
+            Formation anchor = ArmyComposition.AnchorFor(guard);
+            return (anchor != null) ? DistanceToFormationBox(anchor, point) : float.MaxValue;
+        }
+
         private static bool ShouldRecallSortie(Formation formation, FlankSortieState sortie, Vec2 holdPoint, float now)
         {
             Formation target = sortie.Target;
-            if (target == null || target.CountOfUnits == 0 || now - sortie.SortieStartTime >= MaxSortieSeconds)
+            float scale = sortie.Scale;
+            if (target == null || target.CountOfUnits == 0 || now - sortie.SortieStartTime >= MaxSortieSeconds * scale)
             {
                 return true;
+            }
+            if (sortie.Active)
+            {
+                // a grown sortie keeps its home leash from the position anchor
+                float home = HomeGap(formation, RBMAI.Utilities.GetFormationCenter(formation));
+                if (home < float.MaxValue && home > ArmyComposition.ActiveHomeLeash)
+                {
+                    return true;
+                }
             }
             float depths = (formation.Depth + target.Depth) / 2f;
             Vec2 targetCenter = RBMAI.Utilities.GetFormationCenter(target);
             Formation protectedFormation = sortie.Protected;
             if (protectedFormation != null)
             {
-                if (protectedFormation.CountOfUnits == 0 || DistanceToFormationBox(protectedFormation, targetCenter) > HarassReleaseDistance + target.Depth / 2f)
+                if (protectedFormation.CountOfUnits == 0 || DistanceToFormationBox(protectedFormation, targetCenter) > HarassReleaseDistance * scale + target.Depth / 2f)
                 {
                     return true;
                 }
             }
             else
             {
-                float release = ReleaseDistance + depths;
+                float release = ReleaseDistance * scale + depths;
                 if (targetCenter.DistanceSquared(holdPoint) > release * release)
                 {
                     return true;
                 }
             }
-            float leash = SortieLeash + depths;
+            float leash = SortieLeash * scale + depths;
             float protectLeash = ProtectLeash + formation.Depth / 2f;
             Vec2 center = RBMAI.Utilities.GetFormationCenter(formation);
             if (center.DistanceSquared(holdPoint) > leash * leash && (protectedFormation == null || DistanceToFormationBox(protectedFormation, center) > protectLeash))
@@ -374,10 +428,13 @@ namespace RBMAI
             return total > 0 ? (float)near / total : 1f;
         }
 
-        // closest enemy cavalry / horse archer formation working a friendly foot formation; with sideSign (+1 right, -1 left) harassers clearly on the far side are left to the other guard
-        private static Formation FindHarasser(Formation guard, Formation mainFormation, int sideSign, out Formation protectedFormation)
+        // closest enemy cavalry / horse archer formation working a friendly foot formation; with sideSign (+1 right, -1 left) harassers clearly on the far side are left to the other guard.
+        // active (grown defender sorties): also EXPOSED enemy foot within the sortie's reach of the post and the home leash - foot archers, a formation beside / behind
+        // the enemy main, stragglers insignificant to the guard - unscreened; scored by distance / weight, harassers weight 1.
+        private static Formation FindHarasser(Formation guard, Formation mainFormation, int sideSign, float scale, Vec2 holdPoint, bool active, out Formation protectedFormation, out string exposed)
         {
             protectedFormation = null;
+            exposed = null;
             Formation best = null;
             float bestDistanceSq = float.MaxValue;
             Vec2 guardCenter = RBMAI.Utilities.GetFormationCenter(guard);
@@ -399,6 +456,43 @@ namespace RBMAI
                     bool horseArchers = enemy.QuerySystem.IsRangedCavalryFormation;
                     if (!horseArchers && !enemy.QuerySystem.IsCavalryFormation)
                     {
+                        if (!active)
+                        {
+                            continue;
+                        }
+                        string kind;
+                        float weight = ExposedWeight(guard, enemy, out kind);
+                        if (weight <= 0f)
+                        {
+                            continue;
+                        }
+                        Vec2 exposedCenter = RBMAI.Utilities.GetFormationCenter(enemy);
+                        if (otherFlankGuarded && (exposedCenter - mainCenter).DotProduct(sideVec) < -mainFormation.Width * 0.25f)
+                        {
+                            continue;
+                        }
+                        // reachable inside the recall rules: the sortie leash from the post, the release distance, the home leash
+                        float depths = (guard.Depth + enemy.Depth) / 2f;
+                        float release = ReleaseDistance * scale + depths;
+                        float home = HomeGap(guard, exposedCenter);
+                        if (DistanceToFormationBox(enemy, holdPoint) > SortieLeash * scale + guard.Depth / 2f || exposedCenter.DistanceSquared(holdPoint) > release * release
+                            || (home < float.MaxValue && home > ArmyComposition.ActiveHomeLeash) || ReactionMonitor.IsRetreating(enemy))
+                        {
+                            continue;
+                        }
+                        float screenGap;
+                        if (ReactionMonitor.ScreeningFoot(Mission.Current, guard.Team, guard, enemy, ExposedScreenGap, out screenGap) != null)
+                        {
+                            continue;
+                        }
+                        float exposedScore = exposedCenter.DistanceSquared(guardCenter) / (weight * weight);
+                        if (exposedScore < bestDistanceSq)
+                        {
+                            bestDistanceSq = exposedScore;
+                            best = enemy;
+                            protectedFormation = null;
+                            exposed = kind;
+                        }
                         continue;
                     }
                     Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(enemy);
@@ -406,7 +500,7 @@ namespace RBMAI
                     {
                         continue;
                     }
-                    float threatDistance = (horseArchers ? HarassHorseArcherDistance : HarassCavDistance) + enemy.Depth / 2f;
+                    float threatDistance = (horseArchers ? HarassHorseArcherDistance : HarassCavDistance) * scale + enemy.Depth / 2f;
                     Formation victim = ClosestFootFormationWithin(guard, enemyCenter, threatDistance);
                     if (victim == null)
                     {
@@ -418,10 +512,53 @@ namespace RBMAI
                         bestDistanceSq = distanceSq;
                         best = enemy;
                         protectedFormation = victim;
+                        exposed = null;
                     }
                 }
             }
             return best;
+        }
+
+        /// <summary>Enemy foot exposed to a sortie: foot archers (ranged), a formation beside / behind the enemy main (flank / rear), one insignificant to the guard (straggler); the best weight, 0 for none.</summary>
+        private static float ExposedWeight(Formation guard, Formation enemy, out string kind)
+        {
+            kind = null;
+            float weight = 0f;
+            if (ArmyComposition.IsMounted(enemy))
+            {
+                return 0f;
+            }
+            if (ArmyComposition.IsArchers(enemy))
+            {
+                weight = ExposedRangedWeight;
+                kind = "ranged";
+            }
+            Formation enemyMain = FormationCohesion.TeamMain(enemy.Team);
+            if (weight < ExposedFlankWeight && enemyMain != null && enemyMain != enemy)
+            {
+                Vec2 rel = RBMAI.Utilities.GetFormationCenter(enemy) - RBMAI.Utilities.GetFormationCenter(enemyMain);
+                Vec2 dir = enemyMain.Direction;
+                if (dir.IsValid && dir.LengthSquared > 0.01f)
+                {
+                    dir = dir.Normalized();
+                    if (rel.DotProduct(dir) < -(enemyMain.Depth * 0.5f + ExposedFlankMargin))
+                    {
+                        weight = ExposedFlankWeight;
+                        kind = "rear";
+                    }
+                    else if (MathF.Abs(rel.DotProduct(dir.RightVec())) > enemyMain.Width * 0.5f + ExposedFlankMargin)
+                    {
+                        weight = ExposedFlankWeight;
+                        kind = "flank";
+                    }
+                }
+            }
+            if (weight < ExposedStragglerWeight && !ThreatSignificance.IsSignificant(guard, enemy))
+            {
+                weight = ExposedStragglerWeight;
+                kind = "straggler";
+            }
+            return weight;
         }
 
         private static Formation ClosestFootFormationWithin(Formation guard, Vec2 point, float maxDistance)
@@ -464,6 +601,94 @@ namespace RBMAI
             return FormationGeometry.TryGet(formation, FootprintMode.Current, out shape) ? FormationGeometry.GapToPoint(shape, point) : float.MaxValue;
         }
 
+        // An infantry guard charged head-on by melee cavalry braces as BehaviorCharge / BehaviorAdvance do (it used to march on in Line).
+        private const float GuardBraceHoldSeconds = 8f;
+        private const float GuardBraceMaxSeconds = 25f;
+        private const float GuardBraceCooldownSeconds = 15f;
+
+        private sealed class GuardBrace
+        {
+            public WorldPosition Hold = WorldPosition.Invalid;
+            public float Start = float.NaN;
+            public float LastCharged = float.MinValue;
+            public float CooldownUntil = float.MinValue;
+        }
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorProtectFlank, GuardBrace> GuardBraces =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorProtectFlank, GuardBrace>();
+
+        [HarmonyPrefix]
+        [HarmonyPatch("TickOccasionally")]
+        private static bool PrefixTickOccasionally(BehaviorProtectFlank __instance, ref BehaviorState ____protectFlankState, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
+        {
+            Formation guard = __instance.Formation;
+            if (guard == null || !guard.IsAIControlled || !guard.QuerySystem.IsInfantryFormation || Mission.Current == null)
+            {
+                return true;
+            }
+            GuardBrace brace = GuardBraces.GetOrCreateValue(__instance);
+            float now = Mission.Current.CurrentTime;
+            Formation riders = null;
+            float dist = float.MaxValue;
+            // a charging guard stays committed; at InfantryGuardMeleeRatio the guard's own charge rule takes over
+            if (____protectFlankState != BehaviorState.Charging && now >= brace.CooldownUntil
+                && !RBMAI.Utilities.FormationFightingInMelee(guard, InfantryGuardMeleeRatio))
+            {
+                riders = AiModule.RbmBehaviors.OverrideBehaviorCharge.ChargingCavalry(guard, AiModule.RbmBehaviors.OverrideBehaviorCharge.ChargedAtDistance, out dist);
+                if (riders != null)
+                {
+                    brace.LastCharged = now;
+                }
+                else if (!float.IsNaN(brace.Start) && now - brace.LastCharged < GuardBraceHoldSeconds)
+                {
+                    // the riders' reform Move between charges: keep the wall while they stay close
+                    Formation near = RBMAI.Utilities.FindSignificantEnemy(guard, false, false, true, false, false);
+                    if (near != null && near.QuerySystem.IsCavalryFormation)
+                    {
+                        float d = (RBMAI.Utilities.GetFormationCenter(near) - RBMAI.Utilities.GetFormationCenter(guard)).Length;
+                        if (d < AiModule.RbmBehaviors.OverrideBehaviorCharge.ChargedAtDistance)
+                        {
+                            riders = near;
+                            dist = d;
+                        }
+                    }
+                }
+            }
+            if (riders != null && !float.IsNaN(brace.Start) && now - brace.Start > GuardBraceMaxSeconds)
+            {
+                brace.CooldownUntil = now + GuardBraceCooldownSeconds;
+                riders = null;
+            }
+            if (riders == null)
+            {
+                brace.Start = float.NaN;
+                brace.Hold = WorldPosition.Invalid;
+                return true;
+            }
+            if (float.IsNaN(brace.Start))
+            {
+                brace.Start = now;
+                brace.Hold = RBMAI.Utilities.GetFormationCenterWorldPosition(guard);
+                AiModule.RbmBehaviors.OverrideBehaviorCharge.LogBrace(guard, "ProtectFlank", now, AiModule.RbmBehaviors.OverrideBehaviorCharge.ChargedAtDistance);
+            }
+            if (brace.Hold.IsValid)
+            {
+                ____currentOrder = MovementOrder.MovementOrderMove(brace.Hold);
+                guard.SetMovementOrder(____currentOrder);
+            }
+            if (dist > 10f)
+            {
+                ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection((RBMAI.Utilities.GetFormationCenter(riders) - RBMAI.Utilities.GetFormationCenter(guard)).Normalized());
+                guard.SetFacingOrder(___CurrentFacingOrder);
+            }
+            // never a ranged formation (user rule)
+            if (!RBMAI.Utilities.IsRangedForArrangement(guard))
+            {
+                guard.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+            }
+            return false;
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch("OnBehaviorActivatedAux")]
         private static void PostfixOnBehaviorActivatedAux(ref BehaviorProtectFlank __instance)
@@ -478,10 +703,7 @@ namespace RBMAI
         [HarmonyPatch("GetAiWeight")]
         private static bool PrefixGetAiWeight(ref BehaviorProtectFlank __instance, ref float __result, ref Formation ____mainFormation)
         {
-            if (____mainFormation == null || !____mainFormation.AI.IsMainFormation)
-            {
-                ____mainFormation = __instance.Formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
-            }
+            RefreshMainFormation(__instance, ref ____mainFormation);
             if (__instance.Formation.AI.IsMainFormation)
             {
                 __result = 0f;
@@ -494,6 +716,32 @@ namespace RBMAI
             }
             __result = 1.2f;
             return false;
+        }
+
+        // An emptied formation keeps AI.IsMainFormation, so the guard stood beside the dead main's last spot facing its last direction.
+        // No melee-infantry main: the guard sits on the position anchor (archers) instead of charging the closest enemy at weight 0.5.
+        private static void RefreshMainFormation(BehaviorProtectFlank instance, ref Formation mainFormation)
+        {
+            Formation guard = instance.Formation;
+            if (guard?.Team != null && FormationCohesion.TeamMain(guard.Team) == null)
+            {
+                Formation anchor = ArmyComposition.AnchorFor(guard);
+                if (anchor != null)
+                {
+                    mainFormation = anchor;
+                    return;
+                }
+            }
+            if (mainFormation == null || mainFormation.CountOfUnits <= 0 || !mainFormation.AI.IsMainFormation)
+            {
+                mainFormation = instance.Formation?.Team?.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
+            }
+            // a token foot group never stands for the army (user rule): no main, the all-mounted path
+            if (mainFormation != null && guard?.Team != null && FormationCohesion.TeamMain(guard.Team) == null
+                && ArmyComposition.IsToken(guard.Team, ArmyComposition.CategoryOf(mainFormation)))
+            {
+                mainFormation = null;
+            }
         }
     }
 

@@ -76,8 +76,17 @@ namespace RBMAI.AiModule.RbmTactics
                 ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
             }
             // The defender's battle position, unless it IS the current line (then native's BehaviorDefend holds): infantry holds the line, archers their place, cavalry reserves when both ends are covered.
+            // No melee-infantry main: the archer anchor stands (RBMBehaviorArcherStand), other archers take their place.
             TerrainBattlePosition.Plan plan = TerrainBattlePosition.PlanFor(__instance.Team);
-            if (plan != null && !plan.IsStay && RBMBehaviorHoldPosition.TryAssign(____mainInfantry, __instance, 0, RBMBehaviorHoldPosition.Role.Line))
+            if (RBMBehaviorHoldPosition.YieldToArcherStand(__instance.Team, __instance, 0, ____mainInfantry, ____archers))
+            {
+                if (TerrainBattlePosition.ReserveWanted(__instance.Team))
+                {
+                    RBMBehaviorHoldPosition.TryAssign(____leftCavalry, __instance, 0, RBMBehaviorHoldPosition.Role.Reserve);
+                    RBMBehaviorHoldPosition.TryAssign(____rightCavalry, __instance, 0, RBMBehaviorHoldPosition.Role.Reserve);
+                }
+            }
+            else if (plan != null && !plan.IsStay && RBMBehaviorHoldPosition.TryAssign(____mainInfantry, __instance, 0, RBMBehaviorHoldPosition.Role.Line))
             {
                 RBMBehaviorHoldPosition.TryAssign(____archers, __instance, 0, RBMBehaviorHoldPosition.Role.Archers);
                 if (TerrainBattlePosition.ReserveWanted(__instance.Team))

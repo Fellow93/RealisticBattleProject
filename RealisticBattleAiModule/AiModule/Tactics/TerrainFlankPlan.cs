@@ -80,15 +80,9 @@ namespace RBMAI
         public const int WatchConfirmChecks = 2;
 
 
-        private static volatile SidePlan _attacker;
-        private static volatile SidePlan _defender;
+        private static readonly PlanSlot<SidePlan> Plans = new PlanSlot<SidePlan>();
 
-
-        private static int _generation; // bumped in Clear: an older re-plan is dropped
-        private static Task<List<BattleTerrain.FlankFeature>> _replan;
-        private static int _replanGeneration;
-        private static string _replanReason;
-        private static long _replanStartTicks;
+        private static readonly ReplanJob<List<BattleTerrain.FlankFeature>> Replan = new ReplanJob<List<BattleTerrain.FlankFeature>>("flank re-plan canceled");
         private static int _replans;
         private static float _lastReplanAt = float.NegativeInfinity;
         // The armies' centres the running re-plan started from (kept on its plans for the map view).
@@ -124,55 +118,39 @@ namespace RBMAI
         /// <summary>The side's plan as the tactics read it: null with terrainTacticsEnabled off, before the publish, or for another side. Any thread.</summary>
         public static SidePlan ForSide(BattleSideEnum side)
         {
-            // None for a side without terrain plans (ArmyScale): no flank choices, no re-apply on a new plan version.
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || ArmyScale.NoPlans(side))
-            {
-                return null;
-            }
-            return Published(side);
+            // none for a side without terrain plans: no flank choices, no re-apply on a new plan version
+            return Plans.ForSide(side);
         }
 
         /// <summary>ForSide of the team's side.</summary>
         public static SidePlan ForTeam(Team team)
         {
-            return (team != null) ? ForSide(team.Side) : null;
+            return Plans.ForTeam(team);
         }
 
         /// <summary>Whatever the toggle (the log's prediction).</summary>
         internal static SidePlan Published(BattleSideEnum side)
         {
-            return (side == BattleSideEnum.Attacker) ? _attacker : (side == BattleSideEnum.Defender) ? _defender : null;
+            return Plans.Published(side);
         }
 
         /// <summary>Main thread, at the terrain publish.</summary>
         internal static void Publish(SidePlan attacker, SidePlan defender)
         {
-            _attacker = attacker;
-            _defender = defender;
+            Plans.Publish(attacker, defender);
         }
 
-        /// <summary>Main thread: mission end and MissionStartReset. Also drops the tactic- / team-keyed records, queued events, the watch's samples and the re-plan state (a running re-plan is abandoned by generation).</summary>
+        /// <summary>Main thread: mission end and MissionStartReset. Also drops the tactic- / team-keyed records, queued log lines, the watch's samples and the re-plan state (a running re-plan is abandoned by generation).</summary>
         public static void Clear()
         {
-            _attacker = null;
-            _defender = null;
+            Plans.Clear();
             Uses.Clear();
             Logged.Clear();
             ReapplyRequested.Clear();
             PlanSeen.Clear();
             TeamSeen.Clear();
-            UseEvent ignored;
-            while (UseEvents.TryDequeue(out ignored))
-            {
-            }
-            _generation++;
-            if (_replan != null)
-            {
-                // Observe a late fault so it is never reported as an unobserved task exception.
-                _replan.ContinueWith(t => { var unused = t.Exception; }, TaskContinuationOptions.OnlyOnFaulted);
-                _replan = null;
-            }
-            _replanReason = null;
+            TerrainLog.Clear();
+            Replan.Clear();
             _replans = 0;
             _lastReplanAt = float.NegativeInfinity;
             _firstTickAt = float.NaN;
@@ -435,12 +413,11 @@ namespace RBMAI
             {
                 return;
             }
-            if (_replan != null)
+            if (Replan.Running)
             {
                 FinishReplan(mission, terrain, now, lines);
             }
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || (_attacker == null && _defender == null) || now < _nextCheckAt
-                || (ArmyScale.NoPlans(BattleSideEnum.Attacker) && ArmyScale.NoPlans(BattleSideEnum.Defender)))
+            if (!TerrainPlans.AnyActive || Plans.IsEmpty || now < _nextCheckAt)
             {
                 return;
             }
@@ -451,7 +428,7 @@ namespace RBMAI
             }
             CheckStale(mission, terrain, BattleSideEnum.Attacker, now, lines);
             CheckStale(mission, terrain, BattleSideEnum.Defender, now, lines);
-            if (_replan == null && (_attackerState.MovedWhy != null || _defenderState.MovedWhy != null))
+            if (!Replan.Running && (_attackerState.MovedWhy != null || _defenderState.MovedWhy != null))
             {
                 StartReplanOrDrop(mission, terrain, now, lines);
             }
@@ -546,14 +523,12 @@ namespace RBMAI
             float dRide = (d.Mounted > 0) ? d.MountedSpeed : d.FootSpeed;
             _replans++;
             _lastReplanAt = now;
-            _replanGeneration = _generation;
-            _replanStartTicks = DateTime.UtcNow.Ticks;
             _replanAttackerAt = attackerAt;
             _replanDefenderAt = defenderAt;
-            _replanReason = "n=" + _replans.ToString(CultureInfo.InvariantCulture) + "/" + ReplanMax.ToString(CultureInfo.InvariantCulture)
+            string reason = "n=" + _replans.ToString(CultureInfo.InvariantCulture) + "/" + ReplanMax.ToString(CultureInfo.InvariantCulture)
                 + " gap=" + Fmt0(gap) + "m" + Due(BattleSideEnum.Attacker) + Due(BattleSideEnum.Defender);
             // Background: the read's flank walker and routes over the immutable grid only (no engine call).
-            _replan = Task.Run(() => terrain.ReplanFlanks(attackerAt, defenderAt, aFront, dFront, aRide, dRide));
+            Replan.Start(reason, () => terrain.ReplanFlanks(attackerAt, defenderAt, aFront, dFront, aRide, dRide));
         }
 
         private static string Due(BattleSideEnum side)
@@ -565,33 +540,30 @@ namespace RBMAI
         /// <summary>Main thread: publishes a finished re-plan as both sides' next versions (latches applied) and resets both references.</summary>
         private static void FinishReplan(Mission mission, BattleTerrain terrain, float now, List<string> lines)
         {
-            Task<List<BattleTerrain.FlankFeature>> task = _replan;
-            if (!task.IsCompleted)
+            List<BattleTerrain.FlankFeature> flanks;
+            string ms;
+            string failure;
+            ReplanJob<List<BattleTerrain.FlankFeature>>.Outcome outcome = Replan.TryFinish(out flanks, out ms, out failure);
+            string reasonText = Replan.Reason;
+            if (outcome == ReplanJob<List<BattleTerrain.FlankFeature>>.Outcome.Failed)
+            {
+                lines.Add("FLANKPLAN\treplan\tfailed=" + failure + "\treason=" + reasonText + "\tms=" + ms);
+                return;
+            }
+            if (outcome != ReplanJob<List<BattleTerrain.FlankFeature>>.Outcome.Done)
             {
                 return;
             }
-            _replan = null;
-            if (_replanGeneration != _generation)
-            {
-                return;
-            }
-            string ms = ((DateTime.UtcNow.Ticks - _replanStartTicks) / (double)TimeSpan.TicksPerMillisecond).ToString("0", CultureInfo.InvariantCulture);
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                Exception e = (task.Exception != null) ? task.Exception.GetBaseException() : new OperationCanceledException("flank re-plan canceled");
-                lines.Add("FLANKPLAN\treplan\tfailed=" + e.GetType().Name + ":" + BattleTerrainRead.Sanitize(e.Message) + "\treason=" + _replanReason + "\tms=" + ms);
-                return;
-            }
-            SidePlan oldAttacker = _attacker;
-            SidePlan oldDefender = _defender;
+            SidePlan oldAttacker = Plans.Attacker;
+            SidePlan oldDefender = Plans.Defender;
             SidePlan attacker;
             SidePlan defender;
-            ComputeFrom(task.Result, (terrain.Attacker != null) ? terrain.Attacker.Frontage : float.NaN, (terrain.Defender != null) ? terrain.Defender.Frontage : float.NaN,
+            ComputeFrom(flanks, (terrain.Attacker != null) ? terrain.Attacker.Frontage : float.NaN, (terrain.Defender != null) ? terrain.Defender.Frontage : float.NaN,
                 (oldAttacker != null) ? oldAttacker.Version + 1 : 1, (oldDefender != null) ? oldDefender.Version + 1 : 1, "replan",
                 _replanAttackerAt, _replanDefenderAt, out attacker, out defender);
             if (attacker == null || defender == null)
             {
-                lines.Add("FLANKPLAN\treplan\tfailed=noFlanks\treason=" + _replanReason + "\tms=" + ms);
+                lines.Add("FLANKPLAN\treplan\tfailed=noFlanks\treason=" + reasonText + "\tms=" + ms);
                 return;
             }
             // A plan from the armies' current centres fits again: a dropped AttackSide comes back (the threatened sides stay).
@@ -610,8 +582,8 @@ namespace RBMAI
                     SetReference(StateFor(side), position, facing);
                 }
             }
-            lines.Add("FLANKPLAN\treplan\t" + BattleSideEnum.Attacker + "\t" + Describe(attacker) + "\treason=" + _replanReason + "\tms=" + ms);
-            lines.Add("FLANKPLAN\treplan\t" + BattleSideEnum.Defender + "\t" + Describe(defender) + "\treason=" + _replanReason + "\tms=" + ms);
+            lines.Add("FLANKPLAN\treplan\t" + BattleSideEnum.Attacker + "\t" + Describe(attacker) + "\treason=" + reasonText + "\tms=" + ms);
+            lines.Add("FLANKPLAN\treplan\t" + BattleSideEnum.Defender + "\t" + Describe(defender) + "\treason=" + reasonText + "\tms=" + ms);
         }
 
         private static void DropAttackSide(BattleSideEnum side, string why, float now, List<string> lines)
@@ -646,14 +618,7 @@ namespace RBMAI
 
         private static void PublishSide(SidePlan plan)
         {
-            if (plan.Side == BattleSideEnum.Attacker)
-            {
-                _attacker = plan;
-            }
-            else
-            {
-                _defender = plan;
-            }
+            Plans.Set(plan.Side, plan);
         }
 
         /// <summary>Main thread: the covered-flank watch. Samples every enemy mounted formation's cached position each check (closing speed = change since the last sample) and latches a threatened side.</summary>
@@ -941,7 +906,6 @@ namespace RBMAI
         private static readonly ConcurrentDictionary<TacticComponent, SidePlan> PlanSeen = new ConcurrentDictionary<TacticComponent, SidePlan>();
         /// <summary>The plan version each team's decision last saw (FollowPlan).</summary>
         private static readonly ConcurrentDictionary<Team, SidePlan> TeamSeen = new ConcurrentDictionary<Team, SidePlan>();
-        private static readonly ConcurrentQueue<UseEvent> UseEvents = new ConcurrentQueue<UseEvent>();
 
         /// <summary>Native's protected flag; its own TickOccasionally re-applies the tactic when it is set.</summary>
         private static readonly AccessTools.FieldRef<TacticComponent, bool> IsTacticReapplyNeededRef = TryReapplyNeededRef();
@@ -959,20 +923,19 @@ namespace RBMAI
             }
         }
 
-        /// <summary>Immutable.</summary>
-        internal sealed class UseEvent
+        /// <summary>A FLANKUSE line (TerrainLog).</summary>
+        private static void EnqueueUse(Team team, string tactic, string text, bool reapply)
         {
-            public Team Team;
-            public float Time;
-            public string Tactic;
-            public string Text;
-            public bool Reapply;
-        }
-
-        /// <summary>Main thread (terrain log).</summary>
-        internal static bool TryDequeueUse(out UseEvent e)
-        {
-            return UseEvents.TryDequeue(out e);
+            Mission mission = Mission.Current;
+            TerrainLog.Enqueue(new TerrainLog.Event
+            {
+                Tag = TerrainLog.Tag.FlankUse,
+                Team = team,
+                Time = (mission != null) ? mission.CurrentTime : float.NaN,
+                Extra = tactic,
+                Why = text,
+                Reapply = reapply
+            });
         }
 
         /// <summary>Infantry flank guard on this own side: true when the plan says to leave it out (the side is covered). atSplit: the share stays in the main line; otherwise an existing guard gets the main line's behaviors. Records the request.</summary>
@@ -1100,16 +1063,8 @@ namespace RBMAI
             {
                 return;
             }
-            Mission mission = Mission.Current;
-            UseEvents.Enqueue(new UseEvent
-            {
-                Team = team,
-                Time = (mission != null) ? mission.CurrentTime : float.NaN,
-                Tactic = current.GetType().Name,
-                Text = "followPlan v" + seen.Version.ToString(CultureInfo.InvariantCulture) + "->v" + plan.Version.ToString(CultureInfo.InvariantCulture)
-                    + "(" + plan.Note + ") re-applied",
-                Reapply = true
-            });
+            EnqueueUse(team, current.GetType().Name, "followPlan v" + seen.Version.ToString(CultureInfo.InvariantCulture) + "->v" + plan.Version.ToString(CultureInfo.InvariantCulture)
+                + "(" + plan.Note + ") re-applied", true);
         }
 
         /// <summary>Does the plan change any recorded choice compared with seen (null = the tactic's own choices)? A plan without an AttackSide never changes an attack-side choice by itself, so a stale drop alone re-applies nothing.</summary>
@@ -1208,15 +1163,7 @@ namespace RBMAI
                 return;
             }
             Logged[tactic] = old | bit;
-            Mission mission = Mission.Current;
-            UseEvents.Enqueue(new UseEvent
-            {
-                Team = tactic.Team,
-                Time = (mission != null) ? mission.CurrentTime : float.NaN,
-                Tactic = tactic.GetType().Name,
-                Text = text,
-                Reapply = ReapplyRequested.ContainsKey(tactic)
-            });
+            EnqueueUse(tactic.Team, tactic.GetType().Name, text, ReapplyRequested.ContainsKey(tactic));
         }
 
         private static string Fmt(float value)

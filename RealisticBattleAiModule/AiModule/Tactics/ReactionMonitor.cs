@@ -71,6 +71,7 @@ namespace RBMAI
             public Formation Reactor; // significance of Target is judged against it (R1 / R2 the victim, R4 the main infantry)
             public StageSide Side;
             public bool StrikeAtOnce;
+            public bool PushOnly; // R3 infantry vs horse archers: Help's Move push only, never a strike
             public float StartedAt;
             public int StartMen;
             public FormationClass StartClass;
@@ -98,7 +99,6 @@ namespace RBMAI
             public float LastTrue;
             public string Trigger;
             public float Gap;
-            public float GapOld = float.NaN; // shadow log
             public float Closing;
             public float Eta = float.NaN;
             public ReactTask Task;
@@ -390,12 +390,14 @@ namespace RBMAI
             {
                 _events[i].Seen = false;
             }
+            // main = melee infantry only (frontal clash, R4, MainHelp, leashes); the frame stands on the position anchor without one
             Formation main = MainInfantry(_team);
+            Formation frameMain = main ?? ArmyComposition.PositionAnchor(_team);
             Formation enemyMain = null;
             Vec2 forward = Vec2.Invalid;
-            bool frame = main != null && ArmyForward(mission, _team, main, out enemyMain, out forward);
+            bool frame = frameMain != null && ArmyForward(mission, _team, frameMain, out enemyMain, out forward);
             _frameForward = frame ? forward : Vec2.Invalid;
-            _frameMain = main;
+            _frameMain = frame ? frameMain : null;
             _frameEnemyMain = frame ? enemyMain : null;
             // A side without terrain plans (ArmyScale) answers R1 / R2 only.
             ArmyScale.SideScale scale = ArmyScale.For(_team.Side);
@@ -403,10 +405,10 @@ namespace RBMAI
             DetectR1(mission, main, now);
             if (frame)
             {
-                DetectR2(mission, main, forward, now);
+                DetectR2(mission, frameMain, forward, now);
                 if (!limited)
                 {
-                    DetectR7(mission, main, forward, now);
+                    DetectR7(mission, frameMain, forward, now);
                 }
             }
             if (!limited)
@@ -486,17 +488,6 @@ namespace RBMAI
             return FormationGeometry.TryGet(formation, FootprintMode.ScatterAware, out shape) ? FormationGeometry.GapToSegment(shape, p, q) : float.MaxValue;
         }
 
-        /// <summary>The former circle gap, for the shadow log only (NaN when the log is off).</summary>
-        internal static float OldGap(Formation a, Formation b)
-        {
-            if (!FormationGeometry.ShadowOn)
-            {
-                return float.NaN;
-            }
-            float old = FormationGeometry.OldCircleGap(a, b);
-            return (old < 0f) ? 0f : old;
-        }
-
         internal static bool IsRetreating(Formation formation)
         {
             return formation != null && formation.GetReadonlyMovementOrderReference().OrderType == OrderType.Retreat;
@@ -513,41 +504,13 @@ namespace RBMAI
             {
                 return null;
             }
-            if (!aiOnly)
-            {
-                return FormationCohesion.TeamMain(team);
-            }
-            Formation best = null;
-            foreach (Formation f in team.FormationsIncludingSpecialAndEmpty)
-            {
-                if (f == null || f.CountOfUnits <= 0 || !f.IsAIControlled || (best != null && f.CountOfUnits <= best.CountOfUnits))
-                {
-                    continue;
-                }
-                if (f.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.IsRangedForArrangement(f))
-                {
-                    best = f;
-                }
-            }
-            return best;
+            return aiOnly ? FormationCohesion.LargestMeleeInfantry(team, true) : FormationCohesion.TeamMain(team);
         }
 
-        /// <summary>AI thread: an allied team's main infantry (largest melee infantry, player-controlled or not) for R1's frontal-clash rule, or null.</summary>
+        /// <summary>AI thread: an allied team's main infantry (largest melee infantry, player-controlled or not, FormationCohesion's min-men and power-share rule) for R1's frontal-clash rule, or null.</summary>
         private static Formation SideMain(Team team)
         {
-            Formation best = null;
-            foreach (Formation f in team.FormationsIncludingSpecialAndEmpty)
-            {
-                if (f == null || f.CountOfUnits <= 0 || (best != null && f.CountOfUnits <= best.CountOfUnits))
-                {
-                    continue;
-                }
-                if (f.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.IsRangedForArrangement(f))
-                {
-                    best = f;
-                }
-            }
-            return best;
+            return FormationCohesion.LargestMeleeInfantry(team, false);
         }
 
         /// <summary>Our team or another of our side (the player's in an AI army, an allied AI team).</summary>
@@ -615,7 +578,7 @@ namespace RBMAI
             return null;
         }
 
-        /// <summary>AI thread, the army frame: forward = from our main infantry toward the nearest significant enemy infantry (enemyMain), else the main's facing. False without a direction.</summary>
+        /// <summary>AI thread, the army frame: forward = from our main (melee infantry or position anchor) toward the nearest significant enemy infantry (enemyMain), else toward the nearest significant enemy formation (enemyMain null), else the main's facing. False without a direction.</summary>
         internal static bool ArmyForward(Mission mission, Team team, Formation main, out Formation enemyMain, out Vec2 forward)
         {
             enemyMain = null;
@@ -630,9 +593,11 @@ namespace RBMAI
                 return false;
             }
             float best = float.MaxValue;
+            // an enemy whose foot is only token groups has no infantry line to face (the any-class fallback below)
+            bool footToken = ArmyComposition.EnemyFootTokenOnly(team);
             foreach (Team other in mission.Teams)
             {
-                if (other == null || !other.IsEnemyOf(team))
+                if (other == null || !other.IsEnemyOf(team) || footToken)
                 {
                     continue;
                 }
@@ -656,7 +621,44 @@ namespace RBMAI
                     }
                 }
             }
-            if (enemyMain == null)
+            // the any-class fallback only for an army without a melee-infantry main or vs an enemy with (almost) no melee foot
+            if (enemyMain == null && (FormationCohesion.TeamMain(team) == null || ArmyComposition.KFoot(team) > 0f))
+            {
+                // an enemy without significant infantry: toward its nearest significant formation (enemyMain stays null)
+                best = float.MaxValue;
+                foreach (Team other in mission.Teams)
+                {
+                    if (other == null || !other.IsEnemyOf(team))
+                    {
+                        continue;
+                    }
+                    foreach (Formation f in other.FormationsIncludingSpecialAndEmpty)
+                    {
+                        if (f == null || f.CountOfUnits <= 0 || !ThreatSignificance.IsSignificant(main, f))
+                        {
+                            continue;
+                        }
+                        Vec2 c = RBMAI.Utilities.GetFormationCenter(f);
+                        float d = c.IsValid ? c.DistanceSquared(mc) : float.MaxValue;
+                        if (d < best && d > 1f)
+                        {
+                            best = d;
+                            forward = (c - mc).Normalized();
+                        }
+                    }
+                }
+                if (forward.IsValid)
+                {
+                    return true;
+                }
+                Vec2 dir = main.Direction;
+                if (dir.LengthSquared < 0.01f)
+                {
+                    return false;
+                }
+                forward = dir.Normalized();
+            }
+            else if (enemyMain == null)
             {
                 Vec2 dir = main.Direction;
                 if (dir.LengthSquared < 0.01f)

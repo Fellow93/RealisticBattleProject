@@ -155,6 +155,18 @@ namespace RBMAI
                         enemyCav = null;
                     }
 
+                    // only horse archers left near: a leashed push toward them instead of advancing after riders (as BehaviorCharge)
+                    // any enemy foot makes significantEnemy foot: the list walk only when it is not
+                    bool onlyMountedLeft = (significantEnemy == null || ArmyComposition.IsMounted(significantEnemy) || ArmyComposition.IsTokenEnemyFormation(__instance.Formation.Team, significantEnemy))
+                        && AiModule.RbmBehaviors.HorseArcherPush.OnlyMountedLeft(__instance.Formation);
+                    if (AiModule.RbmBehaviors.HorseArcherPush.TryPush(__instance, __instance.Formation, "Advance", onlyMountedLeft, out WorldPosition haPoint, out Vec2 haFacing))
+                    {
+                        positionsStorage.Remove(__instance.Formation);
+                        ____currentOrder = MovementOrder.MovementOrderMove(haPoint);
+                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(haFacing);
+                        return false;
+                    }
+
                     float cavDist = 0f;
                     float signDist = 1f;
 
@@ -169,11 +181,17 @@ namespace RBMAI
                         Vec2 cavDirection = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                         cavDist = cavDirection.Normalize();
                     }
-
-                    if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
+                    // any riders charging us, whatever else is nearer
+                    Formation chargingCav = AiModule.RbmBehaviors.OverrideBehaviorCharge.ChargingCavalry(__instance.Formation, BraceDistance, out float chargingDist);
+                    if (chargingCav != null)
                     {
-                        // within BraceDistance only: TargetFormation stays set after a plain Charge order
-                        if (cavDist < BraceDistance && enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
+                        enemyCav = chargingCav;
+                        cavDist = chargingDist;
+                    }
+
+                    if (chargingCav != null || ((enemyCav != null) && (cavDist <= signDist) && AiModule.RbmBehaviors.OverrideBehaviorCharge.BraceWorthy(__instance.Formation, enemyCav) && (signDist > 35f)))
+                    {
+                        if (cavDist < BraceDistance && AiModule.RbmBehaviors.OverrideBehaviorCharge.ChargeTargetOf(enemyCav) == __instance.Formation)
                         {
                             Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                             WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
@@ -320,6 +338,10 @@ namespace RBMAI
             if (brace.Bracing && __instance.Formation.QuerySystem.IsInfantryFormation)
             {
                 // bracing against charging cavalry: no width/shape/arrangement decision this tick
+                if (!brace.WasBracing)
+                {
+                    AiModule.RbmBehaviors.OverrideBehaviorCharge.LogBrace(__instance.Formation, "Advance", Mission.Current.CurrentTime, BraceDistance);
+                }
                 brace.WasBracing = true;
                 __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
                 return false;

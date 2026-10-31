@@ -101,12 +101,21 @@ namespace RBMAI
             info.Error = (errors.Count > 0) ? string.Join(";", errors) : null;
         }
 
-        /// <summary>TerrainSpots' live re-plan. BACKGROUND THREAD: FindSpots for both sides on a ReplanFrame (armies' centres now, the read's frontages / paces) over the published grid, features and woods mask. Returns a new SpotsInfo (the published one is never touched); a side that threw is left null. No engine call.</summary>
-        internal static BattleTerrain.SpotsInfo ReplanSpots(BattleTerrain terrain, Grid grid, Vec2 attacker, Vec2 defender, Vec2 attackerAcross, Vec2 defenderAcross)
+        /// <summary>The army plans' live re-plan. BACKGROUND THREAD: one ReplanFrame (armies' centres now, the read's frontages / paces), then the spots and (cavalry) the cavalry ground on it, in the read's order. No engine call.</summary>
+        internal static BattleTerrain.ArmyReplan ReplanArmyPlans(BattleTerrain terrain, Grid grid, Vec2 attacker, Vec2 defender, Vec2 attackerAcross, Vec2 defenderAcross, bool cavalry)
         {
             long startTicks = DateTime.UtcNow.Ticks;
-            BattleTerrain.SpotsInfo info = new BattleTerrain.SpotsInfo();
             Frame f = ReplanFrame(terrain, grid, attacker, defender, attackerAcross, defenderAcross);
+            BattleTerrain.ArmyReplan result = new BattleTerrain.ArmyReplan();
+            result.Spots = ReplanSpots(f, startTicks);
+            result.Cavalry = cavalry ? ReplanCavalry(terrain, f) : null;
+            return result;
+        }
+
+        /// <summary>FindSpots for both sides on a re-plan frame (null = the centres coincide) over the published grid, features and woods mask. Returns a new SpotsInfo (the published one is never touched); a side that threw is left null.</summary>
+        private static BattleTerrain.SpotsInfo ReplanSpots(Frame f, long startTicks)
+        {
+            BattleTerrain.SpotsInfo info = new BattleTerrain.SpotsInfo();
             if (f == null)
             {
                 info.Attacker = null;

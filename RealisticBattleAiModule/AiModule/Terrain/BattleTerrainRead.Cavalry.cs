@@ -105,13 +105,11 @@ namespace RBMAI
             }
             // published only complete (readers null-check it)
             info.BadMask = mask;
-            // kept for the live re-plans' frame: the frame's labels are gone after the read
-            info.OpenFieldLabels = f.OpenFieldLabels;
             info.Error = (errors.Count > 0) ? string.Join(";", errors) : null;
         }
 
-        /// <summary>TerrainCavalry's live re-plan. BACKGROUND THREAD: FindCavalry for both sides on a ReplanFrame with the read's mask. Returns a new CavalryInfo (the published one is never touched); a side that threw is left null. No engine call.</summary>
-        internal static BattleTerrain.CavalryInfo ReplanCavalry(BattleTerrain terrain, Grid grid, Vec2 attacker, Vec2 defender, Vec2 attackerAcross, Vec2 defenderAcross)
+        /// <summary>The cavalry ground's live re-plan (ReplanArmyPlans). BACKGROUND THREAD: FindCavalry for both sides on the re-plan frame (null = the centres coincide) with the read's mask. Returns a new CavalryInfo (the published one is never touched); a side that threw is left null. No engine call.</summary>
+        private static BattleTerrain.CavalryInfo ReplanCavalry(BattleTerrain terrain, Frame f)
         {
             long startTicks = DateTime.UtcNow.Ticks;
             BattleTerrain.CavalryInfo read = terrain.Cavalry;
@@ -126,8 +124,6 @@ namespace RBMAI
             info.MaskStep = read.MaskStep;
             info.MaskNx = read.MaskNx;
             info.MaskNy = read.MaskNy;
-            info.OpenFieldLabels = read.OpenFieldLabels;
-            Frame f = ReplanFrame(terrain, grid, attacker, defender, attackerAcross, defenderAcross);
             if (f == null)
             {
                 info.Attacker = null;

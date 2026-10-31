@@ -34,9 +34,6 @@ namespace RBMAI
         internal const float MinTurnSeconds = 10f;
         internal const float MinDistance = 40f; // m, concentration to the line's centre
         internal const float KeepTurnDegrees = 35f; // a smaller plan facing change keeps a local turn
-        private const float RebuildDistance = 5f; // m
-        private const float RebuildSeconds = 2f;
-
         private int _planKey = int.MinValue;
         private Vec2 _planFacing = Vec2.Invalid;
         private Vec2 _facing = Vec2.Invalid;
@@ -44,10 +41,9 @@ namespace RBMAI
         private float _pendingSince = float.NaN;
         private float _turnedAt = float.NegativeInfinity;
 
-        private WorldPosition _world = WorldPosition.Invalid;
-        private Vec2 _worldPoint = Vec2.Invalid;
+        // the turned Move point (CachedMovePoint's 5 m / 2 s) and the plan point it was built for
+        private readonly CachedMovePoint _world = new CachedMovePoint();
         private Vec2 _worldPlanPoint = Vec2.Invalid;
-        private float _builtAt = float.NegativeInfinity;
 
         /// <summary>Invalid before the first Update.</summary>
         internal Vec2 Facing => _turned ? _facing : _planFacing;
@@ -60,10 +56,8 @@ namespace RBMAI
             _turned = false;
             _pendingSince = float.NaN;
             _turnedAt = float.NegativeInfinity;
-            _world = WorldPosition.Invalid;
-            _worldPoint = Vec2.Invalid;
+            _world.Clear();
             _worldPlanPoint = Vec2.Invalid;
-            _builtAt = float.NegativeInfinity;
         }
 
         /// <summary>AI thread, every order calculation. planKey = plan version; mayTurn = holding at its point, not charged, active. maxOffPlanDegrees: 180 = any. Returns "reface" / "unface" with text in why, else null.</summary>
@@ -161,11 +155,11 @@ namespace RBMAI
             float half = MathF.Max(depth, 1f) * 0.5f;
             Vec2 pivot = planPoint - planFacing.Normalized() * half;
             Vec2 front = pivot + _facing * half;
-            if (_world.IsValid && _worldPlanPoint.IsValid && _worldPlanPoint.DistanceSquared(planPoint) < 0.25f
-                && (_worldPoint.Distance(front) <= RebuildDistance || now - _builtAt < RebuildSeconds))
+            bool samePlan = _worldPlanPoint.IsValid && _worldPlanPoint.DistanceSquared(planPoint) < 0.25f;
+            if (samePlan && _world.IsFresh(front, now, true))
             {
-                point = _worldPoint;
-                return _world;
+                point = _world.Desired;
+                return _world.Point;
             }
             BattleTerrain terrain = BattleTerrain.Current;
             if (terrain != null && !terrain.IsWalkable(front))
@@ -173,12 +167,9 @@ namespace RBMAI
                 // keep the facing, stand at the plan's own point (the turned front would be off the ground)
                 return planWorld;
             }
-            WorldPosition target = planWorld;
-            target.SetVec2MT(front);
-            _world = target;
-            _worldPoint = front;
+            WorldPosition target;
+            _world.TryGet(front, now, planWorld, planWorld, false, false, true, out target);
             _worldPlanPoint = planPoint;
-            _builtAt = now;
             point = front;
             return target;
         }
@@ -188,18 +179,14 @@ namespace RBMAI
         {
             private const float EdgeMin = 20f;
 
-            private WorldPosition _world = WorldPosition.Invalid;
-            private Vec2 _point = Vec2.Invalid;
+            private readonly CachedMovePoint _world = new CachedMovePoint();
             private Vec2 _source = Vec2.Invalid;
-            private float _builtAt = float.NegativeInfinity;
             private bool _turned;
 
             internal void Reset()
             {
-                _world = WorldPosition.Invalid;
-                _point = Vec2.Invalid;
+                _world.Clear();
                 _source = Vec2.Invalid;
-                _builtAt = float.NegativeInfinity;
                 _turned = false;
             }
 
@@ -248,18 +235,15 @@ namespace RBMAI
                     what = "turnPlace";
                     why = "line turned " + Fmt0(turn) + "deg: place " + Fmt0(planPoint.Distance(target)) + "m round the line's pivot to " + Fmt0(target.x) + "," + Fmt0(target.y);
                 }
-                if (_world.IsValid && _source.IsValid && _source.DistanceSquared(planPoint) < 0.25f
-                    && (_point.Distance(target) <= RebuildDistance || now - _builtAt < RebuildSeconds))
+                bool samePlan = _source.IsValid && _source.DistanceSquared(planPoint) < 0.25f;
+                if (samePlan && _world.IsFresh(target, now, true))
                 {
-                    point = _point;
-                    return _world;
+                    point = _world.Desired;
+                    return _world.Point;
                 }
-                WorldPosition built = planWorld;
-                built.SetVec2MT(target);
-                _world = built;
-                _point = target;
+                WorldPosition built;
+                _world.TryGet(target, now, planWorld, planWorld, false, false, true, out built);
                 _source = planPoint;
-                _builtAt = now;
                 point = target;
                 return built;
             }

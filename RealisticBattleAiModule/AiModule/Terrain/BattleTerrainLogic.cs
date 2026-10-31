@@ -92,6 +92,7 @@ namespace RBMAI
             _pending = null;
             _reportedFailures.Clear();
             _tacticWatches.Clear();
+            _compositionLogged.Clear();
             BattleTerrain.Clear();
             TerrainTacticFactors.Clear();
             TerrainFlankPlan.Clear();
@@ -167,16 +168,10 @@ namespace RBMAI
                 LogRepicks();
                 TickFlankPlan(mission);
                 TickArmyPlans(mission);
-                LogFlankUses();
-                LogSpotUses();
-                LogCavalryUses();
-                LogChokeHoldUses();
                 RepickBattlePosition(mission);
-                LogBattlePositionUses();
-                LogHedgehogUses();
-                LogApproachUses();
-                LogShapes();
+                LogTerrainEvents();
                 LogReactions();
+                LogComposition(mission);
                 if (_tacticWatches.Count > 0)
                 {
                     WatchTactics(mission);
@@ -279,14 +274,15 @@ namespace RBMAI
                 TerrainHedgehog.SidePlan attackerHedgehog = null;
                 TerrainHedgehog.SidePlan defenderHedgehog = null;
                 TerrainApproach.SidePlan attackerApproach = null;
-                int released = -1;
-                int repicks = 0;
+                int repicks = -1;
                 try
                 {
                     attacker = TerrainTacticFactors.Compute(terrain, BattleSideEnum.Attacker);
                     defender = TerrainTacticFactors.Compute(terrain, BattleSideEnum.Defender);
                     // complete and immutable before publishing; the AI thread reads them from here on
                     TerrainTacticFactors.Publish(attacker, defender);
+                    // armies are on the field now: compositions restart from the real numbers
+                    ArmyComposition.RequestReseed();
                     try
                     {
                         // flank plan; read only with terrainTacticsEnabled
@@ -360,8 +356,7 @@ namespace RBMAI
                     }
                     if (RBMConfig.RBMConfig.terrainTacticsEnabled && (attacker != null || defender != null))
                     {
-                        released = ReleaseTacticDwell(mission);
-                        // native's x1.5 current-tactic bonus would keep the terrain-blind first pick: re-pick once without it
+                        // native's x1.5 current-tactic bonus would keep the terrain-blind first pick: re-pick once without it (runs whatever TacticDwell holds)
                         repicks = TacticSelection.RequestTerrainRepick(mission);
                     }
                 }
@@ -382,9 +377,8 @@ namespace RBMAI
                         Log("t=" + Fmt(now) + "\t" + line);
                     }
                     Log("# terrain tactic factors published at t=" + Fmt(now) + ": applied=" + (RBMConfig.RBMConfig.terrainTacticsEnabled ? 1 : 0)
-                        + ((released >= 0)
-                            ? "; tactic dwell released for " + released.ToString(CultureInfo.InvariantCulture)
-                              + " team(s); terrain re-pick (no x1.5 current-tactic bonus, margin x"
+                        + ((repicks >= 0)
+                            ? "; terrain re-pick (no x1.5 current-tactic bonus, margin x"
                               + Fmt(TacticSelection.TerrainRepickMargin) + ") due for " + repicks.ToString(CultureInfo.InvariantCulture)
                               + " team(s) at their next decision (<= 5 s)"
                             : ""));
@@ -478,20 +472,6 @@ namespace RBMAI
                 ReportOnce("terrainPublish", e);
             }
             Flush();
-        }
-
-        /// <summary>Main thread, once per battle at the publish (terrainTacticsEnabled only): drops TacticDwell's hold of every team with team AI so the next decision re-picks with terrain. Returns holds dropped.</summary>
-        private static int ReleaseTacticDwell(Mission mission)
-        {
-            int released = 0;
-            foreach (Team team in mission.Teams)
-            {
-                if (team != null && team.HasTeamAi && Tactics.TacticDwell.tacticSince.TryRemove(team, out _))
-                {
-                    released++;
-                }
-            }
-            return released;
         }
 
         // terrain tactic log (feeds nothing; main thread)
@@ -685,7 +665,7 @@ namespace RBMAI
         /// <summary>True when the team's weights carry the terrain factor: toggle on and its side's factors published.</summary>
         private static bool TerrainApplied(Team team)
         {
-            return RBMConfig.RBMConfig.terrainTacticsEnabled && TerrainTacticFactors.ForSide(team.Side) != null && !ArmyScale.NoPlans(team);
+            return TerrainPlans.Active(team) && TerrainTacticFactors.ForSide(team.Side) != null;
         }
 
         /// <summary>Scores each option with and without terrain (applied: divide the factor out; not applied: multiply it in). Never multiplies terrain twice.</summary>
@@ -856,19 +836,11 @@ namespace RBMAI
             _replanLines.Clear();
             try
             {
-                TerrainCavalry.Tick(mission, terrain, now, _replanLines);
+                TerrainArmyReplan.Tick(mission, terrain, now, _replanLines);
             }
             catch (Exception e)
             {
-                ReportOnce("cavalryReplan", e);
-            }
-            try
-            {
-                TerrainSpots.Tick(mission, terrain, now, _replanLines);
-            }
-            catch (Exception e)
-            {
-                ReportOnce("spotsReplan", e);
+                ReportOnce("armyReplan", e);
             }
             try
             {
@@ -888,48 +860,11 @@ namespace RBMAI
             }
         }
 
-        /// <summary>FLANKUSE lines: the flank plan decisions the AI thread queued.</summary>
-        private void LogFlankUses()
+        /// <summary>BEHAVIOR / CHOKEHOLD bypassed / APPROACH use / FORMSHAPE / FLANKUSE lines: the terrain events the AI thread queued (TerrainLog).</summary>
+        private void LogTerrainEvents()
         {
-            Drain<TerrainFlankPlan.UseEvent>(TerrainFlankPlan.TryDequeueUse, e => e.Team,
-                e => "t=" + Fmt(e.Time) + "\tFLANKUSE\t" + TeamName(e.Team) + "\t" + e.Tactic + "\t" + e.Text
-                    + "\treapply=" + (e.Reapply ? 1 : 0), false);
-        }
-
-        /// <summary>BEHAVIOR lines: the archer-spot events the AI thread queued.</summary>
-        private void LogSpotUses()
-        {
-            Drain<TerrainSpots.UseEvent>(TerrainSpots.TryDequeueUse, e => e.Team,
-                e => "t=" + Fmt(e.Time) + "\tBEHAVIOR\t" + TeamName(e.Team) + "\tformation=" + e.FormationIndex.ToString(CultureInfo.InvariantCulture)
-                    + "\t" + e.Behavior + "\t" + e.What + "\tspot=" + e.SpotId + "\twhy=" + e.Why, true);
-        }
-
-        /// <summary>FORMSHAPE lines: TerrainShape's queued formation-shape changes.</summary>
-        private void LogShapes()
-        {
-            Drain<TerrainShape.ShapeEvent>(TerrainShape.TryDequeue, e => e.Team,
-                e => "t=" + Fmt(e.Time) + "\tFORMSHAPE\t" + TeamName(e.Team) + "\tformation=" + e.FormationIndex.ToString(CultureInfo.InvariantCulture)
-                    + "\t" + e.Behavior + "\t" + e.What + "\twhy=" + e.Why + "\t" + e.Values, true);
-        }
-
-        /// <summary>BEHAVIOR lines: the cavalry-ground events the AI thread queued.</summary>
-        private void LogCavalryUses()
-        {
-            Drain<TerrainCavalry.UseEvent>(TerrainCavalry.TryDequeueUse, e => e.Team,
-                e => "t=" + Fmt(e.Time) + "\tBEHAVIOR\t" + TeamName(e.Team) + "\tformation=" + e.FormationIndex.ToString(CultureInfo.InvariantCulture)
-                    + "\t" + e.Behavior + "\t" + e.What + "\tpoint=" + e.PointId + "\twhy=" + e.Why, true);
-        }
-
-        /// <summary>BEHAVIOR lines (and the CHOKEHOLD bypassed line): the choke hold's events the AI thread queued.</summary>
-        private void LogChokeHoldUses()
-        {
-            Drain<TerrainChokeHold.UseEvent>(TerrainChokeHold.TryDequeueUse, e => e.Team, e =>
-                (e.What == "bypassed")
-                    // RBMTacticHoldChoke.CheckBypass: hold dropped for the battle
-                    ? "t=" + Fmt(e.Time) + "\tCHOKEHOLD\tbypassed\t" + TeamName(e.Team) + "\twhy=" + e.Why
-                    : "t=" + Fmt(e.Time) + "\tBEHAVIOR\t" + TeamName(e.Team) + "\tformation="
-                        + ((e.FormationIndex >= 0) ? e.FormationIndex.ToString(CultureInfo.InvariantCulture) : "-")
-                        + "\tHoldChoke\t" + e.What + "\tpoint=" + e.Point + "\twhy=" + e.Why, true);
+            Drain<TerrainLog.Event>(TerrainLog.TryDequeue, e => e.Team,
+                e => "t=" + Fmt(e.Time) + "\t" + TerrainLog.Format(e, TeamName(e.Team)), true);
         }
 
         /// <summary>Main thread, every tick: the battle position's re-pick (TerrainBattlePosition.TickRepick, background re-score); BATTLEPOS repick line with the log on. Runs log on or off.</summary>
@@ -963,37 +898,122 @@ namespace RBMAI
             }
         }
 
-        /// <summary>BEHAVIOR lines: the battle position's events the AI thread queued.</summary>
-        private void LogBattlePositionUses()
-        {
-            Drain<TerrainBattlePosition.UseEvent>(TerrainBattlePosition.TryDequeueUse, e => e.Team,
-                e => "t=" + Fmt(e.Time) + "\tBEHAVIOR\t" + TeamName(e.Team) + "\tformation="
-                    + ((e.FormationIndex >= 0) ? e.FormationIndex.ToString(CultureInfo.InvariantCulture) : "-")
-                    + "\t" + (e.Behavior ?? "HoldPosition") + "\t" + e.What + "\tpoint=" + e.Point + "\twhy=" + e.Why, true);
-        }
-
-        /// <summary>BEHAVIOR lines: the hedgehog's events the AI thread queued.</summary>
-        private void LogHedgehogUses()
-        {
-            Drain<TerrainHedgehog.UseEvent>(TerrainHedgehog.TryDequeueUse, e => e.Team,
-                e => "t=" + Fmt(e.Time) + "\tBEHAVIOR\t" + TeamName(e.Team) + "\tformation="
-                    + ((e.FormationIndex >= 0) ? e.FormationIndex.ToString(CultureInfo.InvariantCulture) : "-")
-                    + "\tHedgehog\t" + e.What + "\twhy=" + e.Why, true);
-        }
-
-        /// <summary>APPROACH use lines: the approach route events the AI thread queued.</summary>
-        private void LogApproachUses()
-        {
-            Drain<TerrainApproach.UseEvent>(TerrainApproach.TryDequeueUse, e => e.Team,
-                e => "t=" + Fmt(e.Time) + "\tAPPROACH\tuse\t" + TeamName(e.Team) + "\tformation=" + e.FormationIndex.ToString(CultureInfo.InvariantCulture)
-                    + "\t" + e.What + "\twhy=" + e.Why, true);
-        }
-
         /// <summary>REACT lines: the reaction monitor's lines the AI thread queued.</summary>
         private void LogReactions()
         {
             Drain<ReactionMonitor.LogEvent>(ReactionMonitor.TryDequeue, e => e.Team,
                 e => "t=" + Fmt(e.Time) + "\tREACT\t" + TeamName(e.Team) + "\t" + e.Text, true);
+        }
+
+        private const float CompositionLogSeconds = 10f;
+        private const float CompositionLogChange = 0.05f;
+
+        private sealed class CompositionLine
+        {
+            public ArmyComposition.Snapshot Snapshot;
+            public string Signature;
+            public float At;
+        }
+
+        /// <summary>Per team: the snapshot, roles signature and time last written as COMPOSITION. Main thread only.</summary>
+        private readonly Dictionary<Team, CompositionLine> _compositionLogged = new Dictionary<Team, CompositionLine>();
+
+        /// <summary>COMPOSITION per team every CompositionLogSeconds, sooner when a share or k moved CompositionLogChange since the last line, or at once on a
+        /// token / main / anchor / line / infantry-leads change; then the COMPEVENT lines the AI thread queued.</summary>
+        private void LogComposition(Mission mission)
+        {
+            if (_log == null)
+            {
+                DrainComposition();
+                return;
+            }
+            try
+            {
+                float now = mission.CurrentTime;
+                foreach (Team team in mission.Teams)
+                {
+                    if (team == null || team.Side == BattleSideEnum.None || team.QuerySystem == null || team.QuerySystem.MemberCount <= 0)
+                    {
+                        continue;
+                    }
+                    // main thread: only what the AI thread already cached (no snapshot build, no latch change)
+                    ArmyComposition.Snapshot snap;
+                    if (!ArmyComposition.TryPeek(team, out snap))
+                    {
+                        continue;
+                    }
+                    Formation main = snap.Main;
+                    Formation anchor = main ?? snap.FootAnchor;
+                    string mainName = (main != null) ? TerrainCavalry.FormationName(main) : "-";
+                    string anchorName = (anchor != null) ? TerrainCavalry.FormationName(anchor) : "-";
+                    string lineName = (snap.LineHolder != null) ? TerrainCavalry.FormationName(snap.LineHolder) : "-";
+                    string tokens = ArmyComposition.DescribeTokens(snap);
+                    string signature = tokens + "|" + mainName + "|" + anchorName + "|" + snap.AnchorReason + "|" + lineName + "|" + (snap.InfantryLeads ? "1" : "0");
+                    CompositionLine last;
+                    string trigger;
+                    if (!_compositionLogged.TryGetValue(team, out last))
+                    {
+                        trigger = "first";
+                    }
+                    else if (signature != last.Signature)
+                    {
+                        trigger = "roles";
+                    }
+                    else if (last.Snapshot != snap && ArmyComposition.MaxChange(snap, last.Snapshot) >= CompositionLogChange)
+                    {
+                        trigger = "change";
+                    }
+                    else if (now - last.At >= CompositionLogSeconds && last.Snapshot != snap)
+                    {
+                        trigger = "timer";
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    _compositionLogged[team] = new CompositionLine { Snapshot = snap, Signature = signature, At = now };
+                    Log("t=" + Fmt(now) + "\tCOMPOSITION\t" + TeamName(team)
+                        + "\t" + ArmyComposition.Describe(snap)
+                        + "\tmen=" + snap.OwnMen.ToString(CultureInfo.InvariantCulture)
+                        + " inf:" + snap.InfantryMen.ToString(CultureInfo.InvariantCulture)
+                        + " arc:" + snap.RangedMen.ToString(CultureInfo.InvariantCulture)
+                        + " cav:" + snap.CavalryMen.ToString(CultureInfo.InvariantCulture)
+                        + " ha:" + snap.HorseArcherMen.ToString(CultureInfo.InvariantCulture)
+                        + "\tenemyMen=" + snap.EnemyMen.ToString(CultureInfo.InvariantCulture)
+                        + " inf:" + snap.EnemyMeleeFootMen.ToString(CultureInfo.InvariantCulture)
+                        + " arc:" + snap.EnemyRangedMen.ToString(CultureInfo.InvariantCulture)
+                        + " cav:" + snap.EnemyMeleeCavalryMen.ToString(CultureInfo.InvariantCulture)
+                        + " ha:" + snap.EnemyHorseArcherMen.ToString(CultureInfo.InvariantCulture)
+                        + "\tdismounted=" + snap.OwnDismounted.ToString(CultureInfo.InvariantCulture) + "/" + snap.EnemyDismounted.ToString(CultureInfo.InvariantCulture)
+                        + "\tstrength=" + Fmt(snap.OwnStrength) + "/" + Fmt(snap.EnemyStrength) + " start=" + Fmt(snap.StartEnemyStrength)
+                        + "\ttoken=" + tokens
+                        + "\tmainRule=" + (snap.InfantryLeads ? "leads" : "noLead") + " share=" + ArmyComposition.F2(snap.TeamInfantryShare)
+                        + "\tmain=" + mainName
+                        + "\tanchor=" + anchorName + " reason=" + snap.AnchorReason
+                        + "\tline=" + lineName + " reason=" + snap.LineReason
+                        + "\tkFoot=" + ArmyComposition.F2(snap.KFoot)
+                        + " kCav=" + ArmyComposition.F2(snap.KCav)
+                        + " kWeak=" + ArmyComposition.F2(snap.KWeak)
+                        + " kMount=" + ArmyComposition.F2(snap.KMount)
+                        + " kHA=" + ArmyComposition.F2(snap.KHA)
+                        + " footRangedEngage=" + (snap.FootRangedEngage ? "1" : "0")
+                        + "\tdry=" + snap.DryText
+                        + "\tscale=" + snap.ScaleReason + (snap.Limited ? "(limited)" : "")
+                        + "\ttrigger=" + trigger);
+                }
+            }
+            catch (Exception e)
+            {
+                ReportOnce("composition", e);
+            }
+            DrainComposition();
+        }
+
+        /// <summary>COMPEVENT lines; with the log off the queue is still emptied (Drain discards).</summary>
+        private void DrainComposition()
+        {
+            Drain<ArmyComposition.LogEvent>(ArmyComposition.TryDequeue, e => e.Team,
+                e => "t=" + Fmt(e.Time) + "\tCOMPEVENT\t" + TeamName(e.Team) + "\t" + e.Kind + "\tformation=" + e.Formation + "\twhat=" + e.What + "\t" + e.Text, true);
         }
 
         /// <summary>The OUTLINES line (everything after the time): dot counts, per kind, work and ms.</summary>
@@ -1089,6 +1109,7 @@ namespace RBMAI
             _active = false;
             _terrainGrid = null;
             _tacticWatches.Clear();
+            _compositionLogged.Clear();
         }
 
         private static string LogFolderPath

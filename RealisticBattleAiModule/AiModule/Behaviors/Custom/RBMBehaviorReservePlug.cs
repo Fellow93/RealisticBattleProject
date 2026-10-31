@@ -119,11 +119,9 @@ namespace RBMAI
         private volatile string _stateName = "wait";
         /// <summary>FOLLOW mode: why, else null. AI thread.</summary>
         private string _followWhy;
-        /// <summary>Cached follow point (copy of the line's cached median, ONE SetVec2MT), its Vec2, facing, build time. AI thread.</summary>
-        private WorldPosition _followTarget = WorldPosition.Invalid;
-        private Vec2 _followPoint = Vec2.Invalid;
+        /// <summary>Cached follow point (copy of the line's cached median, ONE SetVec2MT) and the facing built with it. AI thread.</summary>
+        private readonly CachedMovePoint _follow = new CachedMovePoint();
         private Vec2 _followFacing = Vec2.Invalid;
-        private float _followBuiltAt = float.NegativeInfinity;
         private string _followNote;
 
         public RBMBehaviorReservePlug(Formation formation)
@@ -204,10 +202,8 @@ namespace RBMAI
         private void ResetFollow()
         {
             _followWhy = null;
-            _followTarget = WorldPosition.Invalid;
-            _followPoint = Vec2.Invalid;
+            _follow.Reset();
             _followFacing = Vec2.Invalid;
-            _followBuiltAt = float.NegativeInfinity;
             _followNote = null;
         }
 
@@ -481,19 +477,13 @@ namespace RBMAI
                 wanted = front - f * (line.Depth + last);
                 note = TerrainBattlePosition.Fmt0(last) + "m unchecked";
             }
-            if (!_followPoint.IsValid || !_followTarget.AsVec2.IsValid
-                || (_followPoint.DistanceSquared(wanted) > FollowRebuildDistance * FollowRebuildDistance && now - _followBuiltAt >= FollowRebuildSeconds))
+            bool rebuilt;
+            _follow.TryGet(wanted, now, source, false, FollowRebuildDistance, FollowRebuildSeconds, out target, out rebuilt);
+            if (rebuilt)
             {
-                // ONE SetVec2MT on a fresh copy, kept until a rebuild (native caches the order position by its Vec2)
-                WorldPosition built = source;
-                built.SetVec2MT(wanted);
-                _followTarget = built;
-                _followPoint = wanted;
                 _followFacing = f;
-                _followBuiltAt = now;
                 _followNote = note + " behind " + TerrainCavalry.FormationName(line);
             }
-            target = _followTarget;
             facing = _followFacing;
             return true;
         }
@@ -596,20 +586,17 @@ namespace RBMAI
 
             float contactPower = 0f;
             float nearestGap = float.MaxValue;
-            float nearestGapOld = float.NaN;
             Formation nearest = null;
             // riders to brace against (selfThreat / flankTurn by melee cavalry: no commit)
             Formation brace = null;
             float braceGap = float.MaxValue;
             string braceWhy = null;
-            float ownRadius = MathF.Max(formation.Width, formation.Depth) * 0.5f;
             Footprint ownShape;
             if (!FormationGeometry.TryGet(formation, FootprintMode.Current, out ownShape))
             {
                 return null;
             }
             Footprint lineShape = Footprint.Box(lineCentre, facing, halfWidth, MathF.Max(line.Depth, 1f) * 0.5f);
-            bool shadow = FormationGeometry.ShadowOn;
             foreach (Team team in mission.Teams)
             {
                 if (team == null || !team.IsEnemyOf(formation.Team))
@@ -628,24 +615,22 @@ namespace RBMAI
                     {
                         continue;
                     }
-                    float radius = MathF.Max(e.Width, e.Depth) * 0.5f;
                     bool mounted = e.QuerySystem.IsCavalryFormation;
                     // only a significant enemy (relative to the reserve) makes it commit on its own
                     bool significant = ThreatSignificance.IsSignificant(formation, e);
                     float selfGap = FormationGeometry.Gap(ownShape, shape);
-                    float selfGapOld = shadow ? c.Distance(own) - radius - ownRadius : float.NaN;
                     if (significant && selfGap <= SelfThreatDistance)
                     {
                         if (!mounted)
                         {
                             enemy = e;
-                            return "selfThreat " + ThreatSignificance.Describe(formation, e) + " gap=" + FormationGeometry.Shadow(selfGap, selfGapOld);
+                            return "selfThreat " + ThreatSignificance.Describe(formation, e) + " gap=" + FormationGeometry.GapText(selfGap);
                         }
                         if (selfGap < braceGap)
                         {
                             brace = e;
                             braceGap = selfGap;
-                            braceWhy = "selfThreat " + ThreatSignificance.Describe(formation, e) + " gap=" + FormationGeometry.Shadow(selfGap, selfGapOld);
+                            braceWhy = "selfThreat " + ThreatSignificance.Describe(formation, e) + " gap=" + FormationGeometry.GapText(selfGap);
                         }
                     }
                     else if (mounted && e == _braced && selfGap <= BraceKeepDistance && selfGap < braceGap)
@@ -653,7 +638,7 @@ namespace RBMAI
                         // the riders it faces, still near: stay braced
                         brace = e;
                         braceGap = selfGap;
-                        braceWhy = "keep gap=" + FormationGeometry.Shadow(selfGap, selfGapOld);
+                        braceWhy = "keep gap=" + FormationGeometry.GapText(selfGap);
                     }
                     Vec2 rel = c - lineCentre;
                     float along = Vec2.DotProduct(rel, lineDir);
@@ -664,11 +649,6 @@ namespace RBMAI
                     {
                         nearestGap = lineGap;
                         nearest = e;
-                        if (shadow)
-                        {
-                            float clamped = MBMath.ClampFloat(along, -halfWidth, halfWidth);
-                            nearestGapOld = c.Distance(lineCentre + lineDir * clamped) - radius - halfDepth;
-                        }
                     }
                     if (lineGap <= ContactGap)
                     {
@@ -682,7 +662,7 @@ namespace RBMAI
                         if (endGap <= TurnDistance)
                         {
                             string turn = "flankTurn " + ThreatSignificance.Describe(formation, e) + " " + (along >= 0f ? "left" : "right") + "End gap="
-                                + FormationGeometry.Shadow(endGap, shadow ? c.Distance(end) - radius : float.NaN);
+                                + FormationGeometry.GapText(endGap);
                             if (!mounted)
                             {
                                 enemy = e;
@@ -711,14 +691,14 @@ namespace RBMAI
             {
                 _contactSince = now;
                 TerrainBattlePosition.Enqueue(formation.Team, formation, now, "ReservePlug", "contact", "plug",
-                    (inMelee ? "lineMelee " : "enemyNear ") + ThreatSignificance.Describe(line, nearest) + " gap=" + FormationGeometry.Shadow(nearestGap, nearestGapOld)
+                    (inMelee ? "lineMelee " : "enemyNear ") + ThreatSignificance.Describe(line, nearest) + " gap=" + FormationGeometry.GapText(nearestGap)
                     + " line=" + TerrainCavalry.FormationName(line));
             }
             else if (!float.IsNaN(_contactSince) && !contactNow && now - _lastContactAt >= ContactResetSeconds)
             {
                 TerrainBattlePosition.Enqueue(formation.Team, formation, now, "ReservePlug", "contactLost", "plug",
                     "no melee with significant foot at the line for " + TerrainBattlePosition.Fmt0(now - _lastContactAt) + "s (clock ran "
-                    + TerrainBattlePosition.Fmt0(now - _contactSince) + "s) nearestFoot=" + FormationGeometry.Shadow(nearestGap, nearestGapOld));
+                    + TerrainBattlePosition.Fmt0(now - _contactSince) + "s) nearestFoot=" + FormationGeometry.GapText(nearestGap));
                 _contactSince = float.NaN;
             }
             if (contactPower > 0f && RBMAI.Utilities.FormationFightingInMelee(line, MeleeRatio))
@@ -824,7 +804,7 @@ namespace RBMAI
                 return null;
             }
             return TerrainCavalry.FormationName(target) + (mounted ? " mounted" : " retreating") + " gap="
-                + FormationGeometry.Shadow(gap, FormationGeometry.ShadowOn ? FormationGeometry.OldCircleGap(anchor, target) : float.NaN);
+                + FormationGeometry.GapText(gap);
         }
 
         /// <summary>Largest non-HA enemy within ContactGap of the line, else (unless contactOnly) the nearest; FOOT first. AI thread.</summary>

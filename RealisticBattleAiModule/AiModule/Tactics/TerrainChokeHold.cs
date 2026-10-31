@@ -21,9 +21,8 @@ namespace RBMAI
     internal static class TerrainChokeHold
     {
 
-        private static volatile Plan _defender;
-
-        private static readonly ConcurrentQueue<UseEvent> UseEvents = new ConcurrentQueue<UseEvent>();
+        // defender side only
+        private static readonly PlanSlot<Plan> Plans = new PlanSlot<Plan>();
 
         /// <summary>The defender's hold. Immutable. Data = the worker's raw place.</summary>
         internal sealed class Plan
@@ -60,12 +59,7 @@ namespace RBMAI
         /// <summary>The team's hold: null with terrainTacticsEnabled off, before the publish, for an attacker, without a plan, or once BYPASSED (MarkBypassed). Any thread.</summary>
         public static Plan HoldFor(Team team)
         {
-            // None for a defender without terrain plans (ArmyScale.NoPlans).
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || team == null || team.Side != BattleSideEnum.Defender || ArmyScale.NoPlans(team))
-            {
-                return null;
-            }
-            Plan plan = _defender;
+            Plan plan = (team != null && team.Side == BattleSideEnum.Defender) ? Plans.ForTeam(team) : null;
             return (plan != null && plan == _bypassed) ? null : plan;
         }
 
@@ -76,7 +70,7 @@ namespace RBMAI
         {
             get
             {
-                Plan plan = _defender;
+                Plan plan = Plans.Defender;
                 return plan != null && plan == _bypassed;
             }
         }
@@ -84,7 +78,7 @@ namespace RBMAI
         /// <summary>AI thread (CheckBypass): latches this plan as bypassed (a new publish is a new hold). False when it already was.</summary>
         internal static bool MarkBypassed(Team team, Plan plan, float time, string why)
         {
-            if (plan == null || plan != _defender || plan == _bypassed)
+            if (plan == null || plan != Plans.Defender || plan == _bypassed)
             {
                 return false;
             }
@@ -94,23 +88,20 @@ namespace RBMAI
         }
 
         /// <summary>Whatever the toggle (log and map).</summary>
-        internal static Plan Published => _defender;
+        internal static Plan Published => Plans.Defender;
 
         /// <summary>Main thread, at the terrain publish.</summary>
         internal static void Publish(Plan defender)
         {
-            _defender = defender;
+            Plans.Set(BattleSideEnum.Defender, defender);
         }
 
         /// <summary>Main thread: mission end (BattleTerrainLogic) and MissionStartReset. Also drops the queued events.</summary>
         public static void Clear()
         {
-            _defender = null;
+            Plans.Clear();
             _bypassed = null;
-            UseEvent ignored;
-            while (UseEvents.TryDequeue(out ignored))
-            {
-            }
+            TerrainLog.Clear();
         }
 
         // build (main thread)
@@ -153,42 +144,16 @@ namespace RBMAI
                 reserve, data.Reserve.IsValid && reserveWhy == null, reserveWhy);
         }
 
-        // behavior / tactic events (AI thread writes, main thread drains)
-
-        /// <summary>HoldChoke state change or the tactic's engage. Immutable.</summary>
-        internal sealed class UseEvent
-        {
-            public Team Team;
-            public int FormationIndex; // -1 for a tactic-level event
-            public float Time;
-            public string What;
-            public string Point;
-            public string Why;
-        }
-
-        /// <summary>AI thread; only with the terrain log on. formation null = the tactic's own event.</summary>
+        /// <summary>AI thread: a HoldChoke state change or the tactic's engage (formation null = the tactic's own event); "bypassed" is the CHOKEHOLD bypassed line.</summary>
         internal static void Enqueue(Team team, Formation formation, float time, string what, string point, string why)
         {
-            DecisionTrace.Note(formation, "HoldChoke", what, why);
-            if (!RBMConfig.RBMConfig.battleTerrainLoggingEnabled || team == null)
+            if (what != "bypassed")
             {
+                TerrainLog.Behavior(team, formation, time, "HoldChoke", what, "point", point, why);
                 return;
             }
-            UseEvents.Enqueue(new UseEvent
-            {
-                Team = team,
-                FormationIndex = (formation != null) ? (int)formation.FormationIndex : -1,
-                Time = time,
-                What = what,
-                Point = point,
-                Why = why
-            });
-        }
-
-        /// <summary>Main thread (terrain log).</summary>
-        internal static bool TryDequeueUse(out UseEvent e)
-        {
-            return UseEvents.TryDequeue(out e);
+            DecisionTrace.Note(formation, "HoldChoke", what, why);
+            TerrainLog.Enqueue(new TerrainLog.Event { Tag = TerrainLog.Tag.ChokeBypassed, Team = team, Time = time, What = what, Why = why });
         }
 
         // log (main thread)

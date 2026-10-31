@@ -23,7 +23,9 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
     protected void AssignTacticFormations()
     {
         _splitPlan = TerrainFlankPlan.ForTeam(Team);
-        ManageFormationCounts(3, 1, 2, 1);
+        // Native splits infantry evenly into as many formations as asked (and merges down to fewer); under
+        // IsFormationReshufflingUnsafe the re-deal below runs once, so a side that will not split must ask for one.
+        ManageFormationCounts(ShouldSplit(CountAiFootInfantry(Team)) ? 3 : 1, 1, 2, 1);
 
         List<Formation> nonEmptyFormations = FormationsIncludingEmpty
             .Where((Formation f) => f.CountOfUnits > 0).ToList();
@@ -41,11 +43,11 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
             List<Formation> flankingSlots = FormationsIncludingEmpty
-            .Where((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation)
+            .Where((Formation f) => f != _mainInfantry && f.IsAIOwned && f.QuerySystem.IsInfantryFormation)
             .ToList();
 
-            // ChooseAndSortByPriority only prefers AI formations: never reshuffle player-commanded men.
-            if (_mainInfantry.IsAIControlled && flankingSlots.Count >= 2)
+            // ChooseAndSortByPriority only prefers AI formations: never reshuffle player-commanded men (IsAIOwned: delegated ones too).
+            if (_mainInfantry.IsAIOwned && flankingSlots.Count >= 2)
             {
                 Formation leftSlot;
                 Formation rightSlot;
@@ -167,11 +169,54 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
     }
 
     // User rule: with fewer melee infantry than this there are no flank guards.
-    internal const int MinInfantryToSplit = 100;
+    internal const int MinInfantryToSplit = 80;
 
     internal static bool ShouldSplit(int infCount)
     {
         return infCount >= MinInfantryToSplit;
+    }
+
+    /// <summary>Foot men in the team's AI infantry formations, read before ManageFormationCounts moves anyone (the deal's own count comes after).</summary>
+    internal static int CountAiFootInfantry(Team team)
+    {
+        int count = 0;
+        if (team == null)
+        {
+            return 0;
+        }
+        foreach (Formation f in team.FormationsIncludingEmpty)
+        {
+            if (f.CountOfUnits <= 0 || !f.IsAIControlled || !f.QuerySystem.IsInfantryFormation)
+            {
+                continue;
+            }
+            f.ApplyActionOnEachUnitViaBackupList((Agent a) =>
+            {
+                if (!a.HasMount)
+                    count++;
+            });
+        }
+        return count;
+    }
+
+    /// <summary>CountAiFootInfantry from cached query data only (no unit walk): safe and cheap in GetTacticWeight on the AI thread.</summary>
+    internal static int EstimateAiFootInfantry(Team team)
+    {
+        float count = 0f;
+        if (team == null)
+        {
+            return 0;
+        }
+        foreach (Formation f in team.FormationsIncludingEmpty)
+        {
+            if (f.CountOfUnits <= 0 || !f.IsAIControlled || !f.QuerySystem.IsInfantryFormation)
+            {
+                continue;
+            }
+            FormationQuerySystem q = f.QuerySystem;
+            count += f.CountOfUnits * MathF.Max(0f, 1f - q.CavalryUnitRatioReadOnly - q.RangedCavalryUnitRatioReadOnly);
+        }
+        return (int)MathF.Round(count);
     }
 
     // Native ManageFormationCounts also fills a third infantry slot the split does not deal; its foot men are added to the split.
@@ -297,14 +342,13 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
         if (_leftCavalry != null)
         {
             _leftCavalry.AI.ResetBehaviorWeights();
-            TacticComponent.SetDefaultBehaviorWeights(_leftCavalry);
+            // no default weights (as SplitArchers / SplitSkirmishers): native Charge flipped with ProtectFlank before the attack
             _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(this, _leftCavalry, FormationAI.BehaviorSide.Left, _rightCavalry == null);
             _leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
         }
         if (_rightCavalry != null)
         {
             _rightCavalry.AI.ResetBehaviorWeights();
-            TacticComponent.SetDefaultBehaviorWeights(_rightCavalry);
             _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(this, _rightCavalry, FormationAI.BehaviorSide.Right, false);
             _rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
         }
@@ -530,7 +574,8 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
     protected override float GetTacticWeight()
     {
         float t;
-        if (!TacticSelection.TryGetInfantrySuperiority(Team, out t))
+        // no flank guards possible: the split tactic would only be a plain attack
+        if (!ShouldSplit(EstimateAiFootInfantry(Team)) || !TacticSelection.TryGetInfantrySuperiority(Team, out t))
         {
             return TacticSelection.UnfitWeight;
         }

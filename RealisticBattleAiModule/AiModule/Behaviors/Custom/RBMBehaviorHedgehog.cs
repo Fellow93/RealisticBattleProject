@@ -97,12 +97,11 @@ namespace RBMAI
         private bool _inPlace;
         /// <summary>0 = none.</summary>
         private int _inPlaceVersion;
-        /// <summary>Archers following the charging infantry: cached point (copy of its median, ONE SetVec2MT), Vec2, facing, build time. AI thread.</summary>
+        /// <summary>Archers following the charging infantry: cached point (copy of its median, ONE SetVec2MT) and the facing built with it; stale = rebuild at the next follow. AI thread.</summary>
         private bool _following;
-        private WorldPosition _followWorld = WorldPosition.Invalid;
-        private Vec2 _followPoint = Vec2.Invalid;
+        private readonly CachedMovePoint _follow = new CachedMovePoint();
+        private bool _followStale;
         private Vec2 _followFacing = Vec2.Invalid;
-        private float _followBuiltAt = float.NegativeInfinity;
         private TerrainBattlePosition.Plan _plan;
         private int _planVersion;
         private WorldPosition _anchor = WorldPosition.Invalid;
@@ -207,10 +206,9 @@ namespace RBMAI
             TerrainBattlePosition.Plan positionNow = (base.Formation != null) ? TerrainBattlePosition.PlanFor(base.Formation.Team) : null;
             _inPlaceVersion = (positionNow != null) ? positionNow.Version : 0;
             _following = false;
-            _followWorld = WorldPosition.Invalid;
-            _followPoint = Vec2.Invalid;
+            _follow.Reset();
+            _followStale = false;
             _followFacing = Vec2.Invalid;
-            _followBuiltAt = float.NegativeInfinity;
             _owner = owner;
             _ownerGeneration = generation;
             _role = role;
@@ -406,8 +404,7 @@ _anchor = formation.CachedMedianPosition;
                 return;
             }
             float gap;
-            float gapOld;
-            Formation cavalry = HoldLateCharge.NearestSignificantEnemyCavalry(mission, formation, out gap, out gapOld);
+            Formation cavalry = HoldLateCharge.NearestSignificantEnemyCavalry(mission, formation, out gap);
             if (!_halted)
             {
                 if (cavalry == null || gap > MarchHaltCavalry)
@@ -423,7 +420,7 @@ _anchor = formation.CachedMedianPosition;
                 }
                 _halted = true;
                 TerrainHedgehog.Enqueue(formation.Team, formation, now, "march halt",
-                    "cavalry " + ThreatSignificance.Describe(formation, cavalry) + " gap=" + FormationGeometry.Shadow(gap, gapOld) + " (<="
+                    "cavalry " + ThreatSignificance.Describe(formation, cavalry) + " gap=" + FormationGeometry.GapText(gap) + " (<="
                     + TerrainHedgehog.Fmt0(MarchHaltCavalry) + "): form up where it stands, " + TerrainHedgehog.Fmt0(RBMAI.Utilities.GetFormationCenter(formation).Distance(_holdPoint)) + "m short of the point");
             }
             else if (cavalry == null || gap > MarchResumeCavalry)
@@ -432,7 +429,7 @@ _anchor = formation.CachedMedianPosition;
                 _hasHaltAnchor = false;
                 TerrainHedgehog.Enqueue(formation.Team, formation, now, "march resume",
                     "no significant enemy melee cavalry within " + TerrainHedgehog.Fmt0(MarchResumeCavalry) + "m"
-                    + (cavalry != null ? " (nearest gap=" + FormationGeometry.Shadow(gap, gapOld) + ")" : ""));
+                    + (cavalry != null ? " (nearest gap=" + FormationGeometry.GapText(gap) + ")" : ""));
             }
         }
 
@@ -444,23 +441,21 @@ _anchor = formation.CachedMedianPosition;
             {
                 return null;
             }
-            float footOld;
-            float foot = HoldLateCharge.NearestEnemyFootGap(mission, formation, out footOld);
+            float foot = HoldLateCharge.NearestEnemyFootGap(mission, formation);
             if (foot <= HoldLateCharge.RecallFootGap)
             {
                 return null;
             }
-            string footText = " foot=" + FormationGeometry.Shadow(foot, footOld);
+            string footText = " foot=" + FormationGeometry.GapText(foot);
             if (_inPlaceVersion != 0 && plan.Version != _inPlaceVersion)
             {
                 return "replan v" + _inPlaceVersion.ToString(CultureInfo.InvariantCulture) + "->v" + plan.Version.ToString(CultureInfo.InvariantCulture) + footText;
             }
             float cavalryGap;
-            float cavalryGapOld;
-            Formation cavalry = HoldLateCharge.NearestSignificantEnemyCavalry(mission, formation, out cavalryGap, out cavalryGapOld);
+            Formation cavalry = HoldLateCharge.NearestSignificantEnemyCavalry(mission, formation, out cavalryGap);
             if (cavalry == null || cavalryGap > InPlaceCalmCavalry)
             {
-                return "calm cavalry=" + (cavalry != null ? FormationGeometry.Shadow(cavalryGap, cavalryGapOld) : "none") + footText;
+                return "calm cavalry=" + (cavalry != null ? FormationGeometry.GapText(cavalryGap) : "none") + footText;
             }
             return null;
         }
@@ -488,17 +483,13 @@ _anchor = formation.CachedMedianPosition;
             {
                 wanted = centre;
             }
-            if (!_followWorld.AsVec2.IsValid || !_followPoint.IsValid
-                || (_followPoint.DistanceSquared(wanted) > FollowRebuildDistance * FollowRebuildDistance && now - _followBuiltAt >= FollowRebuildSeconds))
+            bool rebuilt;
+            _follow.TryGet(wanted, now, source, _followStale, FollowRebuildDistance, FollowRebuildSeconds, out target, out rebuilt);
+            _followStale = false;
+            if (rebuilt)
             {
-                WorldPosition built = source;
-                built.SetVec2MT(wanted);
-                _followWorld = built;
-                _followPoint = wanted;
                 _followFacing = dir;
-                _followBuiltAt = now;
             }
-            target = _followWorld;
             facing = _followFacing;
             return true;
         }
@@ -525,8 +516,7 @@ _anchor = formation.CachedMedianPosition;
                 Mission mission = Mission.Current;
                 float now = (mission != null) ? mission.CurrentTime : 0f;
                 float cavalryGap = float.MaxValue;
-                float cavalryGapOld = float.NaN;
-                Formation cavalry = (mission != null) ? HoldLateCharge.NearestSignificantEnemyCavalry(mission, base.Formation, out cavalryGap, out cavalryGapOld) : null;
+                Formation cavalry = (mission != null) ? HoldLateCharge.NearestSignificantEnemyCavalry(mission, base.Formation, out cavalryGap) : null;
                 WorldPosition followTarget;
                 Vec2 followFacing;
                 if (cavalry != null && cavalryGap <= HoldLateCharge.RangedCavalryWait && FollowInfantry(infantry.Formation, now, out followTarget, out followFacing))
@@ -535,7 +525,7 @@ _anchor = formation.CachedMedianPosition;
                     {
                         _following = true;
                         TerrainHedgehog.Enqueue(base.Formation.Team, base.Formation, now, "archers follow",
-                            "infantry charging, cavalry " + ThreatSignificance.Describe(base.Formation, cavalry) + " gap=" + FormationGeometry.Shadow(cavalryGap, cavalryGapOld));
+                            "infantry charging, cavalry " + ThreatSignificance.Describe(base.Formation, cavalry) + " gap=" + FormationGeometry.GapText(cavalryGap));
                     }
                     base.CurrentOrder = MovementOrder.MovementOrderMove(followTarget);
                     CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(followFacing);
@@ -546,13 +536,13 @@ _anchor = formation.CachedMedianPosition;
                     if (_following)
                     {
                         _following = false;
-                        _followPoint = Vec2.Invalid;
+                        _followStale = true;
                         TerrainHedgehog.Enqueue(base.Formation.Team, base.Formation, now, "archers hold",
                             "no significant enemy melee cavalry within " + TerrainHedgehog.Fmt0(HoldLateCharge.RangedCavalryWait) + "m: hold here");
                         // hold where they are now (the last point would walk them back alone)
-                        if (_followWorld.AsVec2.IsValid)
+                        if (_follow.Point.AsVec2.IsValid)
                         {
-                            _archerTarget = _followWorld;
+                            _archerTarget = _follow.Point;
                             _archerTargetFacing = _followFacing;
                             // not the inside point any more: ArcherTarget builds it again once the square re-forms
                             _archerTargetSource = Vec2.Invalid;

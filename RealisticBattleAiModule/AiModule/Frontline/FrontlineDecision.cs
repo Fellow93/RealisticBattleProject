@@ -35,6 +35,10 @@ namespace RBMAI
             // Close-up patience: wait start (float.MinValue = not waiting) and end of the current shove (user rule: push a little, not mindlessly).
             public float closeUpWaitSince = float.MinValue;
             public float closeUpShoveUntil = float.MinValue;
+            // Held by close-up (waiting or shoving, no step won) since, for the AI log's RUN line; float.MinValue = not held. Survives shoves.
+            public float closeUpHeldSince = float.MinValue;
+            // Allies standing just ahead at the last Attack decision (ScanAhead); a crowd (ClumpMinStanding+) means no patience shove.
+            public int closeUpCrowdAhead = 0;
 
             public enum AIDecision
             {

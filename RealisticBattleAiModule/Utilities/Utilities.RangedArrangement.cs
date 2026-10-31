@@ -24,7 +24,7 @@ namespace RBMAI
         //  0. surrounded: enemy formations (>= RangedSurroundMinMen, edge within RangedSurroundRange) in >= RangedSurroundEnterQuadrants
         //                 of the four quadrants round its facing (left at <= RangedSurroundExitQuadrants), AND no friendly infantry
         //                 (>= RangedCoverMinMen) within RangedCoverEnterGap (leaves when infantry is within RangedCoverExitGap) -> loose Circle
-        //  1. heavyFire: UnderRangedAttackRatio >= RangedHeavyFire                                   -> Loose
+        //  1. heavyFire: UnderRangedAttackRatio >= RangedHeavyFire, held until below RangedHeavyFireExit -> Loose
         //  2. cavalry:   enemy MELEE cavalry (>= RangedCavalryMinMen) COMING IN: within RangedCavalryThreatRange closing >=
         //                RangedCavalryChargeSpeed, or within RangedCavalryCloseRange closing >= RangedCavalryClosingSpeed, or within
         //                RangedCavalryContactRange; kept RangedCavalryKeepSeconds. Gaps use RangedStableRadius (its Line size: Loose's
@@ -34,8 +34,8 @@ namespace RBMAI
         //                terrainTacticsEnabled + snapshot only, re-read every RangedGroundCheckSeconds) -> Loose
         //  5. post:      a fixed post sheltered by infantry (the caller says so)                       -> Line
         //  6. default:   the caller's preferred arrangement.
-        // At most one change per RangedArrangementCooldown s while the formation still stands in the arrangement this chose last.
-        // ENTERING the loose circle is exempt (urgent, own hysteresis); leaving it is not.
+        // At most one change per RangedArrangementCooldown s (cavalry / heavyFire) or RangedArrangementCalmCooldown s (the rest) while the
+        // formation still stands in the arrangement this chose last. ENTERING the loose circle is exempt (urgent, own hysteresis); leaving it is not.
         //
         // The loose circle: SetArrangementOrder(Circle) (native OnApply resets UnitSpacing to the Circle's 2), then SetPositioning(unitSpacing:
         // RangedLooseShapeSpacing) and FormOrder Wide. Every call re-asserts the spacing and the Wide width order; the width order it
@@ -47,13 +47,17 @@ namespace RBMAI
 
         internal const float RangedArrangementCooldown = 15f;
 
+        // Calm choices (default / post / ground / fire): cover and support fire starting and ending must not reshape the block each time.
+        internal const float RangedArrangementCalmCooldown = 30f;
+
         // Under-fire Loose: entered at the first ratio, left below the second held for RangedLineAgainSeconds.
         internal const float RangedLooseUnderFire = 0.1f;
         internal const float RangedLineAgainFire = 0.02f;
         internal const float RangedLineAgainSeconds = 10f;
 
-        // Loose even with enemy cavalry near.
+        // Loose even with enemy cavalry near; left below the exit ratio.
         internal const float RangedHeavyFire = 0.25f;
+        internal const float RangedHeavyFireExit = 0.15f;
 
         // Enemy melee cavalry (edge gap m, cached velocity toward us m/s) makes it close ranks: charging in, closing, or in contact.
         internal const float RangedCavalryThreatRange = 100f;
@@ -124,6 +128,7 @@ namespace RBMAI
             public bool HasApplied;
             public float ChangedAt = float.NegativeInfinity;
             public bool UnderFire;
+            public bool HeavyFire;
             public float CalmSince = float.NaN;
             public bool BrokenGround;
             public float GroundAt = float.NegativeInfinity;
@@ -229,6 +234,14 @@ namespace RBMAI
                         s.CalmSince = float.NaN;
                     }
                 }
+                if (fire >= RangedHeavyFire)
+                {
+                    s.HeavyFire = true;
+                }
+                else if (fire < RangedHeavyFireExit)
+                {
+                    s.HeavyFire = false;
+                }
                 UpdateRangedBrokenGround(formation, s, now);
                 UpdateRangedSurrounded(mission, formation, s);
                 if (MeleeCavalryThreat(mission, formation))
@@ -248,7 +261,7 @@ namespace RBMAI
                     reason = RangedArrangementReason.Surrounded;
                     wanted = ArrangementOrder.ArrangementOrderEnum.Circle;
                 }
-                else if (fire >= RangedHeavyFire)
+                else if (s.HeavyFire)
                 {
                     reason = RangedArrangementReason.HeavyFire;
                     wanted = ArrangementOrder.ArrangementOrderEnum.Loose;
@@ -280,7 +293,9 @@ namespace RBMAI
                 }
 
                 bool enteringCircle = wanted == ArrangementOrder.ArrangementOrderEnum.Circle && s.Applied != ArrangementOrder.ArrangementOrderEnum.Circle;
-                if (s.HasApplied && wanted != s.Applied && !enteringCircle && formation.ArrangementOrder.OrderEnum == s.Applied && now - s.ChangedAt < RangedArrangementCooldown)
+                float cooldown = (reason == RangedArrangementReason.Cavalry || reason == RangedArrangementReason.HeavyFire)
+                    ? RangedArrangementCooldown : RangedArrangementCalmCooldown;
+                if (s.HasApplied && wanted != s.Applied && !enteringCircle && formation.ArrangementOrder.OrderEnum == s.Applied && now - s.ChangedAt < cooldown)
                 {
                     // Last choice still stands and is recent: keep it.
                     return s.Applied;
@@ -654,8 +669,8 @@ namespace RBMAI
                     }
                     if (gap <= RangedCavalryThreatRange)
                     {
-                        Vec2 velocity = enemy.CachedCurrentVelocity;
-                        float closing = velocity.IsValid ? velocity.DotProduct(toUs) : 0f;
+                        // sampled motion: a reshaping block is no closing speed
+                        float closing = EnemyMotion.Velocity(enemy).DotProduct(toUs);
                         if (closing >= RangedCavalryChargeSpeed || (gap <= RangedCavalryCloseRange && closing >= RangedCavalryClosingSpeed))
                         {
                             return true;

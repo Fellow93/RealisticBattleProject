@@ -59,10 +59,14 @@ namespace RBMAI
                 ____rangedCavalry.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
             }
-            // The defender's battle position (needs a published plan): infantry holds the line, archers their place, cavalry reserves when both ends are covered.
-            if (RBMBehaviorHoldPosition.TryAssign(____mainInfantry, __instance, 0, RBMBehaviorHoldPosition.Role.Line))
+            // The defender's battle position (needs a published plan): infantry holds the line (no melee-infantry main: the archer anchor stands), archers their place, cavalry reserves when both ends are covered.
+            bool archerLine = RBMBehaviorHoldPosition.YieldToArcherStand(__instance.Team, __instance, 0, ____mainInfantry, ____archers);
+            if (archerLine || RBMBehaviorHoldPosition.TryAssign(____mainInfantry, __instance, 0, RBMBehaviorHoldPosition.Role.Line))
             {
-                RBMBehaviorHoldPosition.TryAssign(____archers, __instance, 0, RBMBehaviorHoldPosition.Role.Archers);
+                if (!archerLine)
+                {
+                    RBMBehaviorHoldPosition.TryAssign(____archers, __instance, 0, RBMBehaviorHoldPosition.Role.Archers);
+                }
                 if (TerrainBattlePosition.ReserveWanted(__instance.Team))
                 {
                     RBMBehaviorHoldPosition.TryAssign(____leftCavalry, __instance, 0, RBMBehaviorHoldPosition.Role.Reserve);

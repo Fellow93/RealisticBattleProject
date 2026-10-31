@@ -17,6 +17,11 @@ namespace RBMAI
     /// CONNECTED: the team's main infantry (AI- or player-led) is >= ConnectMeleeRatio in melee with a significant enemy formation within
     /// MeleeProbeGap (the fronts), or under Charge / ChargeWithTarget with one within ConnectChargeGap. Read at most every ConnectCheckSeconds,
     /// held ConnectHoldSeconds. ENGAGED ENEMY = the nearest such formation (kept unless gone or another is RetargetMargin nearer).
+    /// MAIN = the behavior's position anchor (ArmyComposition.AnchorFor): the main infantry, else the foot anchor; beside an ARCHER anchor connected = the nearest
+    /// significant enemy within TakeRange (KeepRange while supporting) x the reach of the anchor.
+    /// ALONE (the formation is the anchor, or there is none): the archers are their own anchor ("main" = itself): connected = the nearest significant enemy within TakeRange
+    /// (KeepRange while supporting) x the reach; "ahead" = past their own front, no cohesion test, no mainMoved / outOfRange re-pick (the connection ends it);
+    /// behind / sides / search are laid out round the archers themselves. Exhausted = the last pick or the ladder ended in "none" (ArcherSkirmish's initiative).
     ///
     /// STAND AND SHOOT: the current place is kept when usable: not ahead of the main's centre on the main -> enemy axis, the engaged enemy within
     /// TakeRange x the reach (half max missile range + both half depths), no other significant enemy melee formation within SafeEnemyGap (the engaged
@@ -121,9 +126,10 @@ namespace RBMAI
         private Formation _checkedMain;
         private bool _lastConnected;
         private string _lastHow;
-        private Vec2 _point = Vec2.Invalid;
+        private const float ApplyKeepDistance = 0.5f; // m: Apply keeps the built point this close
+        /// <summary>The support Move point (front-centre); Desired = its Vec2.</summary>
+        private readonly CachedMovePoint _move = new CachedMovePoint();
         private Vec2 _facing = Vec2.Invalid;
-        private WorldPosition _target = WorldPosition.Invalid;
         private string _kind;
         private Vec2 _mainAt = Vec2.Invalid;
         private float _pickedAt = float.NegativeInfinity;
@@ -137,18 +143,39 @@ namespace RBMAI
         private bool _keepLogged;
         private string _noneLogged;
         private volatile string _label;
+        private bool _exhaustedFlag;
+        private float _exhaustedAt = float.NegativeInfinity;
+
+        // set: stamped; cleared: a new place, firing, a new engaged enemy, or ExhaustedSeconds after it was set
+        private bool _exhausted
+        {
+            get { return _exhaustedFlag; }
+            set
+            {
+                if (value && !_exhaustedFlag)
+                {
+                    _exhaustedAt = MBCommon.GetTotalMissionTime();
+                }
+                _exhaustedFlag = value;
+            }
+        }
+
+        internal const float ExhaustedSeconds = 30f;
 
         /// <summary>AI thread.</summary>
         internal Formation Main => _active ? _main : null;
 
+        /// <summary>AI thread: the last pick found no place, or the vision ladder ended in "none", within ExhaustedSeconds; cleared by the next place, firing or a new engaged enemy.</summary>
+        internal bool Exhausted => _exhaustedFlag && MBCommon.GetTotalMissionTime() - _exhaustedAt < ExhaustedSeconds;
+
         /// <summary>Footprint centre (ArcherCover's fallback bends toward it); invalid when not supporting. AI thread.</summary>
         internal Vec2 Refuge(Formation formation)
         {
-            if (!_active || !_point.IsValid || !_facing.IsValid || formation == null)
+            if (!_active || !_move.Desired.IsValid || !_facing.IsValid || formation == null)
             {
                 return Vec2.Invalid;
             }
-            return _point - _facing * (MathF.Max(formation.Depth, FriendlyOverlap.MinDepth) * 0.5f);
+            return _move.Desired - _facing * (MathF.Max(formation.Depth, FriendlyOverlap.MinDepth) * 0.5f);
         }
 
         /// <summary>Decision layer text ("support behind", ...); null when not supporting. Any thread.</summary>
@@ -178,7 +205,8 @@ namespace RBMAI
                     }
                     return false;
                 }
-                Formation main = FormationCohesion.MainInfantry(formation);
+                // the behavior's own anchor (a second archer formation supports beside the archer anchor); the anchor itself acts alone
+                Formation main = ArmyComposition.AnchorFor(formation) ?? formation;
                 Formation enemy;
                 string how;
                 if (!Connection(mission, formation, main, now, out enemy, out how))
@@ -236,12 +264,12 @@ namespace RBMAI
                     FormationCohesion.SetSupportAnchor(formation, main);
                 }
                 float depth = MathF.Max(formation.Depth, FriendlyOverlap.MinDepth);
-                Vec2 placeCentre = _point - _facing * (depth * 0.5f);
+                Vec2 placeCentre = _move.Desired - _facing * (depth * 0.5f);
                 float toEnemy = placeCentre.Distance(enemyCentre);
                 string repick = null;
                 bool hard = false;
-                // stand vs mounted: riders riding out of range never move the archers off their place
-                if (toEnemy > KeepRange * g.Reach && !IsMounted(enemy))
+                // stand vs mounted: riders riding out of range never move the archers off their place; alone the connection ends it
+                if (!g.Self && toEnemy > KeepRange * g.Reach && !IsMounted(enemy))
                 {
                     if (float.IsNaN(_outOfRangeSince))
                     {
@@ -256,11 +284,12 @@ namespace RBMAI
                 {
                     _outOfRangeSince = float.NaN;
                 }
-                if (repick == null && _mainAt.IsValid && _mainAt.Distance(mainCentre) > MainMovedRepick)
+                if (repick == null && !g.Self && _mainAt.IsValid && _mainAt.Distance(mainCentre) > MainMovedRepick)
                 {
                     repick = "mainMoved " + Fmt0(_mainAt.Distance(mainCentre)) + "m";
                 }
-                if (repick == null && g.AheadOfMain(_point))
+                // alone the "main" is where they stand now: a held place is never ahead of itself
+                if (repick == null && !g.Self && g.AheadOfMain(_move.Desired))
                 {
                     repick = "ahead";
                     hard = true;
@@ -268,14 +297,14 @@ namespace RBMAI
                 if (repick == null)
                 {
                     Formation friend;
-                    float share = FriendlyOverlap.Share(formation, _point, _facing, null, FriendlyOverlap.Mode.HeadingOnly, out friend);
+                    float share = FriendlyOverlap.Share(formation, _move.Desired, _facing, null, FriendlyOverlap.Mode.HeadingOnly, out friend);
                     if (share > FriendlyOverlap.KeepMaxShare)
                     {
                         repick = "friendOverlap " + TerrainCavalry.FormationName(friend) + " share=" + Fmt2(share);
                         hard = true;
                     }
                 }
-                if (repick == null && terrain != null && GroundFail(terrain, formation, _point, _facing, EdgeMin, true) != null)
+                if (repick == null && terrain != null && GroundFail(terrain, formation, _move.Desired, _facing, EdgeMin, true) != null)
                 {
                     repick = "ground";
                     hard = true;
@@ -287,7 +316,7 @@ namespace RBMAI
                 }
 
                 // vision
-                bool arrived = ArrivedAt(formation, centre, _point, _facing, ArriveDistance);
+                bool arrived = ArrivedAt(formation, centre, _move.Desired, _facing, ArriveDistance);
                 if (arrived && float.IsNaN(_arrivedAt))
                 {
                     _arrivedAt = now;
@@ -305,6 +334,7 @@ namespace RBMAI
                     if (shooting >= NoShootRatio)
                     {
                         _noShootSince = float.NaN;
+                        _exhausted = false;
                         if (!_keepLogged && what == null)
                         {
                             _keepLogged = true;
@@ -372,9 +402,19 @@ namespace RBMAI
                 float gap;
                 NearestEngaged(mission, main, out nearest, out gap);
                 bool connected = false;
-                string gapText = FormationGeometry.Shadow(gap, (nearest != null && FormationGeometry.ShadowOn) ? OldFrontGap(main, nearest) : float.NaN);
+                string gapText = FormationGeometry.GapText(gap);
                 string text = "gap=" + gapText;
-                if (nearest != null)
+                if (nearest != null && (main == formation || ArmyComposition.IsArchers(main)))
+                {
+                    // alone, or beside an archer anchor (it shoots, it never closes to melee): a significant enemy within the archers' reach of the anchor
+                    Vec2 own = RBMAI.Utilities.GetFormationCenter(main);
+                    Vec2 other = RBMAI.Utilities.GetFormationCenter(nearest);
+                    float reach = Reach(formation, nearest);
+                    float d = (own.IsValid && other.IsValid) ? own.Distance(other) : float.MaxValue;
+                    connected = d <= (_active ? KeepRange : TakeRange) * reach;
+                    text = ((main == formation) ? "alone " : "archerAnchor ") + TerrainCavalry.FormationName(nearest) + " d=" + Fmt0(d) + "/" + Fmt0(reach) + "m";
+                }
+                else if (nearest != null)
                 {
                     OrderType order = main.GetReadonlyMovementOrderReference().OrderType;
                     if ((order == OrderType.Charge || order == OrderType.ChargeWithTarget) && gap <= ConnectChargeGap)
@@ -397,6 +437,11 @@ namespace RBMAI
                     if (_enemy == null || _enemy.CountOfUnits <= 0 || _enemy == nearest || _main != main
                         || FrontGap(main, _enemy) > gap + RetargetMargin)
                     {
+                        if (_enemy != nearest)
+                        {
+                            // a new engaged enemy: whatever was exhausted was about the old one
+                            _exhausted = false;
+                        }
                         _enemy = nearest;
                     }
                 }
@@ -444,18 +489,6 @@ namespace RBMAI
             return FormationGeometry.Gap(a, FootprintMode.ScatterAware, b, FootprintMode.ScatterAware);
         }
 
-        /// <summary>The former measure (centre distance minus both half depths), for the shadow log.</summary>
-        private static float OldFrontGap(Formation a, Formation b)
-        {
-            Vec2 ca = RBMAI.Utilities.GetFormationCenter(a);
-            Vec2 cb = RBMAI.Utilities.GetFormationCenter(b);
-            if (!ca.IsValid || !cb.IsValid)
-            {
-                return float.MaxValue;
-            }
-            return MathF.Max(0f, ca.Distance(cb) - a.Depth * 0.5f - b.Depth * 0.5f);
-        }
-
         /// <summary>m, centre to centre: ArcherSkirmish's effective shooting range.</summary>
         private static float Reach(Formation formation, Formation enemy)
         {
@@ -475,9 +508,15 @@ namespace RBMAI
             /// <summary>Half extents of the main's footprint.</summary>
             public float MainAlong;
             public float MainAcross;
+            /// <summary>Alone: the archers are their own main.</summary>
+            public bool Self;
+            /// <summary>Alone: a front up to this far ahead of their centre is not "ahead" (their own front).</summary>
+            public float SelfFront;
 
             public Geometry(Formation formation, Formation main, Formation enemy, Vec2 mainCentre, Vec2 enemyCentre, Vec2 axis, float reach)
             {
+                Self = main == formation;
+                SelfFront = MathF.Max(formation.Depth, FriendlyOverlap.MinDepth) * 0.5f + 1f;
                 Main = main;
                 Enemy = enemy;
                 MainCentre = mainCentre;
@@ -491,7 +530,7 @@ namespace RBMAI
 
             public bool AheadOfMain(Vec2 front)
             {
-                return Vec2.DotProduct(front - MainCentre, Axis) > 1f;
+                return Vec2.DotProduct(front - MainCentre, Axis) > (Self ? SelfFront : 1f);
             }
 
             public Vec2 Behind => MainCentre - Axis * (MainAlong + BehindGap);
@@ -513,6 +552,7 @@ namespace RBMAI
             {
                 // neither a place nor a safe stand: the behavior's own order, ArcherCover answers a threat
                 // (the dedupe text is built only with the log on: _noneLogged is only written there)
+                _exhausted = true;
                 if (RBMConfig.RBMConfig.battleTerrainLoggingEnabled)
                 {
                     string none = "pick " + standFail;
@@ -548,10 +588,11 @@ namespace RBMAI
             {
                 // nothing usable and no safe stand: the support ends, the behavior's own order takes over
                 Drop(formation, now, "noPlace " + reason + " here=" + standFail, out what, out why);
+                _exhausted = true;
                 return;
             }
             // standing where the old place was is a keep, not a move
-            bool same = _point.IsValid && _point.DistanceSquared(c.Front) <= 100f;
+            bool same = _move.Desired.IsValid && _move.Desired.DistanceSquared(c.Front) <= 100f;
             Apply(formation, g, c, now);
             _ladder = Ladder.None;
             what = same ? "support keep" : "support move";
@@ -573,7 +614,7 @@ namespace RBMAI
                 EnemyConcentration.Result r;
                 if (EnemyConcentration.Find(mission, formation, EnemyConcentration.Range, out r) && r.Centre.IsValid)
                 {
-                    Vec2 placeCentre = _point - _facing * (MathF.Max(formation.Depth, FriendlyOverlap.MinDepth) * 0.5f);
+                    Vec2 placeCentre = _move.Desired - _facing * (MathF.Max(formation.Depth, FriendlyOverlap.MinDepth) * 0.5f);
                     Vec2 toward = r.Centre - placeCentre;
                     if (toward.LengthSquared > 1f)
                     {
@@ -623,6 +664,7 @@ namespace RBMAI
                     why = spell + " search " + Describe(formation, g, c);
                     return;
                 }
+                _exhausted = true;
                 what = "support none";
                 why = "search none " + spell + " " + KindText();
             }
@@ -684,7 +726,7 @@ namespace RBMAI
             {
                 return unsafeText;
             }
-            float gap = FormationCohesion.Gap(formation, c.Front, c.Facing, g.Main);
+            float gap = g.Self ? float.NaN : FormationCohesion.Gap(formation, c.Front, c.Facing, g.Main);
             float limit = FormationCohesion.Limit(formation, FormationCohesion.Kind.Auto) + FormationCohesion.KeepSlack;
             if (!float.IsNaN(gap) && gap > limit)
             {
@@ -731,7 +773,7 @@ namespace RBMAI
             {
                 return unsafeText;
             }
-            float gap = FormationCohesion.Gap(formation, front, f, g.Main);
+            float gap = g.Self ? float.NaN : FormationCohesion.Gap(formation, front, f, g.Main);
             float limit = FormationCohesion.Limit(formation, FormationCohesion.Kind.Auto);
             if (!float.IsNaN(gap) && gap > limit)
             {
@@ -1050,26 +1092,14 @@ namespace RBMAI
         /// <summary>A copy of a cached WorldPosition with ONE SetVec2MT (a spot's own one as it is).</summary>
         private void Apply(Formation formation, Geometry g, Candidate c, float now)
         {
-            bool moved = !_point.IsValid || _point.DistanceSquared(c.Front) > 0.25f;
-            if (moved)
+            // a spot's own WorldPosition (its point is the spot); else the main's median near the support place, the archers' own for a stand
+            WorldPosition first = (c.Spot != null) ? c.Spot.Position
+                : (c.Kind == "stand" || c.Kind == "standNoPlace" || g.Main == null) ? formation.CachedMedianPosition : g.Main.CachedMedianPosition;
+            WorldPosition point;
+            bool rebuilt;
+            _move.TryGet(c.Front, now, first, formation.CachedMedianPosition, false, true, !_move.Desired.IsValid, ApplyKeepDistance, 0f, out point, out rebuilt);
+            if (rebuilt)
             {
-                if (c.Spot != null)
-                {
-                    _target = c.Spot.Position;
-                }
-                else
-                {
-                    // ONE SetVec2MT on a fresh copy (native caches the order position by its Vec2); the main's median is near the support place, the archers' own for a stand
-                    WorldPosition source = (c.Kind == "stand" || c.Kind == "standNoPlace" || g.Main == null) ? formation.CachedMedianPosition : g.Main.CachedMedianPosition;
-                    if (!source.AsVec2.IsValid)
-                    {
-                        source = formation.CachedMedianPosition;
-                    }
-                    WorldPosition target = source;
-                    target.SetVec2MT(c.Front);
-                    _target = target;
-                }
-                _point = c.Front;
                 _arrivedAt = float.NaN;
             }
             _facing = c.Facing;
@@ -1081,16 +1111,17 @@ namespace RBMAI
             _outOfRangeSince = float.NaN;
             _noShootSince = float.NaN;
             _keepLogged = false;
+            _exhausted = false;
             _label = "support " + c.Kind;
         }
 
         private void UpdateFacing(Mission mission, Formation formation, Geometry g, Formation preferTarget)
         {
-            if (_faceConcentration || !_point.IsValid)
+            if (_faceConcentration || !_move.Desired.IsValid)
             {
                 return;
             }
-            Vec2 placeCentre = _point - _facing * (MathF.Max(formation.Depth, FriendlyOverlap.MinDepth) * 0.5f);
+            Vec2 placeCentre = _move.Desired - _facing * (MathF.Max(formation.Depth, FriendlyOverlap.MinDepth) * 0.5f);
             Vec2 aim = g.EnemyCentre;
             if (preferTarget != null && preferTarget.CountOfUnits > 0)
             {
@@ -1128,9 +1159,9 @@ namespace RBMAI
 
         private bool Current(out WorldPosition target, out Vec2 facing)
         {
-            target = _target;
+            target = _move.Point;
             facing = _facing;
-            return _active && _point.IsValid && _facing.IsValid && _target.AsVec2.IsValid;
+            return _active && _move.Desired.IsValid && _facing.IsValid && target.AsVec2.IsValid;
         }
 
         private void Drop(Formation formation, float now, string reason, out string what, out string why)
@@ -1140,9 +1171,8 @@ namespace RBMAI
             _active = false;
             _main = null;
             _enemy = null;
-            _point = Vec2.Invalid;
+            _move.Clear();
             _facing = Vec2.Invalid;
-            _target = WorldPosition.Invalid;
             _kind = null;
             _mainAt = Vec2.Invalid;
             _arrivedAt = float.NaN;
@@ -1197,14 +1227,6 @@ namespace RBMAI
     /// </summary>
     internal sealed class CoverSupport
     {
-        internal enum LogQueue
-        {
-            /// <summary>TerrainSpots.EnqueueBehavior with the behavior name.</summary>
-            Spots,
-            BattlePosition,
-            ChokeHold
-        }
-
         internal enum Step
         {
             Off,
@@ -1217,15 +1239,16 @@ namespace RBMAI
 
         internal readonly ArcherCover Cover = new ArcherCover();
         internal readonly SupportFire Support = new SupportFire();
-        private readonly LogQueue _queue;
         private readonly string _behavior;
+        private readonly string _pointKey;
         private bool _covering;
         private bool _supporting;
 
-        internal CoverSupport(LogQueue queue, string behavior)
+        /// <summary>behavior = the BEHAVIOR line's behavior name; pointKey = its point field's name ("spot" for the free archer behaviors, "point" for the holds).</summary>
+        internal CoverSupport(string behavior, string pointKey)
         {
-            _queue = queue;
             _behavior = behavior;
+            _pointKey = pointKey;
         }
 
         internal bool Covering => _covering;
@@ -1241,6 +1264,14 @@ namespace RBMAI
         {
             string what;
             string why;
+            // the archer stand never steps back
+            if (RBMBehaviorArcherStand.Owns(formation))
+            {
+                target = WorldPosition.Invalid;
+                facing = Vec2.Invalid;
+                ReleaseCover(formation, "archerStand");
+                return Next(false, ref _covering);
+            }
             // supporting the engaged main: it counts as cover under Charge too
             Cover.SetSupport(Support.Main, Support.Refuge(formation));
             bool covering = Cover.Evaluate(formation, formation.AI != null && formation.AI.ActiveBehavior == owner, atPost, out target, out facing, out what, out why);
@@ -1256,6 +1287,13 @@ namespace RBMAI
         {
             string what;
             string why;
+            if (RBMBehaviorArcherStand.Owns(formation))
+            {
+                target = WorldPosition.Invalid;
+                facing = Vec2.Invalid;
+                ReleaseSupport(formation, "archerStand");
+                return Next(false, ref _supporting);
+            }
             bool supporting = Support.Evaluate(formation, formation.AI != null && formation.AI.ActiveBehavior == owner, preferTarget, post, postFacing, preferredSide,
                 out target, out facing, out what, out why);
             if (what != null)
@@ -1311,18 +1349,7 @@ namespace RBMAI
 
         private void Enqueue(Formation formation, float now, string what, string point, string why)
         {
-            switch (_queue)
-            {
-                case LogQueue.BattlePosition:
-                    TerrainBattlePosition.Enqueue(formation.Team, formation, now, what, point, why);
-                    break;
-                case LogQueue.ChokeHold:
-                    TerrainChokeHold.Enqueue(formation.Team, formation, now, what, point, why);
-                    break;
-                default:
-                    TerrainSpots.EnqueueBehavior(formation.Team, formation, now, _behavior, what, point, why);
-                    break;
-            }
+            TerrainLog.Behavior(formation.Team, formation, now, _behavior, what, _pointKey, point, why);
         }
     }
 }

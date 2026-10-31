@@ -7,20 +7,7 @@ namespace RBMAI
     /// <summary>ReactionMonitor's detection (AI thread): position samples per enemy formation, the R1 / R2 / R4 / R7 detectors (R3 is in Hunt.cs), the event table with hysteresis (strict condition to confirm, looser keep condition) and the expiry.</summary>
     internal sealed partial class ReactionMonitor
     {
-        /// <summary>Last sampled centre and smoothed velocity (m/s). AI thread.</summary>
-        private sealed class Sample
-        {
-            public Vec2 Position;
-            public Vec2 Velocity;
-            public float Time;
-            public bool HasVelocity;
-        }
-
-        private const float SampleMaxGap = 5f; // older samples are no base for a velocity
-
-        private readonly Dictionary<Formation, Sample> _samples = new Dictionary<Formation, Sample>();
-
-        /// <summary>Velocity = mean of the last step and the previous estimate.</summary>
+        /// <summary>Every enemy formation's shared motion sample (EnemyMotion) taken this check.</summary>
         private void UpdateSamples(Mission mission, float now)
         {
             foreach (Team team in mission.Teams)
@@ -31,58 +18,15 @@ namespace RBMAI
                 }
                 foreach (Formation f in team.FormationsIncludingSpecialAndEmpty)
                 {
-                    if (f == null || f.CountOfUnits <= 0)
-                    {
-                        continue;
-                    }
-                    Vec2 c = RBMAI.Utilities.GetFormationCenter(f);
-                    if (!c.IsValid)
-                    {
-                        continue;
-                    }
-                    Sample s;
-                    if (!_samples.TryGetValue(f, out s))
-                    {
-                        _samples[f] = new Sample { Position = c, Time = now };
-                        continue;
-                    }
-                    float dt = now - s.Time;
-                    if (dt <= 0.2f)
-                    {
-                        continue;
-                    }
-                    if (dt > SampleMaxGap)
-                    {
-                        s.HasVelocity = false;
-                    }
-                    else
-                    {
-                        Vec2 v = (c - s.Position) * (1f / dt);
-                        s.Velocity = s.HasVelocity ? (s.Velocity + v) * 0.5f : v;
-                        s.HasVelocity = true;
-                    }
-                    s.Position = c;
-                    s.Time = now;
+                    EnemyMotion.Touch(f, now);
                 }
             }
         }
 
         /// <summary>The sampled speed (m/s) of <paramref name="enemy"/> toward <paramref name="point"/>; 0 without a velocity.</summary>
-        private float Closing(Formation enemy, Vec2 point)
+        private static float Closing(Formation enemy, Vec2 point)
         {
-            Sample s;
-            if (enemy == null || !_samples.TryGetValue(enemy, out s) || !s.HasVelocity)
-            {
-                return 0f;
-            }
-            Vec2 c = RBMAI.Utilities.GetFormationCenter(enemy);
-            Vec2 to = point - (c.IsValid ? c : s.Position);
-            float len = to.Length;
-            if (len < 0.5f)
-            {
-                return 0f;
-            }
-            return s.Velocity.DotProduct(to * (1f / len));
+            return EnemyMotion.ClosingSpeed(enemy, point);
         }
 
         private ReactionEvent Find(ReactKind kind, Formation victim, Formation attacker, int spot)
@@ -102,7 +46,7 @@ namespace RBMAI
 
         /// <summary>One detector hit: strict starts / confirms an event (after ConfirmChecks strict checks in a row), keep is the looser condition that keeps a confirmed one alive. Returns the event when this check counted for it, else null.</summary>
         private ReactionEvent Observe(ReactKind kind, Formation victim, int spot, Formation reactor, Formation attacker, bool strict, bool keep, string trigger,
-            float gap, float closing, float eta, float now, float gapOld = float.NaN)
+            float gap, float closing, float eta, float now)
         {
             ReactionEvent ev = Find(kind, victim, attacker, spot);
             if (ev == null)
@@ -133,7 +77,6 @@ namespace RBMAI
             ev.LastTrue = now;
             ev.Trigger = trigger;
             ev.Gap = gap;
-            ev.GapOld = gapOld;
             ev.Closing = closing;
             ev.Eta = eta;
             if (kind == ReactKind.R4)
@@ -158,7 +101,7 @@ namespace RBMAI
 
         private static string DetectWhy(ReactionEvent ev)
         {
-            string text = (ev.Trigger ?? "-") + " gap=" + FormationGeometry.Shadow(ev.Gap, ev.GapOld) + " closing=" + Fmt1(ev.Closing) + "m/s";
+            string text = (ev.Trigger ?? "-") + " gap=" + FormationGeometry.GapText(ev.Gap) + " closing=" + Fmt1(ev.Closing) + "m/s";
             if (!float.IsNaN(ev.Eta))
             {
                 text += " eta=" + Fmt0(ev.Eta) + "s";
@@ -287,7 +230,7 @@ namespace RBMAI
                         }
                         Observe(ReactKind.R1, victim, 0, victim, a, strict, keep,
                             melee ? (horseArchers ? "melee horseArchers" : "melee") : (cavalry ? "cavalryClosing" : (horseArchers ? "horseArchersClose" : "closing")),
-                            gap, closing, float.NaN, now, OldGap(victim, a));
+                            gap, closing, float.NaN, now);
                     }
                 }
             }
@@ -350,13 +293,13 @@ namespace RBMAI
             {
                 return RiderAspect.None;
             }
-            Sample s;
-            if (!_samples.TryGetValue(riders, out s) || !s.HasVelocity)
+            Vec2 velocity;
+            if (!EnemyMotion.TryVelocity(riders, out velocity))
             {
                 return RiderAspect.Frontal;
             }
-            float comeIn = -s.Velocity.DotProduct(forward);
-            float across = s.Velocity.DotProduct(left);
+            float comeIn = -velocity.DotProduct(forward);
+            float across = velocity.DotProduct(left);
             if (comeIn > 0.5f)
             {
                 float t = MathF.Min((along - front) / comeIn, FrontalLookAhead);
@@ -396,7 +339,7 @@ namespace RBMAI
             }
             until[riders] = now + FrontalSkipLogSeconds;
             Log(kind, "skip", 0, victim, 0, victim, riders, null, null, float.NaN, float.NaN,
-                "frontalCavalry lateral=" + Fmt0(lateral) + "m gap=" + FormationGeometry.Shadow(gap, OldGap(victim, riders)) + " closing=" + Fmt1(closing) + "m/s", now);
+                "frontalCavalry lateral=" + Fmt0(lateral) + "m gap=" + FormationGeometry.GapText(gap) + " closing=" + Fmt1(closing) + "m/s", now);
         }
 
         // R2 enemy cavalry round a flank / at the archers / the rear
@@ -425,6 +368,8 @@ namespace RBMAI
             Vec2 left = new Vec2(-forward.y, forward.x);
             float mainFront = main.Depth * 0.5f;
             float mainHalfWidth = main.Width * 0.5f;
+            // an anchor that is no melee line (archers) is a victim itself, without line ends
+            bool mainIsLine = FormationCohesion.IsMeleeInfantry(main);
             // Victims: own foot ranged, own formations behind the main front plane, the main line's ends; allied teams' foot ranged.
             _r2Victims.Clear();
             foreach (Team own in mission.Teams)
@@ -435,7 +380,7 @@ namespace RBMAI
                 }
                 foreach (Formation f in own.FormationsIncludingSpecialAndEmpty)
                 {
-                    if (f == null || f == main || f.CountOfUnits < VictimMinMen)
+                    if (f == null || (f == main && mainIsLine) || f.CountOfUnits < VictimMinMen)
                     {
                         continue;
                     }
@@ -460,8 +405,11 @@ namespace RBMAI
                     _r2Victims.Add(new VictimSpot { Formation = f, Spot = 0, Point = c, Radius = Radius(f), Ranged = ranged, InFront = inFront });
                 }
             }
-            _r2Victims.Add(new VictimSpot { Formation = main, Spot = 1, Point = mc + left * mainHalfWidth, Radius = 0f });
-            _r2Victims.Add(new VictimSpot { Formation = main, Spot = 2, Point = mc - left * mainHalfWidth, Radius = 0f });
+            if (mainIsLine)
+            {
+                _r2Victims.Add(new VictimSpot { Formation = main, Spot = 1, Point = mc + left * mainHalfWidth, Radius = 0f });
+                _r2Victims.Add(new VictimSpot { Formation = main, Spot = 2, Point = mc - left * mainHalfWidth, Radius = 0f });
+            }
 
             foreach (Team team in mission.Teams)
             {
@@ -499,7 +447,6 @@ namespace RBMAI
                     bool bestKeep = false;
                     bool bestKept = false;
                     float bestGap = 0f;
-                    float bestGapOld = float.NaN;
                     float bestClosing = 0f;
                     for (int i = 0; i < _r2Victims.Count; i++)
                     {
@@ -548,7 +495,6 @@ namespace RBMAI
                             bestKeep = keep;
                             bestKept = confirmed;
                             bestGap = gap;
-                            bestGapOld = OldSpotGap(v.Point, v.Radius, a);
                             bestClosing = closing;
                         }
                     }
@@ -566,7 +512,7 @@ namespace RBMAI
                     VictimSpot pick = _r2Victims[best];
                     Observe(ReactKind.R2, pick.Formation, pick.Spot, pick.Formation, a, bestStrict, bestKeep,
                         (round ? "round" : "frontal") + (horseArchers ? " horseArchers" : "") + " lateral=" + Fmt0(lateral) + "m along=" + Fmt0(along) + "m",
-                        bestGap, bestClosing, (bestEta >= float.MaxValue) ? float.NaN : bestEta, now, bestGapOld);
+                        bestGap, bestClosing, (bestEta >= float.MaxValue) ? float.NaN : bestEta, now);
                 }
             }
         }
@@ -575,17 +521,6 @@ namespace RBMAI
         private static float SpotGap(Formation victim, int spot, Vec2 point, Formation riders)
         {
             return (spot == 0) ? EdgeGap(victim, riders) : GapToPoint(riders, point);
-        }
-
-        /// <summary>The former circle measure to a victim spot, shadow log only (NaN when off).</summary>
-        private static float OldSpotGap(Vec2 point, float victimRadius, Formation riders)
-        {
-            if (!FormationGeometry.ShadowOn)
-            {
-                return float.NaN;
-            }
-            Vec2 ac = RBMAI.Utilities.GetFormationCenter(riders);
-            return (ac.IsValid && point.IsValid) ? MathF.Max(0f, point.Distance(ac) - Radius(riders) - victimRadius) : float.NaN;
         }
 
         private const float R2MeleeKeepGap = 60f; // edge gap to the victim spot
@@ -632,9 +567,7 @@ namespace RBMAI
                 float gap = SpotGap(ev.Victim, ev.Spot, point, riders);
                 if (gap <= R2MeleeKeepGap)
                 {
-                    float victimRadius = (ev.Spot == 0) ? Radius(ev.Victim) : 0f;
-                    Observe(ReactKind.R2, ev.Victim, ev.Spot, Reactor(ev), riders, false, true, "ridersInMelee melee=" + Fmt2(melee), gap, 0f, float.NaN, now,
-                        OldSpotGap(point, victimRadius, riders));
+                    Observe(ReactKind.R2, ev.Victim, ev.Spot, Reactor(ev), riders, false, true, "ridersInMelee melee=" + Fmt2(melee), gap, 0f, float.NaN, now);
                 }
             }
         }
@@ -742,7 +675,7 @@ namespace RBMAI
                     bool strict = speed < R7MaxSpeed && bestGap <= R7Range;
                     Observe(ReactKind.R7, pick.Formation, pick.Spot, pick.Formation, a, strict, true,
                         "shadow" + (aq.IsRangedCavalryFormation ? " horseArchers" : "") + " speed=" + Fmt1(speed) + "m/s lateral=" + Fmt0(lateral) + "m along=" + Fmt0(along) + "m",
-                        bestGap, Closing(a, pick.Point), float.NaN, now, OldSpotGap(pick.Point, pick.Radius, a));
+                        bestGap, Closing(a, pick.Point), float.NaN, now);
                 }
             }
         }
@@ -838,8 +771,7 @@ namespace RBMAI
                         continue;
                     }
                     Formation victim = locked ?? existing.Victim;
-                    Observe(ReactKind.R4, victim, 0, main, e, strict, keep, "locked melee=" + Fmt2(enemyMelee), (locked != null) ? lockedGap : float.NaN, 0f, float.NaN, now,
-                        (locked != null) ? OldGap(locked, e) : float.NaN);
+                    Observe(ReactKind.R4, victim, 0, main, e, strict, keep, "locked melee=" + Fmt2(enemyMelee), (locked != null) ? lockedGap : float.NaN, 0f, float.NaN, now);
                 }
             }
         }

@@ -68,7 +68,7 @@ $Cfg = @{
     RecallLoopMax      = 2      # more loops than this = FAIL (1..this = WARN)
     ChargeLoopCount    = 3      # this many local charges of one formation at the same enemy formation ...
     ChargeLoopWindow   = 120    # s ... within this = WARN (a bait loop: charge, recall, walk back, charge again)
-    ChargeStartDist    = 50     # m: USER RULE 2026-10-22 an AI foot formation's real charge (AI log CHANGE ORDER -> Charge / ChargeToTarget) starts within this of its target ...
+    ChargeStartDist    = 40     # m: USER RULE 2026-10-22 (50 m, 40 m since 2026-10-30) an AI foot formation's real charge (AI log CHANGE ORDER -> Charge / ChargeToTarget) starts within this of its target ...
     ChargeStartSlack   = 30     # m ... plus this slack (distToEnemy is centre to centre, sampled once a second): a start from farther = WARN
     # 5. Churn
     ChurnWindow        = 60     # s
@@ -118,6 +118,17 @@ $Cfg = @{
     # 16. Charge flicker
     ChargeFlipWindow   = 30     # s
     ChargeFlipMax      = 3      # ChargeGuard advance <-> go switches of one formation above this per ChargeFlipWindow = WARN
+    # 17. Army composition
+    WearDownHoldMax    = 120    # s: a team's melee cavalry held by wearDown this long without an open = WARN
+    CompFlickerWindow  = 60     # s
+    CompFlickerMax     = 3      # the same COMPEVENT what for one team / formation above this per CompFlickerWindow = WARN
+    CompTimelineMax    = 20     # timeline entries listed per team
+    # 18. Cavalry cohesion
+    CavScatterFactor   = 4      # AI melee cavalry under Charge / ChargeToTarget with FORM dev above this x idealDisp = scattered ...
+    CavScatterWarnSec  = 30     # s ... one continuous stretch longer than this = WARN
+    CavScatterFailSec  = 90     # s ... longer than this = FAIL
+    CavScatterGapSec   = 3      # s: a sample gap longer than this ends the stretch
+    ReformNoneWarn     = 5      # this many CavalryCharge 'reform none' lines of one formation with no 'reform take' = WARN
     # misc
     PairToleranceSec   = 5      # s: ai_ and terrain_ stamps this close belong to one battle
     MinBattleSeconds   = 20     # s: shorter battles get a note, most checks have nothing to judge
@@ -169,6 +180,7 @@ class FS {
     [double]$t; [string]$tk; [string]$team; [string]$form; [string]$cls; [int]$men; [bool]$ai
     [string]$beh; [string]$ord; [string]$state; [string]$arr
     [double]$w; [double]$d; [double]$ax; [double]$ay; [double]$ox; [double]$oy; [double]$dOrd; [double]$dEn; [double]$dx; [double]$dy
+    [double]$dev; [double]$ideal
 }
 
 function N1([double]$x) { return [P]::N($x, 1) }
@@ -248,6 +260,7 @@ function Invoke-Check([string]$aiPath, [string]$terrainPath, [string]$stamp) {
             $s.state = ''; $s.arr = ''; $s.w = [double]::NaN; $s.d = [double]::NaN
             $s.ax = [double]::NaN; $s.ay = [double]::NaN; $s.ox = [double]::NaN; $s.oy = [double]::NaN
             $s.dOrd = [double]::NaN; $s.dEn = [double]::NaN; $s.dx = [double]::NaN; $s.dy = [double]::NaN
+            $s.dev = [double]::NaN; $s.ideal = [double]::NaN
             for ($i = 12; $i -lt $p.Length; $i++) {
                 $f = $p[$i]
                 $eq = $f.IndexOf('=')
@@ -263,6 +276,8 @@ function Invoke-Check([string]$aiPath, [string]$terrainPath, [string]$stamp) {
                     'distToOrder' { $s.dOrd = [P]::D($v) }
                     'distToEnemy' { $s.dEn = [P]::D($v) }
                     'dir' { $xy = $v.Split(','); if ($xy.Length -eq 2) { $s.dx = [P]::D($xy[0]); $s.dy = [P]::D($xy[1]) } }
+                    'dev' { $s.dev = [P]::D($v) }
+                    'idealDisp' { $s.ideal = [P]::D($v) }
                 }
             }
             $key = $s.team + '|' + $s.form
@@ -353,8 +368,8 @@ function Invoke-Check([string]$aiPath, [string]$terrainPath, [string]$stamp) {
         Repick = (New-Object 'System.Collections.Generic.List[string]'); FollowPlan = @{}; AttackSides = @{}
         TacticSummary = (New-Object 'System.Collections.Generic.List[string]'); FlankCap = $false; Hedgehog = (New-Object 'System.Collections.Generic.List[string]')
         Reacts = (New-Object 'System.Collections.Generic.List[object]'); BalanceRepicks = (New-Object 'System.Collections.Generic.List[object]')
-        Shadow = @{}
         Approach = (New-Object 'System.Collections.Generic.List[object]'); ApproachUses = (New-Object 'System.Collections.Generic.List[object]')
+        Composition = (New-Object 'System.Collections.Generic.List[object]'); CompEvents = (New-Object 'System.Collections.Generic.List[object]')
     }
     if ($terrainPath -and (Test-Path -LiteralPath $terrainPath)) {
         $tr.Present = $true
@@ -375,21 +390,6 @@ function Invoke-Check([string]$aiPath, [string]$terrainPath, [string]$stamp) {
                 if ($p[$i] -match '^(error|failed|rayFailed)=' -or $p[$i] -match '\sfailed=') { $tr.Errors.Add($p[0] + ' ' + $kind + ' ' + $p[$i]) }
             }
             if ($line -match 'Exception') { $tr.Errors.Add($line) }
-            # FormationGeometry shadow field "key=Xm(old Ym)": per site + key, new - old
-            if ($line.Contains('(old ')) {
-                $site = $kind
-                if ($kind -eq 'BEHAVIOR' -and $p.Length -ge 6) { $site = 'BEHAVIOR ' + $p[4] + ' ' + ($p[5] -split '\s+')[0] }
-                elseif ($kind -eq 'REACT' -and $p.Length -ge 5) { $site = 'REACT ' + $p[3] + ' ' + $p[4] }
-                foreach ($m in [regex]::Matches($line, '(\w+)=(-?\d+)m\(old (-?\d+)m\)')) {
-                    $sk = $site + ' ' + $m.Groups[1].Value
-                    $d = [double]$m.Groups[2].Value - [double]$m.Groups[3].Value
-                    if (-not $tr.Shadow.ContainsKey($sk)) { $tr.Shadow[$sk] = @{ n = 0; sum = 0.0; min = [double]::MaxValue; max = [double]::MinValue } }
-                    $sh = $tr.Shadow[$sk]
-                    $sh['n'] = $sh['n'] + 1; $sh['sum'] = $sh['sum'] + $d
-                    if ($d -lt $sh['min']) { $sh['min'] = $d }
-                    if ($d -gt $sh['max']) { $sh['max'] = $d }
-                }
-            }
             switch ($kind) {
                 'TERRAIN' {
                     if ($p[2] -like 'skipped*') { $tr.Skipped = $p[2] }
@@ -462,6 +462,19 @@ function Invoke-Check([string]$aiPath, [string]$terrainPath, [string]$stamp) {
                     else {
                         $tr.Approach.Add([pscustomobject]@{ t = [P]::T($p[0]); kind = $p[2]; chosen = [P]::F($p, 'chosen'); gain = [P]::F($p, 'gain'); why = [P]::F($p, 'why'); reason = [P]::F($p, 'reason'); text = ($p[2..([math]::Min(4, $p.Length - 1))] -join ' ') })
                     }
+                }
+                'COMPOSITION' {
+                    if ($p.Length -lt 4) { break }
+                    $kv = @{}
+                    foreach ($m in [regex]::Matches($line, '\b(kFoot|kCav|kWeak|kMount|kHA|footRangedEngage)=(-?[0-9.]+)')) { $kv[$m.Groups[1].Value] = [P]::D($m.Groups[2].Value) }
+                    $tr.Composition.Add([pscustomobject]@{ t = [P]::T($p[0]); team = $p[2]; shares = $p[3]; men = [P]::F($p, 'men'); dismounted = [P]::F($p, 'dismounted'); main =[P]::F($p, 'main'); anchor = [P]::F($p, 'anchor'); line = [P]::F($p, 'line'); token = [P]::F($p, 'token'); dry = [P]::F($p, 'dry'); k = $kv })
+                }
+                'COMPEVENT' {
+                    if ($p.Length -lt 6) { break }
+                    # kind = role|state|gate|tactic, what = the event; an older build wrote the event as the kind and no what column
+                    if ($p[5].StartsWith('what=')) { $what = $p[5].Substring(5); $text = $(if ($p.Length -gt 6) { $p[6..($p.Length - 1)] -join ' ' } else { '' }); $group = $p[3] }
+                    else { $what = $p[3]; $text = ($p[5..($p.Length - 1)] -join ' '); $group = '-' }
+                    $tr.CompEvents.Add([pscustomobject]@{ t = [P]::T($p[0]); team = $p[2]; group = $group; kind = $what; form = [P]::V($p[4]); text = $text })
                 }
                 'TACTICSUMMARY' { $tr.TacticSummary.Add(($p[2..($p.Length - 1)] -join ' ')) }
                 'HEDGEHOG' { $tr.Hedgehog.Add($p[2] + ' ' + [P]::F($p, 'verdict')) }
@@ -1349,17 +1362,6 @@ function Invoke-Check([string]$aiPath, [string]$terrainPath, [string]$stamp) {
     Add-Result '13' 'Decision trace' (Worst $st) ('DecisionTrace: DECISION lines and the most frequent field:writer per formation (INFO); every FLIP line (a formation whose Move point / order kind / arrangement / behavior keeps flipping, with the rules that fight) = WARN') $ev
 
     # =================================================================================================
-    # 14. Gap shadow: FormationGeometry's footprint gaps vs the measure each site used before ("gap=Xm(old Ym)")
-    # =================================================================================================
-    $ev = New-Object 'System.Collections.Generic.List[string]'
-    if ($tr.Shadow.Count -eq 0) { $ev.Add('no "(old Ym)" fields (terrain log off, an older build, or no migrated gap logged)') }
-    foreach ($sk in ($tr.Shadow.Keys | Sort-Object { -$tr.Shadow[$_]['n'] })) {
-        $sh = $tr.Shadow[$sk]
-        $ev.Add('INFO ' + $sk + ': n=' + $sh['n'] + ' new-old mean=' + (N1 ($sh['sum'] / $sh['n'])) + ' min=' + (N0 $sh['min']) + ' max=' + (N0 $sh['max']) + ' m')
-    }
-    Add-Result '14' 'Gap shadow' 'INFO' ('per logging site and field: how far the true footprint gap (FormationGeometry) moved from the old measure (new - old, m; negative = now closer); judge each threshold from these before retuning') $ev
-
-    # =================================================================================================
     # 15. Approach: the attacker's terrain route (terrain APPROACH lines, TerrainApproach)
     # =================================================================================================
     $ev = New-Object 'System.Collections.Generic.List[string]'; $st = @('PASS')
@@ -1439,6 +1441,216 @@ function Invoke-Check([string]$aiPath, [string]$terrainPath, [string]$stamp) {
     }
     if ($flips.Count -eq 0) { $ev.Add('INFO no ChargeGuard advance / go lines (terrain log off, or no far charges)') }
     Add-Result '16' 'Charge flicker' (Worst $st) ('one formation''s ChargeGuard advance <-> go switching > ' + $Cfg.ChargeFlipMax + 'x in ' + $Cfg.ChargeFlipWindow + ' s = WARN (a formation that keeps releasing and losing its charge)') $ev
+
+    # =================================================================================================
+    # 17. Army composition: shares and ramps (terrain COMPOSITION lines) and the k-driven BEHAVIOR lines
+    # =================================================================================================
+    $ev = New-Object 'System.Collections.Generic.List[string]'; $st = @('PASS')
+    $kNames = @('kFoot', 'kCav', 'kWeak', 'kMount', 'kHA')
+    $lastComp = @{}; $maxK = @{}
+    foreach ($c in ($tr.Composition | Sort-Object t)) {
+        $lastComp[$c.team] = $c
+        if (-not $maxK.ContainsKey($c.team)) { $maxK[$c.team] = 0.0 }
+        foreach ($kn in $kNames) {
+            if ($c.k.ContainsKey($kn) -and -not [double]::IsNaN($c.k[$kn]) -and $c.k[$kn] -gt $maxK[$c.team]) { $maxK[$c.team] = $c.k[$kn] }
+        }
+    }
+    if ($tr.Composition.Count -eq 0) { $st = @('INFO'); $ev.Add('no COMPOSITION lines (terrain log off, not a field battle, or an older build)') }
+    foreach ($team in ($lastComp.Keys | Sort-Object)) {
+        $c = $lastComp[$team]
+        $kt = @(); foreach ($kn in ($kNames + @('footRangedEngage'))) { if ($c.k.ContainsKey($kn)) { $kt += ($kn + '=' + $c.k[$kn]) } }
+        $ev.Add('INFO ' + $team + ' last t=' + (N0 $c.t) + ': ' + $c.shares + ' men=' + $c.men + $(if ($c.dismounted) { ' dismounted=' + $c.dismounted } else { '' }) + ' token=' + $c.token + ' main=' + $c.main + ' anchor=' + $c.anchor + $(if ($c.line) { ' line=' + $c.line } else { '' }) + ' dry=' + $c.dry + ' ' + ($kt -join ' ') + ' (max k over the battle ' + $maxK[$team] + ')')
+    }
+    $counts = [ordered]@{ 'archerStand take' = 0; 'archerStand charge' = 0; 'initiative' = 0; 'initiative end' = 0; 'FollowCavalry take' = 0; 'FollowCavalry charge' = 0; 'FollowCavalry end' = 0; 'wearDown hold' = 0; 'wearDown open' = 0; 'haPush' = 0; 'kCavPlace' = 0; 'kWeak' = 0 }
+    $kDriven = @{}   # team -> list of "t beh what"
+    $wdHold = @{}    # team -> t of the first hold not yet opened
+    $wdOpen = @{}    # team -> $true once opened
+    foreach ($b in ($tr.Behaviors | Sort-Object t)) {
+        $isK = $false
+        if ($b.beh -eq 'ArcherStand' -and $b.what -eq 'archerStand take') { $counts['archerStand take']++ }
+        elseif ($b.beh -eq 'ArcherStand' -and $b.what -like 'archerStand charge*') { $counts['archerStand charge']++ }
+        elseif ($b.beh -eq 'ArcherSkirmish' -and $b.what -eq 'initiative') { $counts['initiative']++ }
+        elseif ($b.beh -eq 'ArcherSkirmish' -and $b.what -eq 'initiative end') { $counts['initiative end']++ }
+        elseif ($b.beh -eq 'FollowCavalry') {
+            $isK = $true
+            if ($b.what -eq 'follow take') { $counts['FollowCavalry take']++ } elseif ($b.what -eq 'follow charge') { $counts['FollowCavalry charge']++ } elseif ($b.what -eq 'follow end') { $counts['FollowCavalry end']++ }
+        }
+        elseif ($b.what -eq 'wearDown hold') {
+            $isK = $true; $counts['wearDown hold']++
+            if (-not $wdOpen.ContainsKey($b.team) -and -not $wdHold.ContainsKey($b.team)) { $wdHold[$b.team] = $b.t }
+        }
+        elseif ($b.what -eq 'wearDown open') {
+            $counts['wearDown open']++
+            if ($wdHold.ContainsKey($b.team)) {
+                $held = $b.t - $wdHold[$b.team]
+                if ($held -gt $Cfg.WearDownHoldMax) { $st += 'WARN'; $ev.Add('WARN ' + $b.team + ': wearDown held ' + (N0 $held) + ' s (t=' + (N0 $wdHold[$b.team]) + '..' + (N0 $b.t) + ') before open ' + $b.why) }
+                else { $ev.Add('INFO ' + $b.team + ': wearDown held ' + (N0 $held) + ' s, open ' + $b.why) }
+                $wdHold.Remove($b.team)
+            }
+            $wdOpen[$b.team] = $true
+        }
+        elseif ($b.what -like 'haPush*') { $counts['haPush']++ }
+        elseif ($b.what -eq 'kCavPlace') { $isK = $true; $counts['kCavPlace']++ }
+        elseif ($b.beh -eq 'CavalryCharge' -and $b.what -eq 'kWeak') {
+            $counts['kWeak']++
+            if (-not $b.why.StartsWith('off')) { $isK = $true }
+        }
+        if ($isK) {
+            if (-not $kDriven.ContainsKey($b.team)) { $kDriven[$b.team] = New-Object 'System.Collections.Generic.List[string]' }
+            $kDriven[$b.team].Add('t=' + (N0 $b.t) + ' ' + $b.form + ' ' + $b.beh + ' ' + $b.what)
+        }
+    }
+    foreach ($team in @($wdHold.Keys)) {
+        $held = $missionEnd - $wdHold[$team]
+        if ($held -gt $Cfg.WearDownHoldMax) { $st += 'WARN'; $ev.Add('WARN ' + $team + ': wearDown hold from t=' + (N0 $wdHold[$team]) + ' never opened (' + (N0 $held) + ' s to mission end)') }
+        else { $ev.Add('INFO ' + $team + ': wearDown hold from t=' + (N0 $wdHold[$team]) + ' still held at mission end (' + (N0 $held) + ' s)') }
+    }
+    # COMPEVENT (kind = what; group = role|state|gate|tactic, '-' for an older build): structure changes (token / main / no-main anchor / archer line), role lines, timeline, flicker
+    $structural = @{}   # team -> $true once a token / main / infantryLeads / no-main anchor / archer line event was seen
+    $timeline = @{}
+    $flickKeys = @{}
+    $evCounts = @{}
+    foreach ($c in ($tr.CompEvents | Sort-Object t)) {
+        if (-not $evCounts.ContainsKey($c.kind)) { $evCounts[$c.kind] = 0 }
+        $evCounts[$c.kind]++
+        $isStruct = ($c.kind -eq 'token' -or $c.kind -eq 'main' -or $c.kind -eq 'infantryLeads' -or $c.kind -eq 'line' -or ($c.kind -eq 'anchor' -and -not $c.text.Contains('reason=main')))
+        if ($isStruct) { $structural[$c.team] = $true }
+        $isRole = ($c.kind -like 'archerLine*' -or $c.kind -like 'initiative*' -or $c.kind -eq 'engageCarry' -or $c.kind -like 'wearDown*' -or $c.kind -eq 'kWeak' -or $c.kind -eq 'followCavalry skip' -or $c.kind -eq 'reactLeash' -or $c.kind -eq 'noMainArchers')
+        if ($isStruct -or $isRole -or $c.kind -eq 'reapply' -or $c.kind -eq 'decisionMain' -or $c.kind -eq 'scale') {
+            if (-not $timeline.ContainsKey($c.team)) { $timeline[$c.team] = New-Object 'System.Collections.Generic.List[string]' }
+            $timeline[$c.team].Add('t=' + (N0 $c.t) + ' ' + $c.kind + ' ' + $c.form + ' ' + $c.text)
+        }
+        if ($isRole -and $c.kind -ne 'archerLine refuse') {
+            if (-not $kDriven.ContainsKey($c.team)) { $kDriven[$c.team] = New-Object 'System.Collections.Generic.List[string]' }
+            $kDriven[$c.team].Add('t=' + (N0 $c.t) + ' ' + $c.form + ' COMPEVENT ' + $c.kind)
+        }
+        # flicker: deduped refusals and reseeds are not transitions
+        if ($c.kind -ne 'archerLine refuse' -and $c.kind -ne 'reseed' -and $c.kind -ne 'startEnemy' -and $c.kind -ne 'dry') {
+            $key = $c.team + '|' + $c.kind + '|' + $c.form
+            if (-not $flickKeys.ContainsKey($key)) { $flickKeys[$key] = New-Object 'System.Collections.Generic.List[double]' }
+            $flickKeys[$key].Add($c.t)
+        }
+    }
+    foreach ($key in ($flickKeys.Keys | Sort-Object)) {
+        $times = $flickKeys[$key]; $j = 0; $worstN = 0; $worstT = 0.0
+        for ($i = 0; $i -lt $times.Count; $i++) {
+            while ($times[$i] - $times[$j] -gt $Cfg.CompFlickerWindow) { $j++ }
+            if ($i - $j + 1 -gt $worstN) { $worstN = $i - $j + 1; $worstT = $times[$j] }
+        }
+        if ($worstN -gt $Cfg.CompFlickerMax) { $st += 'WARN'; $ev.Add('WARN ' + $key.Replace('|', ' ') + ': ' + $worstN + 'x within ' + $Cfg.CompFlickerWindow + ' s from t=' + (N0 $worstT) + ' (flicker)') }
+    }
+    foreach ($team in ($timeline.Keys | Sort-Object)) {
+        $list = $timeline[$team]
+        $shown = [math]::Min($list.Count, $Cfg.CompTimelineMax)
+        $ev.Add('INFO ' + $team + ' timeline (' + $list.Count + ' events): ' + (($list | Select-Object -First $shown) -join ' | ') + $(if ($list.Count -gt $shown) { ' | ...' } else { '' }))
+    }
+    if ($evCounts.Count -gt 0) {
+        $cp = @(); foreach ($k in ($evCounts.Keys | Sort-Object)) { $cp += ($k + '=' + $evCounts[$k]) }
+        $ev.Add('INFO COMPEVENT kinds: ' + ($cp -join ' '))
+    }
+    elseif ($tr.Composition.Count -gt 0) { $ev.Add('INFO no COMPEVENT lines (an older build, or nothing changed)') }
+    # archer stand held by a token archer force: the team's last COMPOSITION before the take lists own arc as token
+    $compByTeam = @{}
+    foreach ($c in ($tr.Composition | Sort-Object t)) { if (-not $compByTeam.ContainsKey($c.team)) { $compByTeam[$c.team] = New-Object 'System.Collections.Generic.List[object]' }; $compByTeam[$c.team].Add($c) }
+    foreach ($b in ($tr.Behaviors | Where-Object { $_.beh -eq 'ArcherStand' -and $_.what -eq 'archerStand take' })) {
+        if (-not $compByTeam.ContainsKey($b.team)) { continue }
+        $prev = $null
+        foreach ($c in $compByTeam[$b.team]) { if ($c.t -le $b.t) { $prev = $c } else { break } }
+        if ($prev -and $prev.token -and $prev.token -match '^own:([^ ]*)' -and ($Matches[1] -split ',') -contains 'arc') {
+            $st += 'WARN'; $ev.Add('WARN ' + $b.team + ': archerStand take by ' + $b.form + ' at t=' + (N0 $b.t) + ' while own archers were a token force (' + $prev.token + ')')
+        }
+    }
+    # the stand owns its formation: a cover / support move by another archer behavior on it while it stands = the yield failed
+    $standing = @{}   # team|form -> $true between take and release
+    foreach ($b in ($tr.Behaviors | Sort-Object t)) {
+        $key = $b.team + '|' + $b.form
+        if ($b.beh -eq 'ArcherStand') {
+            if ($b.what -eq 'archerStand take') { $standing[$key] = $true }
+            elseif ($b.what -eq 'archerStand release') { $standing.Remove($key) }
+            continue
+        }
+        if ($standing.ContainsKey($key) -and ($b.beh -eq 'ArcherFlank' -or $b.beh -eq 'ArcherSkirmish' -or $b.beh -eq 'HoldPosition') -and $b.what -match '^(cover (take|change|step)|support (take|move|rotate|shift))') {
+            $st += 'WARN'; $ev.Add('WARN ' + $b.team + ' ' + $b.form + ': ' + $b.beh + ' ' + $b.what + ' at t=' + (N0 $b.t) + ' while the archer stand owns the formation')
+        }
+    }
+    foreach ($team in ($kDriven.Keys | Sort-Object)) {
+        if ($maxK.ContainsKey($team) -and $maxK[$team] -le 0 -and -not $structural.ContainsKey($team)) {
+            $st += 'WARN'
+            $ev.Add('WARN ' + $team + ': every k was 0 all battle and no token / main / anchor change, yet ' + $kDriven[$team].Count + ' k-driven or role line(s), first ' + $kDriven[$team][0])
+        }
+    }
+    $parts = @(); foreach ($k in $counts.Keys) { $parts += ($k + '=' + $counts[$k]) }
+    $ev.Add('INFO lines: ' + ($parts -join ' '))
+    $rcPush = @($tr.Reacts | Where-Object { $_.why -and $_.why.Contains('haPush') }).Count
+    if ($rcPush -gt 0) { $ev.Add('INFO REACT lines with an R3 haPush note: ' + $rcPush) }
+    Add-Result '17' 'Army composition' (Worst $st) ('ArmyComposition: last shares / tokens / k per team, a timeline of the COMPEVENT transitions per team, line counts (INFO); the same COMPEVENT what for one team / formation > ' + $Cfg.CompFlickerMax + 'x in ' + $Cfg.CompFlickerWindow + ' s, k-driven or role lines (FollowCavalry, wearDown, kCavPlace, kWeak, archerLine, initiative, ...) from a team whose k values were all 0 with no token / main / anchor change, a wearDown hold lasting > ' + $Cfg.WearDownHoldMax + ' s without an open, an archer stand taken by a token archer force, or a cover / support move on a formation the archer stand owns = WARN') $ev
+
+    # =================================================================================================
+    # 18. Cavalry cohesion: AI melee cavalry charging while scattered (FORM dev / idealDisp) and its reform points (terrain BEHAVIOR CavalryCharge reform lines)
+    # =================================================================================================
+    $ev = New-Object 'System.Collections.Generic.List[string]'; $st = @('PASS')
+    $nCav = 0
+    foreach ($key in ($forms.Keys | Sort-Object)) {
+        $lst = $forms[$key]
+        if (@($lst | Where-Object { $_.cls -eq 'Cavalry' -and $_.ai }).Count -eq 0) { continue }
+        $nCav++
+        $runs = New-Object 'System.Collections.Generic.List[object]'
+        $cur = $null; $prevT = [double]::NaN
+        foreach ($s in $lst) {
+            $bad = $s.ai -and $s.cls -eq 'Cavalry' -and ($s.ord -eq 'Charge' -or $s.ord -eq 'ChargeToTarget') -and $s.ideal -gt 0 -and $s.dev -gt $Cfg.CavScatterFactor * $s.ideal
+            if ($cur -ne $null -and (-not $bad -or ($s.t - $prevT) -gt $Cfg.CavScatterGapSec)) { $runs.Add($cur); $cur = $null }
+            if ($bad) {
+                if ($cur -eq $null) { $cur = @{ from = $s.t; to = $s.t; sum = 0.0; sumDev = 0.0; n = 0 } }
+                $cur.to = $s.t; $cur.sum += $s.dev / $s.ideal; $cur.sumDev += $s.dev; $cur.n++
+            }
+            $prevT = $s.t
+        }
+        if ($cur -ne $null) { $runs.Add($cur) }
+        $total = 0.0
+        foreach ($r in $runs) {
+            $len = $r.to - $r.from; $total += $len
+            $sev = $null
+            if ($len -gt $Cfg.CavScatterFailSec) { $sev = 'FAIL' } elseif ($len -gt $Cfg.CavScatterWarnSec) { $sev = 'WARN' }
+            if ($sev) {
+                $st += $sev
+                $ev.Add($sev + ' ' + $key.Replace('|', '/') + ': charging scattered t=' + (N0 $r.from) + '-' + (N0 $r.to) + ' (' + (N0 $len) + ' s), mean dev ' + (N0 ($r.sumDev / $r.n)) + ' m = ' + (N1 ($r.sum / $r.n)) + 'x idealDisp')
+            }
+        }
+        if ($total -gt 0) { $ev.Add('INFO ' + $key.Replace('|', '/') + ': ' + (N0 $total) + ' s charging at dev > ' + $Cfg.CavScatterFactor + 'x idealDisp in ' + $runs.Count + ' stretch(es)') }
+    }
+    if ($nCav -eq 0) { $st = @('INFO'); $ev.Add('no AI melee cavalry formation in the FORM lines') }
+    $rf = @{}   # team|form -> counts
+    foreach ($b in ($tr.Behaviors | Where-Object { $_.beh -eq 'CavalryCharge' -and $_.what -like 'reform *' })) {
+        $key = $b.team + '|' + $b.form
+        if (-not $rf.ContainsKey($key)) { $rf[$key] = @{ take = 0; change = 0; none = 0; rel = @{}; rejects = @{} } }
+        $c = $rf[$key]
+        switch ($b.what) {
+            'reform take' { $c.take++ }
+            'reform change' { $c.change++ }
+            'reform none' {
+                $c.none++
+                foreach ($m in [regex]::Matches($b.why, '\b[a-z]+:([A-Za-z]+)')) { $rj = $m.Groups[1].Value; if (-not $c.rejects.ContainsKey($rj)) { $c.rejects[$rj] = 0 }; $c.rejects[$rj]++ }
+            }
+            'reform release' {
+                $why = '-'
+                if ($b.why -match 'newCharge\(([A-Za-z]+)') { $why = 'newCharge:' + $Matches[1] }
+                elseif ($b.why -match '(?:^|\s)why=([A-Za-z]+)') { $why = $Matches[1] }
+                if (-not $c.rel.ContainsKey($why)) { $c.rel[$why] = 0 }
+                $c.rel[$why]++
+            }
+        }
+    }
+    foreach ($key in ($rf.Keys | Sort-Object)) {
+        $c = $rf[$key]
+        $relTxt = (($c.rel.Keys | Sort-Object | ForEach-Object { $_ + '=' + $c.rel[$_] }) -join ' '); if (-not $relTxt) { $relTxt = '-' }
+        $rjTxt = (($c.rejects.Keys | Sort-Object { -$c.rejects[$_] } | ForEach-Object { $_ + '=' + $c.rejects[$_] }) -join ' ')
+        $ev.Add('INFO ' + $key.Replace('|', '/') + ' reform: take=' + $c.take + ' change=' + $c.change + ' none=' + $c.none + ' release: ' + $relTxt + $(if ($rjTxt) { ' (none rejects: ' + $rjTxt + ')' } else { '' }))
+        if ($c.none -ge $Cfg.ReformNoneWarn -and $c.take -eq 0) {
+            $st += 'WARN'; $ev.Add('WARN ' + $key.Replace('|', '/') + ': ' + $c.none + ' reform none and no reform take (it never found a place to regroup)')
+        }
+    }
+    if ($tr.Present -and $rf.Count -eq 0 -and $nCav -gt 0) { $ev.Add('INFO no CavalryCharge reform lines') }
+    Add-Result '18' 'Cavalry cohesion' (Worst $st) ('AI melee cavalry (FORM class Cavalry) under Charge / ChargeToTarget with dev > ' + $Cfg.CavScatterFactor + 'x idealDisp for one stretch > ' + $Cfg.CavScatterWarnSec + ' s = WARN, > ' + $Cfg.CavScatterFailSec + ' s = FAIL; reform take / change / none / release-why counts per formation (INFO); >= ' + $Cfg.ReformNoneWarn + ' reform none with no take = WARN') $ev
 
     # ------------------------------------------------------------------ print
     foreach ($r in $script:Results) {

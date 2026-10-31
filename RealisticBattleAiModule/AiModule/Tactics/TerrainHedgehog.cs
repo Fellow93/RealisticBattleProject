@@ -28,10 +28,7 @@ namespace RBMAI
         public const float HedgehogWeakCav = 1.25f; // our cavalry is weak: enemy mounted power x ours
         public const float HedgehogPikeShare = 0.6f; // of our melee infantry with a polearm or a shield
 
-        private static volatile SidePlan _attacker;
-        private static volatile SidePlan _defender;
-
-        private static readonly ConcurrentQueue<UseEvent> UseEvents = new ConcurrentQueue<UseEvent>();
+        private static readonly PlanSlot<SidePlan> Plans = new PlanSlot<SidePlan>();
 
         /// <summary>Immutable.</summary>
         internal sealed class SidePlan
@@ -60,12 +57,7 @@ namespace RBMAI
         /// <summary>The side's read, null with terrainTacticsEnabled off, before the publish or outside a field battle. Any thread.</summary>
         public static SidePlan ForSide(BattleSideEnum side)
         {
-            // None for a side without terrain plans (ArmyScale).
-            if (!RBMConfig.RBMConfig.terrainTacticsEnabled || ArmyScale.NoPlans(side))
-            {
-                return null;
-            }
-            return Published(side);
+            return Plans.ForSide(side);
         }
 
         /// <summary>AI thread: the enemy's MELEE cavalry now (EnemyCavalryRatio x EnemyUnitCount, as SidePlan.EnemyMounted; no horse archers). 0 without a team.</summary>
@@ -78,24 +70,19 @@ namespace RBMAI
         /// <summary>Whatever the toggle (the log).</summary>
         internal static SidePlan Published(BattleSideEnum side)
         {
-            return (side == BattleSideEnum.Attacker) ? _attacker : (side == BattleSideEnum.Defender) ? _defender : null;
+            return Plans.Published(side);
         }
 
         /// <summary>Main thread, at the terrain publish.</summary>
         internal static void Publish(SidePlan attacker, SidePlan defender)
         {
-            _attacker = attacker;
-            _defender = defender;
+            Plans.Publish(attacker, defender);
         }
 
         public static void Clear()
         {
-            _attacker = null;
-            _defender = null;
-            UseEvent ignored;
-            while (UseEvents.TryDequeue(out ignored))
-            {
-            }
+            Plans.Clear();
+            TerrainLog.Clear();
         }
 
         // build (main thread)
@@ -255,40 +242,10 @@ namespace RBMAI
             return false;
         }
 
-        // behavior events (AI thread writes, main thread drains)
-
-        /// <summary>One RBMBehaviorHedgehog change (arrangement, state, engage), for the terrain log. Immutable.</summary>
-        internal sealed class UseEvent
-        {
-            public Team Team;
-            public int FormationIndex;
-            public float Time;
-            public string What;
-            public string Why;
-        }
-
-        /// <summary>AI thread; only with the terrain log on.</summary>
+        /// <summary>AI thread: one RBMBehaviorHedgehog change (arrangement, state, engage).</summary>
         internal static void Enqueue(Team team, Formation formation, float time, string what, string why)
         {
-            DecisionTrace.Note(formation, "Hedgehog", what, why);
-            if (!RBMConfig.RBMConfig.battleTerrainLoggingEnabled || team == null)
-            {
-                return;
-            }
-            UseEvents.Enqueue(new UseEvent
-            {
-                Team = team,
-                FormationIndex = (formation != null) ? (int)formation.FormationIndex : -1,
-                Time = time,
-                What = what,
-                Why = why
-            });
-        }
-
-        /// <summary>Main thread (terrain log).</summary>
-        internal static bool TryDequeueUse(out UseEvent e)
-        {
-            return UseEvents.TryDequeue(out e);
+            TerrainLog.Behavior(team, formation, time, "Hedgehog", what, null, null, why);
         }
 
         // log (main thread)

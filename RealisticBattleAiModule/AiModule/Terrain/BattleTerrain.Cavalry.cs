@@ -88,9 +88,6 @@ namespace RBMAI
             internal int MaskNx;
             internal int MaskNy;
 
-            /// <summary>Feature step's open-field labels (edge-trimmed, -1 = none), kept for the live re-plans' frame; null when unknown.</summary>
-            internal int[] OpenFieldLabels;
-
             /// <summary>Bad ground for a charge target (steep, wet, no navmesh, cramped, woods). False outside the map or without a mask. Any thread: array reads only.</summary>
             public bool IsBadGround(Vec2 p)
             {

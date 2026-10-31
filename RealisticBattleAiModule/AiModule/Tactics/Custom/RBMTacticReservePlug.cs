@@ -48,6 +48,7 @@ public class RBMTacticReservePlug : TacticComponent
     {
         base.OnApply();
         _applyGeneration++;
+        RBMBehaviorHoldPosition.ResetEngage(this);
         _hasBattleBeenJoined = false;
     }
 
@@ -63,7 +64,10 @@ public class RBMTacticReservePlug : TacticComponent
         // A line that engaged (or a reserve in the fight): no NEW reserve; one already dealt keeps its men.
         bool spent = _hasBattleBeenJoined || RBMBehaviorReservePlug.HasCommitted(_reserveInfantry, this);
 
-        ManageFormationCounts(2, 1, 2, 1);
+        // One infantry formation unless a reserve is (or will be) dealt: native's even halves would stay under reshuffle-unsafe.
+        int footMen = RBMTacticAttackSplitInfantry.CountAiFootInfantry(Team);
+        bool wantsReserve = _reserveDealt || (!spent && RBMTacticAttackSplitInfantry.ShouldSplit(footMen) && footMen >= MinInfantryCount);
+        ManageFormationCounts(wantsReserve ? 2 : 1, 1, 2, 1);
 
         List<Formation> nonEmptyFormations = FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList();
         _mainInfantry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
@@ -76,11 +80,11 @@ public class RBMTacticReservePlug : TacticComponent
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
             List<Formation> slots = FormationsIncludingEmpty
-                .Where((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation)
+                .Where((Formation f) => f != _mainInfantry && f.IsAIOwned && f.QuerySystem.IsInfantryFormation)
                 .ToList();
 
-            // Never reshuffle men the player commands.
-            if (_mainInfantry.IsAIControlled && slots.Count >= 1)
+            // Never reshuffle men the player commands (IsAIOwned: delegated ones too).
+            if (_mainInfantry.IsAIOwned && slots.Count >= 1)
             {
                 Formation reserveSlot;
                 Formation unused;
@@ -181,11 +185,11 @@ public class RBMTacticReservePlug : TacticComponent
         {
             foreach (Formation formation in nonEmptyFormations)
             {
-                if (formation.CountOfUnits == 1 && formation.IsAIControlled && formation != _reserveInfantry)
+                if (formation.CountOfUnits == 1 && formation.IsAIOwned && formation != _reserveInfantry)
                 {
                     formation.ApplyActionOnEachUnitViaBackupList((Agent agent) =>
                     {
-                        if (!agent.IsRangedCached && !agent.HasMount && _mainInfantry != null && _mainInfantry.IsAIControlled)
+                        if (!agent.IsRangedCached && !agent.HasMount && _mainInfantry != null && _mainInfantry.IsAIOwned)
                             agent.Formation = _mainInfantry;
                     });
                 }

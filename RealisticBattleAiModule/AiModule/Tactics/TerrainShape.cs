@@ -68,33 +68,11 @@ namespace RBMAI
         }
 
         private static readonly ConcurrentDictionary<Formation, State> States = new ConcurrentDictionary<Formation, State>();
-        private static readonly ConcurrentQueue<ShapeEvent> Events = new ConcurrentQueue<ShapeEvent>();
-
-        internal sealed class ShapeEvent
-        {
-            public Team Team;
-            public int FormationIndex;
-            public float Time;
-            public string Behavior;
-            public string What; // loose | unloose | narrow | renarrow | widen | release
-            public string Why;
-            public string Values; // "share=0.42 woods=0.30 minPass=58 at=30 normal=80 width=52 men=240 arr=Loose"
-        }
-
-        /// <summary>Main thread (terrain log).</summary>
-        public static bool TryDequeue(out ShapeEvent e)
-        {
-            return Events.TryDequeue(out e);
-        }
-
         /// <summary>Main thread: mission start and end.</summary>
         public static void Clear()
         {
             States.Clear();
-            ShapeEvent ignored;
-            while (Events.TryDequeue(out ignored))
-            {
-            }
+            TerrainLog.Clear();
         }
 
         /// <summary>Short current-shape text for the decision overlay ("shape: loose(woods 42%)", "shape: narrow 58m"), or null.</summary>
@@ -409,19 +387,20 @@ namespace RBMAI
         private static void Enqueue(Formation formation, State s, float now, string what, string why)
         {
             DecisionTrace.Note(formation, "TerrainShape", what, why);
-            if (!RBMConfig.RBMConfig.battleTerrainLoggingEnabled || formation.Team == null)
+            if (!TerrainLog.On || formation.Team == null)
             {
                 return;
             }
-            Events.Enqueue(new ShapeEvent
+            TerrainLog.Enqueue(new TerrainLog.Event
             {
+                Tag = TerrainLog.Tag.Shape,
                 Team = formation.Team,
                 FormationIndex = (int)formation.FormationIndex,
                 Time = now,
                 Behavior = s.Behavior,
                 What = what,
                 Why = why,
-                Values = "share=" + Fmt2(s.Share) + " woods=" + Fmt2(s.WoodsShare) + " minPass=" + Fmt0(s.MinPassable) + " at=" + Fmt0(s.MinPassableAt)
+                Extra = "share=" + Fmt2(s.Share) + " woods=" + Fmt2(s.WoodsShare) + " minPass=" + Fmt0(s.MinPassable) + " at=" + Fmt0(s.MinPassableAt)
                     + " normal=" + Fmt0(s.NormalWidth) + " narrow=" + Fmt0(s.NarrowWidth) + " width=" + Fmt0(formation.Width) + " depth=" + Fmt0(formation.Depth)
                     + " men=" + formation.CountOfUnitsWithoutDetachedOnes.ToString(CultureInfo.InvariantCulture) + " arr=" + formation.ArrangementOrder.OrderEnum
             });

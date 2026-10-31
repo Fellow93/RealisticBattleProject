@@ -193,10 +193,9 @@ namespace RBMAI
                         }
                     }
                     answered = ally;
-                    bool shadow = FormationGeometry.ShadowOn;
                     return "allyFighting " + TerrainCavalry.FormationName(ally) + " melee=" + Fmt2(melee) + " vs " + ThreatSignificance.Describe(line, foe)
-                        + " allyGap=" + FormationGeometry.Shadow(allyGap, shadow ? FormationGeometry.OldCircleGap(line, ally) : float.NaN)
-                        + " enemyGap=" + FormationGeometry.Shadow(foeGap, shadow ? FormationGeometry.OldCircleGap(foe, ally) : float.NaN);
+                        + " allyGap=" + FormationGeometry.GapText(allyGap)
+                        + " enemyGap=" + FormationGeometry.GapText(foeGap);
                 }
             }
             return null;
@@ -222,7 +221,7 @@ namespace RBMAI
                     return null;
                 }
             }
-            return "infantry gap=" + FormationGeometry.Shadow(_nearestSignificantGap, _nearestSignificantGapOld) + " closing=" + Fmt1(_nearestSignificantClosing) + "m/s melee=" + Fmt2(_meleeShare)
+            return "infantry gap=" + FormationGeometry.GapText(_nearestSignificantGap) + " closing=" + Fmt1(_nearestSignificantClosing) + "m/s melee=" + Fmt2(_meleeShare)
                 + " " + ThreatSignificance.Describe(_readLine, _nearestSignificant);
         }
 
@@ -239,8 +238,7 @@ namespace RBMAI
             {
                 return null;
             }
-            float footOld;
-            float foot = NearestEnemyFootGap(mission, line, out footOld);
+            float foot = NearestEnemyFootGap(mission, line);
             if (foot <= ContactGap)
             {
                 return null;
@@ -252,7 +250,7 @@ namespace RBMAI
             }
             return "recover men=" + men.ToString(CultureInfo.InvariantCulture) + " (engaged at " + menAtEngage.ToString(CultureInfo.InvariantCulture)
                 + ", peak " + peak.ToString(CultureInfo.InvariantCulture) + ", need " + Fmt0(need) + ") melee=" + Fmt2(melee)
-                + " foot=" + FormationGeometry.Shadow(foot, footOld);
+                + " foot=" + FormationGeometry.GapText(foot);
         }
 
         /// <summary>AI thread: calm = no significant enemy foot within RecallFootGap, under ContactMeleeShare in melee and, with noRanged (an out-shot engage), no enemy ranged within OutshotStandoff; else null. The callers time it.</summary>
@@ -262,14 +260,12 @@ namespace RBMAI
             {
                 return null;
             }
-            float footOld;
-            float foot = NearestEnemyFootGap(mission, line, out footOld);
+            float foot = NearestEnemyFootGap(mission, line);
             if (foot <= RecallFootGap)
             {
                 return null;
             }
-            float rangedOld = float.NaN;
-            float ranged = noRanged ? NearestEnemyRangedGap(mission, line, out rangedOld) : float.MaxValue;
+            float ranged = noRanged ? NearestEnemyRangedGap(mission, line) : float.MaxValue;
             if (ranged <= OutshotStandoff)
             {
                 return null;
@@ -279,8 +275,8 @@ namespace RBMAI
             {
                 return null;
             }
-            return "foot=" + FormationGeometry.Shadow(foot, footOld) + " melee=" + Fmt2(melee)
-                + (noRanged ? " ranged=" + FormationGeometry.Shadow(ranged, rangedOld) : "");
+            return "foot=" + FormationGeometry.GapText(foot) + " melee=" + Fmt2(melee)
+                + (noRanged ? " ranged=" + FormationGeometry.GapText(ranged) : "");
         }
 
         /// <summary>InfantryReason with rangedWaitsForCavalry: significant melee cavalry this close keeps the line from charging archers.</summary>
@@ -293,38 +289,31 @@ namespace RBMAI
             Cavalry
         }
 
-        /// <summary>AI thread: edge gap (m, footprints) to the nearest significant enemy foot (>= RecallFootMinMen men, no cavalry / HA); MaxValue without one. old = the former circle gap to the same formation, only while the shadow log is on (else NaN).</summary>
-        internal static float NearestEnemyFootGap(Mission mission, Formation line, out float old)
+        /// <summary>AI thread: edge gap (m, footprints) to the nearest significant enemy foot (>= RecallFootMinMen men, no cavalry / HA); MaxValue without one.</summary>
+        internal static float NearestEnemyFootGap(Mission mission, Formation line)
         {
             float gap;
-            Nearest(mission, line, NearestKind.Foot, out gap, out old);
+            Nearest(mission, line, NearestKind.Foot, out gap);
             return gap;
         }
 
         /// <summary>AI thread: edge gap (m, footprints) to the nearest significant enemy ranged (foot or HA); MaxValue without one.</summary>
-        internal static float NearestEnemyRangedGap(Mission mission, Formation line, out float old)
+        internal static float NearestEnemyRangedGap(Mission mission, Formation line)
         {
             float gap;
-            Nearest(mission, line, NearestKind.Ranged, out gap, out old);
+            Nearest(mission, line, NearestKind.Ranged, out gap);
             return gap;
         }
 
         /// <summary>AI thread: nearest significant enemy MELEE cavalry (no HA) and its edge gap in gap; null (MaxValue) without one.</summary>
         internal static Formation NearestSignificantEnemyCavalry(Mission mission, Formation line, out float gap)
         {
-            float old;
-            return Nearest(mission, line, NearestKind.Cavalry, out gap, out old);
+            return Nearest(mission, line, NearestKind.Cavalry, out gap);
         }
 
-        internal static Formation NearestSignificantEnemyCavalry(Mission mission, Formation line, out float gap, out float old)
-        {
-            return Nearest(mission, line, NearestKind.Cavalry, out gap, out old);
-        }
-
-        private static Formation Nearest(Mission mission, Formation line, NearestKind kind, out float gap, out float old)
+        private static Formation Nearest(Mission mission, Formation line, NearestKind kind, out float gap)
         {
             gap = float.MaxValue;
-            old = float.NaN;
             Formation best = null;
             Footprint lineShape;
             if (mission == null || line == null || line.Team == null || !FormationGeometry.TryGet(line, FootprintMode.ScatterAware, out lineShape))
@@ -370,10 +359,6 @@ namespace RBMAI
                     }
                 }
             }
-            if (best != null && FormationGeometry.ShadowOn)
-            {
-                old = FormationGeometry.OldCircleGap(line, best);
-            }
             return best;
         }
 
@@ -392,8 +377,6 @@ namespace RBMAI
         private float _nearestSignificantGap;
         private Formation _nearestSignificant;
         private float _nearestSignificantClosing; // m/s
-        // the former circle gap, shadow log only (NaN otherwise)
-        private float _nearestSignificantGapOld = float.NaN;
         private Formation _readLine;
         private bool _footInContact;
         private float _meleeShare;
@@ -414,6 +397,9 @@ namespace RBMAI
 
         /// <summary>Set by the behavior once the line has stood at its point (pushedBack / behind need a held position).</summary>
         internal bool ReachedHold;
+
+        /// <summary>The archer stand: only broken (and the owner's own reason) charges; contact is tracked as usual.</summary>
+        internal bool BrokenOnly;
 
         /// <summary>A SIGNIFICANT enemy foot formation (no cavalry / HA) within ContactGap at the last read.</summary>
         internal bool FootInContact => _footInContact;
@@ -442,7 +428,6 @@ namespace RBMAI
             _nearestSignificantGap = float.MaxValue;
             _nearestSignificant = null;
             _nearestSignificantClosing = 0f;
-            _nearestSignificantGapOld = float.NaN;
             _quietUntil = quietUntil;
             _readLine = null;
             _footInContact = false;
@@ -520,8 +505,7 @@ namespace RBMAI
                     Vec2 toLine = centre - c;
                     float distance = toLine.Normalize();
                     float gap = FormationGeometry.Gap(lineShape, shape);
-                    Vec2 velocity = f.CachedCurrentVelocity;
-                    float closing = (velocity.IsValid && distance > 0.01f) ? Vec2.DotProduct(velocity, toLine) : 0f;
+                    float closing = (distance > 0.01f) ? Vec2.DotProduct(EnemyMotion.Velocity(f), toLine) : 0f;
                     // coming in or already close: wait for it
                     if (!(gap <= OutshotNearGap || (gap <= OutshotStandoff && closing >= ClosingSpeed)))
                     {
@@ -565,14 +549,17 @@ namespace RBMAI
                 return null;
             }
             int lost = _outshotStartMen - line.CountOfUnits;
-            float need = MathF.Max((float)OutshotMinLost, OutshotLossShare * _outshotStartMen);
-            if (now - _outshotSince >= OutshotSeconds && lost >= need)
+            // an enemy with (almost) no melee foot never comes in: shorter window, no loss needed (kFoot)
+            float kFoot = ArmyComposition.KFoot(line.Team);
+            float window = ArmyComposition.Lerp(OutshotSeconds, ArmyComposition.OutshotSecondsNoFoot, kFoot);
+            float need = MathF.Max((float)OutshotMinLost, OutshotLossShare * _outshotStartMen) * (1f - kFoot);
+            if (now - _outshotSince >= window && lost >= need)
             {
                 return "outshot rangedPower=" + Fmt0(theirPower) + " vs " + Fmt0(ourPower)
+                    + ((kFoot > 0f) ? " kFoot=" + Fmt2(kFoot) + " window=" + Fmt0(window) + "s need=" + Fmt0(need) : "")
                     + " missiles=" + Fmt0(theirMissiles) + " hit=" + Fmt2(hit) + " lost=" + lost.ToString(CultureInfo.InvariantCulture)
                     + " of " + _outshotStartMen.ToString(CultureInfo.InvariantCulture) + " in " + Fmt0(now - _outshotSince) + "s"
-                    + " fighters=" + FormationGeometry.Shadow(nearestFighter,
-                        (nearestFighterFormation != null && FormationGeometry.ShadowOn) ? FormationGeometry.OldCircleGap(line, nearestFighterFormation) : float.NaN);
+                    + " fighters=" + FormationGeometry.GapText(nearestFighter);
             }
             return null;
         }
@@ -591,7 +578,6 @@ namespace RBMAI
             _nearestSignificantGap = float.MaxValue;
             _nearestSignificant = null;
             _nearestSignificantClosing = 0f;
-            _nearestSignificantGapOld = float.NaN;
             _readLine = line;
             _footInContact = false;
             _behind = null;
@@ -619,15 +605,15 @@ namespace RBMAI
                 facing = new Vec2(0f, 1f);
             }
             facing = facing.Normalized();
-            Vec2 lineDir = new Vec2(-facing.y, facing.x);
-            float halfWidth = square ? 0f : MathF.Max(line.Width, 1f) * 0.5f;
             float halfDepth = square ? MathF.Max(line.Width, line.Depth) * 0.5f : line.Depth * 0.5f;
             // the line's shape at the facing it holds; a circle is a disc
             Footprint lineShape = (square && line.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Circle)
                 ? Footprint.Circle(centre, halfDepth)
                 : Footprint.Box(centre, facing, MathF.Max(line.Width, 1f) * 0.5f, MathF.Max(line.Depth, 1f) * 0.5f);
-            bool shadow = FormationGeometry.ShadowOn;
             float behindBy = 0f;
+            // archers are the enemy's army when it has (almost) no melee foot: catch them farther out (kFoot)
+            float behindKFoot = ArmyComposition.KFoot(line.Team);
+            float behindRangedGap = ArmyComposition.Lerp(BehindRangedGap, ArmyComposition.BehindRangedGapNoFoot, behindKFoot);
             foreach (Team team in mission.Teams)
             {
                 if (team == null || !team.IsEnemyOf(line.Team))
@@ -648,13 +634,6 @@ namespace RBMAI
                     }
                     Vec2 rel = c - centre;
                     float gap = FormationGeometry.Gap(lineShape, shape);
-                    float oldGap = float.NaN;
-                    if (shadow)
-                    {
-                        // the former measure: enemy circle to the line's centre segment
-                        float along = MBMath.ClampFloat(Vec2.DotProduct(rel, lineDir), -halfWidth, halfWidth);
-                        oldGap = c.Distance(centre + lineDir * along) - MathF.Max(e.Width, e.Depth) * 0.5f - halfDepth;
-                    }
                     bool mounted = e.QuerySystem.IsCavalryFormation;
                     // significant to the line (anti-bait): only these are a reason to charge and start / hold Contact by distance; a small group fighting the line still starts it through the melee share
                     bool significant = ThreatSignificance.IsSignificant(line, e);
@@ -662,11 +641,9 @@ namespace RBMAI
                     if (!mounted && significant && gap < _nearestSignificantGap)
                     {
                         _nearestSignificantGap = gap;
-                        _nearestSignificantGapOld = oldGap;
                         _nearestSignificant = e;
-                        Vec2 velocity = e.CachedCurrentVelocity;
                         float distance = rel.Length;
-                        _nearestSignificantClosing = (velocity.IsValid && distance > 0.01f) ? -Vec2.DotProduct(velocity, rel) / distance : 0f;
+                        _nearestSignificantClosing = (distance > 0.01f) ? -Vec2.DotProduct(EnemyMotion.Velocity(e), rel) / distance : 0f;
                     }
                     if (gap <= ContactGap)
                     {
@@ -691,18 +668,18 @@ namespace RBMAI
                     bool squareReach = !square || gap <= BehindSquareGap;
                     if (!squareReach && past > BehindDistance)
                     {
-                        Vec2 v = e.CachedCurrentVelocity;
                         float d = rel.Length;
-                        squareReach = v.IsValid && d > 0.01f && -Vec2.DotProduct(v, rel) / d >= ClosingSpeed;
+                        squareReach = d > 0.01f && -Vec2.DotProduct(EnemyMotion.Velocity(e), rel) / d >= ClosingSpeed;
                     }
                     if (past > BehindDistance && past > behindBy && e.CountOfUnits >= BehindMinMen && (!behindFootOnly || !mounted)
                         && significant && squareReach
-                        && (mounted || gap <= BehindRangedGap || !RBMAI.Utilities.IsRangedForArrangement(e))
+                        && (mounted || gap <= behindRangedGap || !RBMAI.Utilities.IsRangedForArrangement(e))
                         && (e != _guardFormation || now >= _guardUntil || gap <= LoopGuardCloseGap))
                     {
                         behindBy = past;
                         _behindFormation = e;
-                        _behind = ThreatSignificance.Describe(line, e) + " by " + Fmt0(past) + "m gap=" + FormationGeometry.Shadow(gap, oldGap);
+                        _behind = ThreatSignificance.Describe(line, e) + " by " + Fmt0(past) + "m gap=" + FormationGeometry.GapText(gap)
+                            + ((gap > BehindRangedGap && !mounted && RBMAI.Utilities.IsRangedForArrangement(e)) ? " kFoot=" + Fmt2(behindKFoot) + " rangedGap=" + Fmt0(behindRangedGap) : "");
                     }
                 }
             }
@@ -725,7 +702,7 @@ namespace RBMAI
                 _lastContact = now;
                 _advantageSince = float.NaN;
                 _contactPeak.Clear();
-                why = (_meleeShare >= ContactMeleeShare ? "melee=" + Fmt2(_meleeShare) : "enemyNear gap=" + FormationGeometry.Shadow(_nearestSignificantGap, _nearestSignificantGapOld))
+                why = (_meleeShare >= ContactMeleeShare ? "melee=" + Fmt2(_meleeShare) : "enemyNear gap=" + FormationGeometry.GapText(_nearestSignificantGap))
                     + " power=" + Fmt2(PowerRatio(line));
                 // a trigger that already holds latches at once: Holding->Charge
                 string chargeNow = ChargeReasonNow(line, now, holdPoint, facing, ownReason);
@@ -766,7 +743,7 @@ namespace RBMAI
         private string ChargeReasonNow(Formation line, float now, Vec2 holdPoint, Vec2 facing, string ownReason)
         {
             int men = line.CountOfUnits;
-            if (men < LineGoneMen || (_linePeak > 0 && men < LineGoneShare * _linePeak))
+            if (!BrokenOnly && (men < LineGoneMen || (_linePeak > 0 && men < LineGoneShare * _linePeak)))
             {
                 return "lineGone men=" + men.ToString(CultureInfo.InvariantCulture) + " of " + _linePeak.ToString(CultureInfo.InvariantCulture);
             }
@@ -776,7 +753,7 @@ namespace RBMAI
                 _advantageSince = float.NaN;
                 return (ownReason != null && ownReason.StartsWith("allyFighting")) ? ownReason : null;
             }
-            if (ReachedHold)
+            if (ReachedHold && !BrokenOnly)
             {
                 Vec2 centre = RBMAI.Utilities.GetFormationCenter(line);
                 if (centre.IsValid && holdPoint.IsValid && facing.IsValid && facing.LengthSquared > 0.01f)
@@ -802,7 +779,7 @@ namespace RBMAI
                 return null;
             }
             float ratio = PowerRatio(line);
-            if (_footInContact && _contactPower > 0f && ratio >= LateChargeAdvantage)
+            if (!BrokenOnly && _footInContact && _contactPower > 0f && ratio >= LateChargeAdvantage)
             {
                 if (float.IsNaN(_advantageSince))
                 {
@@ -922,6 +899,79 @@ namespace RBMAI
         private static string Fmt2(float value)
         {
             return value.ToString("0.00", CultureInfo.InvariantCulture);
+        }
+    }
+
+    /// <summary>
+    /// The recall rules after a hold's engage, shared by the choke hold, the hedgehog and the battle position (each owner keeps
+    /// its own policy: leash and return distances, what happens beyond them, its gates). Leash: a LOCAL charge more than the
+    /// owner's leash from where it started, out of melee, no significant enemy foot within ContactGap = at once. No foot: no
+    /// significant enemy foot within RecallFootGap for RecallSeconds. Calm: CalmReason for RecallSeconds. Both timed rules only
+    /// after RecallMinCharge, each with its own timer (a rule not asked this tick is reset by its owner). AI thread, one per owner.
+    /// </summary>
+    internal sealed class HoldRecall
+    {
+        private float _noFootSince = float.NaN;
+        private float _calmSince = float.NaN;
+
+        internal void Reset()
+        {
+            _noFootSince = float.NaN;
+            _calmSince = float.NaN;
+        }
+
+        internal void ResetNoFoot()
+        {
+            _noFootSince = float.NaN;
+        }
+
+        internal void ResetCalm()
+        {
+            _calmSince = float.NaN;
+        }
+
+        /// <summary>The leash rule: true with the distance from the charge's start and the melee share when it recalls now.</summary>
+        internal static bool Leashed(Formation line, Vec2 centre, Vec2 chargeStart, float leashDistance, float nearestFoot, out float leash, out float melee)
+        {
+            leash = chargeStart.IsValid ? centre.Distance(chargeStart) : 0f;
+            melee = float.NaN;
+            // never out of a fight it is in (significant enemy foot within ContactGap)
+            if (leash <= leashDistance || nearestFoot <= HoldLateCharge.ContactGap)
+            {
+                return false;
+            }
+            melee = HoldLateCharge.MeleeShare(line);
+            return melee < HoldLateCharge.ContactMeleeShare;
+        }
+
+        /// <summary>The no-foot rule: true once no significant enemy foot was within RecallFootGap for RecallSeconds (RecallMinCharge after the engage).</summary>
+        internal bool NoFootFor(float now, float engagedAt, float nearestFoot)
+        {
+            if (now - engagedAt < HoldLateCharge.RecallMinCharge || nearestFoot <= HoldLateCharge.RecallFootGap)
+            {
+                _noFootSince = float.NaN;
+                return false;
+            }
+            if (float.IsNaN(_noFootSince))
+            {
+                _noFootSince = now;
+            }
+            return now - _noFootSince >= HoldLateCharge.RecallSeconds;
+        }
+
+        /// <summary>The calm rule: the CalmReason text once the line was calm for RecallSeconds (RecallMinCharge after the engage), else null. Not calm (or not asked: calm null) restarts it.</summary>
+        internal string CalmFor(float now, float engagedAt, string calm)
+        {
+            if (calm == null || float.IsNaN(engagedAt) || now - engagedAt < HoldLateCharge.RecallMinCharge)
+            {
+                _calmSince = float.NaN;
+                return null;
+            }
+            if (float.IsNaN(_calmSince))
+            {
+                _calmSince = now;
+            }
+            return (now - _calmSince >= HoldLateCharge.RecallSeconds) ? calm : null;
         }
     }
 }

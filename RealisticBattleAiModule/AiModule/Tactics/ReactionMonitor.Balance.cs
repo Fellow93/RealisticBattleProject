@@ -11,7 +11,8 @@ namespace RBMAI
     /// BalanceHugeShift) or a decisive fall of a class the tactics lean on. Held BalanceConfirmChecks checks, it requests
     /// TacticSelection.RequestBalanceRepick (the next decision picks the highest weight without native's x1.5 bonus; never
     /// away from a fighting defensive line unless huge). Limits: BalanceSpacing, BalanceMaxSwitches, BalanceMaxEvaluations,
-    /// BalanceRequestTimeout; a "blocked" request keeps the reference.
+    /// BalanceRequestTimeout (its clock restarts while the request waits behind a higher-priority re-pick); a "blocked" request
+    /// keeps the reference.
     /// </summary>
     internal sealed partial class ReactionMonitor
     {
@@ -75,7 +76,7 @@ namespace RBMAI
         private float _balanceLastRequest = float.NegativeInfinity;
         private int _balanceEvaluations;
         private int _balanceSwitches;
-        private TacticSelection.BalanceRequest _balanceRequest;
+        private TacticSelection.RepickRequest _balanceRequest;
         private bool _balanceCapLogged;
 
         /// <summary>Once per check.</summary>
@@ -91,17 +92,19 @@ namespace RBMAI
             {
                 return;
             }
-            TacticSelection.BalanceRequest pending = _balanceRequest;
+            TacticSelection.RepickRequest pending = _balanceRequest;
             if (pending != null)
             {
                 if (!pending.Done)
                 {
-                    if (now - _balanceLastRequest < BalanceRequestTimeout)
+                    // the clock restarts while a decision ran a higher-priority re-pick ahead of this one
+                    float waiting = now - System.Math.Max(_balanceLastRequest, pending.DeferredAt);
+                    if (waiting < BalanceRequestTimeout)
                     {
                         return;
                     }
-                    TacticSelection.CancelBalanceRepick(_team, pending);
-                    LogBalance("timeout", "no decision took the request in " + Fmt0(now - _balanceLastRequest) + "s", now);
+                    TacticSelection.CancelRepick(_team, pending);
+                    LogBalance("timeout", "no decision took the request in " + Fmt0(waiting) + "s", now);
                 }
                 else if (pending.Switched)
                 {
@@ -156,7 +159,7 @@ namespace RBMAI
             _balanceChecks = 0;
             string text = why + (huge ? " huge" : "") + " " + DescribeBalance(_balanceRef, b) + " tactic=" + current.GetType().Name
                 + " for=" + Fmt0(now - _balanceRefAt) + "s";
-            TacticSelection.BalanceRequest request = new TacticSelection.BalanceRequest { Why = text, Huge = huge };
+            TacticSelection.RepickRequest request = new TacticSelection.RepickRequest { Source = TacticSelection.RepickSource.Balance, Why = text, Huge = huge };
             if (!TacticSelection.RequestBalanceRepick(_team, request))
             {
                 return;

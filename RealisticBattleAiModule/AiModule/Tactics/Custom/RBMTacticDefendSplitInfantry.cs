@@ -22,7 +22,8 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         // Under BattleMiniMap (IsFormationReshufflingUnsafe) the agent moves happen once, never again.
         bool doReassign = !RBMAI.Tactics.IsFormationReshufflingUnsafe || !_membershipSplitDone;
 
-        ManageFormationCounts(3, 1, 2, 1);
+        // One infantry formation when the side will not split (native would leave three even ones under reshuffle-unsafe).
+        ManageFormationCounts(RBMTacticAttackSplitInfantry.ShouldSplit(RBMTacticAttackSplitInfantry.CountAiFootInfantry(Team)) ? 3 : 1, 1, 2, 1);
 
         List<Formation> nonEmptyFormations = FormationsIncludingEmpty
             .Where((Formation f) => f.CountOfUnits > 0).ToList();
@@ -40,11 +41,11 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
             List<Formation> flankingSlots = FormationsIncludingEmpty
-            .Where((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation)
+            .Where((Formation f) => f != _mainInfantry && f.IsAIOwned && f.QuerySystem.IsInfantryFormation)
             .ToList();
 
-            // ChooseAndSortByPriority only prefers AI formations: never reshuffle player-commanded men.
-            if (_mainInfantry.IsAIControlled && flankingSlots.Count >= 2)
+            // ChooseAndSortByPriority only prefers AI formations: never reshuffle player-commanded men (IsAIOwned: delegated ones too).
+            if (_mainInfantry.IsAIOwned && flankingSlots.Count >= 2)
             {
                 Formation leftSlot;
                 Formation rightSlot;
@@ -157,11 +158,11 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         {
             foreach (Formation formation in nonEmptyFormations)
             {
-                if (formation.CountOfUnits == 1 && formation.IsAIControlled)
+                if (formation.CountOfUnits == 1 && formation.IsAIOwned)
                 {
                     formation.ApplyActionOnEachUnitViaBackupList((Agent agent) =>
                     {
-                        if (!agent.IsRangedCached && !agent.HasMount && _mainInfantry != null && _mainInfantry.IsAIControlled)
+                        if (!agent.IsRangedCached && !agent.HasMount && _mainInfantry != null && _mainInfantry.IsAIOwned)
                             agent.Formation = _mainInfantry;
                     });
                 }
@@ -195,6 +196,7 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
     {
         base.OnApply();
         _applyGeneration++;
+        RBMBehaviorHoldPosition.ResetEngage(this);
     }
 
     protected override void ManageFormationCounts()
@@ -440,7 +442,8 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
     protected override float GetTacticWeight()
     {
         float t;
-        if (!TacticSelection.TryGetInfantrySuperiority(Team, out t))
+        // no flank guards possible: the split tactic would only be a plain defence
+        if (!RBMTacticAttackSplitInfantry.ShouldSplit(RBMTacticAttackSplitInfantry.EstimateAiFootInfantry(Team)) || !TacticSelection.TryGetInfantrySuperiority(Team, out t))
         {
             return TacticSelection.UnfitWeight;
         }

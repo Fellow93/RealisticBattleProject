@@ -26,13 +26,15 @@ namespace RBMAI
     ///  - Deter (R7 shadow, R3 on riding horse archers): as Intercept, Strike only within DeterStrikeGap; back to Approach beyond DeterReleaseGap out of
     ///    melee - never a chase.
     ///  Fight = Strike with the formation at least FightMeleeShare in melee.
+    ///  A MOUNTED Strike (AI, field battle) rides FormedApproach first: a Move to the target's near edge until its go rule, then ChargeToTarget (TickStrikeApproach).
     ///  Hit / Exploit / Hunt: the monitor re-picks the stage side when the way crosses the target's front (SideChanged); the stage-time strike waits in the target's front lane.
-    /// The Move point is the FRONT-centre: a copy of the cached median WorldPosition (or the target's) with ONE SetVec2MT, rebuilt only past RebuildDistance and
-    /// RebuildSeconds (native caches the order position by its exact Vec2); facing re-aimed after > ~10 degrees. Arrangement Line, cavalry FormOrderWide, once on activation.
+    /// The Move point is the FRONT-centre: a copy of the cached median WorldPosition (or the target's) with ONE SetVec2MT, rebuilt only past CachedMovePoint's
+    /// RebuildDistance and RebuildSeconds (native caches the order position by its exact Vec2); facing re-aimed after > ~10 degrees. Arrangement Line, cavalry FormOrderWide, once on activation.
     ///
     /// Ends (REACT end lines): targetGone, targetRetreat, insignificant, disengaged (Fight under DisengagedShare for DisengagedSeconds; Exploit: the target
     /// under ExploitOpenShare in melee), Hunt only: screened (significant enemy melee foot within HuntScreenGap of the archers) and notRanged, timeout (60 s,
-    /// Intercept 45 s; Fight up to FightMaxSeconds), chaseTimeout (not in Fight: ChaseSeconds without closing ChaseMetres), leash (not in Fight: foot 100 m defender /
+    /// Intercept 45 s; Fight up to FightMaxSeconds), chaseTimeout (not in Fight: ChaseSeconds without closing ChaseMetres), EARLY (a mounted responder before the
+/// main lines meet, Early): timeout 30 s / Fight 45 s, disengaged 4 s, chaseTimeout 10 s, cavalry leashes x0.6, reasons suffixed " early"; leash (not in Fight: foot 100 m defender /
     /// 150 m attacker from the main infantry, cavalry 250 m (defender 150 m) or 100 m past the enemy main line, a reserve / the main infantry beyond its home
     /// leash, the main infantry in Fight too at MainHelpFightLeashFactor x), reshuffled (not in Fight), armyRetreat, lostControl. The monitor adds relieved,
     /// threatened, overridden, replaced, noMen, sideClosed; a hunt on riding horse archers turns into a Deter (Redirect).
@@ -90,23 +92,46 @@ namespace RBMAI
 
         internal static float CavalryMainLeash(Team team)
         {
-            return (team != null && team.Side == BattleSideEnum.Defender) ? LeashCavalryDefender : LeashCavalryMain;
+            // outmatched by the enemy's melee cavalry: a shorter leash (kWeak)
+            float scale = 1f - ArmyComposition.WeakShrink * ArmyComposition.KWeak(team);
+            return ((team != null && team.Side == BattleSideEnum.Defender) ? LeashCavalryDefender : LeashCavalryMain) * scale;
         }
 
         internal const float LeashCavalryBeyond = 100f; // past the enemy main line's rear
+
+        // user rule 2026-10-30: before the main lines meet, mounted responders come back to their flank guard sooner
+        private const float EarlyLinesMetGap = 40f; // edge gap main <-> enemy main; nearer (or the main in melee) = lines met
+        private const float EarlyTimeout = 30f;
+        private const float EarlyFightMaxSeconds = 45f;
+        private const float EarlyDisengagedSeconds = 4f;
+        private const float EarlyChaseSeconds = 10f;
+        private const float EarlyLeashFactor = 0.6f;
+
+        /// <summary>AI thread: a mounted responder while its army's main (else the position anchor) is out of melee and its enemy main still beyond EarlyLinesMetGap.</summary>
+        private static bool Early(Mission mission, Formation formation)
+        {
+            if (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
+            {
+                return false;
+            }
+            Formation main = ReactionMonitor.MainInfantry(formation.Team) ?? ArmyComposition.PositionAnchor(formation.Team);
+            if (main == null || main == formation || HoldLateCharge.MeleeShare(main) >= FightMeleeShare)
+            {
+                return false;
+            }
+            Formation enemyMain;
+            Vec2 forward;
+            return ReactionMonitor.ArmyForward(mission, formation.Team, main, out enemyMain, out forward) && enemyMain != null
+                && ReactionMonitor.EdgeGap(main, enemyMain) > EarlyLinesMetGap;
+        }
         private const float ReshuffleShare = 0.6f; // of the men it began with (not in Fight)
-        private const float RebuildDistance = 5f; // Move point rebuilt only past this ...
-        private const float RebuildSeconds = 2f; // ... and this long after the last build
         private const float FacingTurnCos = 0.985f; // re-aim after a turn of ~10 deg
         internal const float OverriddenSeconds = 5f; // another behavior active this long ends the task
 
         private ReactionMonitor.ReactTask _task;
         private Phase _phase = Phase.Approach;
         private float _phaseSince = float.NaN;
-        private WorldPosition _target = WorldPosition.Invalid;
-        private bool _hasTarget;
-        private Vec2 _targetPoint = Vec2.Invalid;
-        private float _targetBuiltAt = float.NegativeInfinity;
+        private readonly CachedMovePoint _target = new CachedMovePoint();
         private Vec2 _facing = Vec2.Invalid;
         private float _chaseSince = float.NaN;
         private float _chaseDistance;
@@ -115,6 +140,30 @@ namespace RBMAI
         private float _notActiveSince = float.NaN;
         private volatile bool _lostControl;
         private volatile string _stateName = "idle";
+        // mounted Strike's formed approach (FormedApproach); _approaching / _approachTarget are read from any thread
+        private bool _go;
+        private volatile bool _approaching;
+        private volatile Formation _approachTarget;
+        private float _approachSince;
+        private float _farSince = float.NaN;
+        private Vec2 _strikeFacing = Vec2.Invalid;
+        private Formation _strikePointTarget;
+        private readonly CachedMovePoint _strikePoint = new CachedMovePoint();
+
+        /// <summary>Any thread: the target an AI formation rides at in a mounted Strike's formed approach (its order is a Move), else null.</summary>
+        internal static Formation FormedApproachTarget(Formation formation)
+        {
+            RBMBehaviorReact react = (formation != null && formation.IsAIControlled && formation.AI != null) ? formation.AI.ActiveBehavior as RBMBehaviorReact : null;
+            return (react != null && react._approaching) ? react._approachTarget : null;
+        }
+
+        private void ResetStrikeApproach()
+        {
+            _go = false;
+            _approaching = false;
+            _farSince = float.NaN;
+            _strikePointTarget = null;
+        }
 
         public RBMBehaviorReact(Formation formation)
             : base(formation)
@@ -142,15 +191,14 @@ namespace RBMAI
             _lostControl = false;
             _phase = task.StrikeAtOnce ? Phase.Strike : Phase.Approach;
             _phaseSince = now;
-            _hasTarget = false;
-            _targetPoint = Vec2.Invalid;
-            _targetBuiltAt = float.NegativeInfinity;
+            _target.Clear();
             _facing = Vec2.Invalid;
             _chaseSince = float.NaN;
             _chaseDistance = 0f;
             _lowMeleeSince = float.NaN;
             _openGoneSince = float.NaN;
             _notActiveSince = float.NaN;
+            ResetStrikeApproach();
             UpdateStateName();
             WeightFactor = 1f;
         }
@@ -164,7 +212,8 @@ namespace RBMAI
                 return;
             }
             _task = null;
-            _hasTarget = false;
+            _target.Reset();
+            ResetStrikeApproach();
             _stateName = "idle";
             WeightFactor = 0f;
             task.Owner?.TaskEnded(this, task, _phase, reason, now);
@@ -183,10 +232,11 @@ namespace RBMAI
             task.StrikeAtOnce = false;
             _phase = Phase.Approach;
             _phaseSince = now;
-            _hasTarget = false;
+            _target.Reset();
             _facing = Vec2.Invalid;
             _chaseSince = float.NaN;
             _lowMeleeSince = float.NaN;
+            ResetStrikeApproach();
             UpdateStateName();
             if (task.Owner != null)
             {
@@ -196,7 +246,7 @@ namespace RBMAI
 
         internal void SideChanged()
         {
-            _hasTarget = false;
+            _target.Reset();
             _chaseSince = float.NaN;
         }
 
@@ -310,7 +360,7 @@ namespace RBMAI
                 Formation screen = ReactionMonitor.ScreeningFoot(mission, formation.Team, formation, target, HuntScreenGap, out screenGap);
                 if (screen != null)
                 {
-                    return "screened " + ThreatSignificance.Describe(formation, screen) + " gap=" + FormationGeometry.Shadow(screenGap, ReactionMonitor.OldGap(screen, target));
+                    return "screened " + ThreatSignificance.Describe(formation, screen) + " gap=" + FormationGeometry.GapText(screenGap);
                 }
             }
             if (!fight && (formation.CountOfUnits < ReshuffleShare * task.StartMen || formation.RepresentativeClass != task.StartClass))
@@ -318,11 +368,13 @@ namespace RBMAI
                 return "reshuffled men=" + formation.CountOfUnits.ToString(CultureInfo.InvariantCulture) + "/" + task.StartMen.ToString(CultureInfo.InvariantCulture)
                     + " class=" + formation.RepresentativeClass;
             }
+            bool early = Early(mission, formation);
+            string earlyText = early ? " early" : "";
             float age = now - task.StartedAt;
-            float limit = fight ? FightMaxSeconds : Timeout(task.Mode);
+            float limit = fight ? (early ? EarlyFightMaxSeconds : FightMaxSeconds) : (early ? MathF.Min(Timeout(task.Mode), EarlyTimeout) : Timeout(task.Mode));
             if (age > limit)
             {
-                return "timeout " + ReactionMonitor.Fmt0(age) + "s";
+                return "timeout " + ReactionMonitor.Fmt0(age) + "s" + earlyText;
             }
             if (fight && task.MainHelp)
             {
@@ -347,9 +399,9 @@ namespace RBMAI
                     {
                         _lowMeleeSince = now;
                     }
-                    else if (now - _lowMeleeSince >= DisengagedSeconds)
+                    else if (now - _lowMeleeSince >= (early ? EarlyDisengagedSeconds : DisengagedSeconds))
                     {
-                        return "disengaged melee=" + ReactionMonitor.Fmt2(melee);
+                        return "disengaged melee=" + ReactionMonitor.Fmt2(melee) + earlyText;
                     }
                 }
                 else
@@ -378,12 +430,13 @@ namespace RBMAI
                 }
             }
             // a Deter screen striking is never a chase
-            string chase = (deter && _phase != Phase.Approach) ? null : CheckChase(formation, task, now);
+            string chase = (deter && _phase != Phase.Approach) ? null : CheckChase(formation, task, now, early ? EarlyChaseSeconds : ChaseSeconds);
             if (chase != null)
             {
-                return chase;
+                return chase + earlyText;
             }
-            return CheckLeash(mission, formation, task);
+            string leash = CheckLeash(mission, formation, task, early ? EarlyLeashFactor : 1f);
+            return (leash != null) ? leash + earlyText : null;
         }
 
         /// <summary>Reserve / main infantry: HomeLeash x factor m from where it stood, or null.</summary>
@@ -403,7 +456,7 @@ namespace RBMAI
         }
 
         /// <summary>Not in Fight; standing at the Move point restarts it.</summary>
-        private string CheckChase(Formation formation, ReactionMonitor.ReactTask task, float now)
+        private string CheckChase(Formation formation, ReactionMonitor.ReactTask task, float now, float chaseSeconds)
         {
             Vec2 centre = RBMAI.Utilities.GetFormationCenter(formation);
             if (!centre.IsValid)
@@ -411,9 +464,9 @@ namespace RBMAI
                 return null;
             }
             float distance;
-            if (_phase == Phase.Approach && _targetPoint.IsValid)
+            if (_phase == Phase.Approach && _target.Desired.IsValid)
             {
-                Vec2 at = _targetPoint - (_facing.IsValid ? _facing : Vec2.Zero) * (formation.Depth * 0.5f);
+                Vec2 at = _target.Desired -(_facing.IsValid ? _facing : Vec2.Zero) * (formation.Depth * 0.5f);
                 distance = centre.Distance(at);
                 if (distance <= PointArrive + formation.Depth * 0.25f)
                 {
@@ -433,14 +486,14 @@ namespace RBMAI
                 _chaseDistance = distance;
                 return null;
             }
-            if (now - _chaseSince >= ChaseSeconds)
+            if (now - _chaseSince >= chaseSeconds)
             {
                 return "chaseTimeout d=" + ReactionMonitor.Fmt0(distance) + "m (was " + ReactionMonitor.Fmt0(_chaseDistance) + "m " + ReactionMonitor.Fmt0(now - _chaseSince) + "s ago)";
             }
             return null;
         }
 
-        private string CheckLeash(Mission mission, Formation formation, ReactionMonitor.ReactTask task)
+        private string CheckLeash(Mission mission, Formation formation, ReactionMonitor.ReactTask task, float cavalryLeashFactor)
         {
             Vec2 centre = RBMAI.Utilities.GetFormationCenter(formation);
             if (!centre.IsValid)
@@ -453,16 +506,37 @@ namespace RBMAI
                 return home;
             }
             Formation main = ReactionMonitor.MainInfantry(formation.Team);
+            // no melee-infantry main: the same leashes from the position anchor (archers), none without one
+            string from = "main";
+            if (main == null)
+            {
+                main = ArmyComposition.PositionAnchor(formation.Team);
+                from = "anchor";
+            }
             if (main == null || main == formation)
             {
                 return null;
             }
+            string leash = Leash(mission, formation, main, centre, cavalryLeashFactor);
+            if (leash != null && from == "anchor")
+            {
+                ArmyComposition.Note(formation.Team, formation, ArmyComposition.KindGate, "reactLeash", "fromAnchor " + TerrainCavalry.FormationName(main) + " " + leash);
+                return leash.Replace("leash main=", "leash anchor=");
+            }
+            return leash;
+        }
+
+        private string Leash(Mission mission, Formation formation, Formation main, Vec2 centre, float cavalryLeashFactor)
+        {
             float gap = ReactionMonitor.EdgeGap(formation, main);
             if (formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsRangedCavalryFormation)
             {
-                if (gap > CavalryMainLeash(formation.Team))
+                float cavalryLeash = CavalryMainLeash(formation.Team) * cavalryLeashFactor;
+                if (gap > cavalryLeash)
                 {
-                    return "leash main=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, main));
+                    float kWeak = ArmyComposition.KWeak(formation.Team);
+                    return "leash main=" + FormationGeometry.GapText(gap)
+                        + ((kWeak > 0f) ? " limit=" + ReactionMonitor.Fmt0(cavalryLeash) + "m kWeak=" + ArmyComposition.F2(kWeak) : "");
                 }
                 Formation enemyMain;
                 Vec2 forward;
@@ -477,7 +551,7 @@ namespace RBMAI
                 return null;
             }
             float limit = (formation.Team.Side == BattleSideEnum.Defender) ? LeashFootDefender : LeashFootAttacker;
-            return (gap > limit) ? "leash main=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, main)) : null;
+            return (gap > limit) ? "leash main=" + FormationGeometry.GapText(gap) : null;
         }
 
         private void UpdatePhase(float now)
@@ -497,21 +571,21 @@ namespace RBMAI
                         switch (task.Mode)
                         {
                             case ReactionMonitor.ReactMode.Help:
-                                if (gap <= HelpStrikeGap)
+                                if (gap <= HelpStrikeGap && !task.PushOnly)
                                 {
-                                    why = "gap=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, task.Target));
+                                    why = "gap=" + FormationGeometry.GapText(gap);
                                 }
                                 break;
                             case ReactionMonitor.ReactMode.Intercept:
                                 if (gap <= InterceptStrikeGap)
                                 {
-                                    why = "gap=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, task.Target));
+                                    why = "gap=" + FormationGeometry.GapText(gap);
                                 }
                                 break;
                             case ReactionMonitor.ReactMode.Deter:
                                 if (gap <= DeterStrikeGap)
                                 {
-                                    why = "gap=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, task.Target));
+                                    why = "gap=" + FormationGeometry.GapText(gap);
                                 }
                                 break;
                             default:
@@ -521,7 +595,7 @@ namespace RBMAI
                                     float strikeGap = (task.Mode == ReactionMonitor.ReactMode.Hunt) ? HuntStrikeGap : StageStrikeGap;
                                     if (gap <= strikeGap)
                                     {
-                                        why = "gap=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, task.Target));
+                                        why = "gap=" + FormationGeometry.GapText(gap);
                                     }
                                     else if (centre.IsValid && stage.IsValid && centre.Distance(stage) <= StageArrive)
                                     {
@@ -546,11 +620,11 @@ namespace RBMAI
                         float melee = HoldLateCharge.MeleeShare(formation);
                         if (melee >= FightMeleeShare)
                         {
-                            SetPhase(Phase.Fight, now, "melee=" + ReactionMonitor.Fmt2(melee) + " gap=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, task.Target)));
+                            SetPhase(Phase.Fight, now, "melee=" + ReactionMonitor.Fmt2(melee) + " gap=" + FormationGeometry.GapText(gap));
                         }
                         else if (task.Mode == ReactionMonitor.ReactMode.Deter && gap > DeterReleaseGap)
                         {
-                            SetPhase(Phase.Approach, now, "release gap=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, task.Target)));
+                            SetPhase(Phase.Approach, now, "release gap=" + FormationGeometry.GapText(gap));
                         }
                         break;
                     }
@@ -561,7 +635,7 @@ namespace RBMAI
                             float melee = HoldLateCharge.MeleeShare(formation);
                             if (melee < DisengagedShare)
                             {
-                                SetPhase(Phase.Approach, now, "release gap=" + FormationGeometry.Shadow(gap, ReactionMonitor.OldGap(formation, task.Target)) + " melee=" + ReactionMonitor.Fmt2(melee));
+                                SetPhase(Phase.Approach, now, "release gap=" + FormationGeometry.GapText(gap) + " melee=" + ReactionMonitor.Fmt2(melee));
                             }
                         }
                         break;
@@ -575,6 +649,7 @@ namespace RBMAI
             _phase = phase;
             _phaseSince = now;
             _chaseSince = float.NaN;
+            ResetStrikeApproach();
             UpdateStateName();
             ReactionMonitor.ReactTask task = _task;
             if (task != null && task.Owner != null)
@@ -597,17 +672,23 @@ namespace RBMAI
             Mission mission = Mission.Current;
             if (task == null || formation == null || mission == null || formation.CountOfUnits <= 0 || task.Target == null || task.Target.CountOfUnits <= 0)
             {
+                _approaching = false;
                 base.CurrentOrder = MovementOrder.MovementOrderStop;
                 CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
                 return;
             }
+            float now = mission.CurrentTime;
             if (_phase != Phase.Approach)
             {
+                if (_phase == Phase.Strike && TickStrikeApproach(mission, formation, task, now))
+                {
+                    return;
+                }
+                _approaching = false;
                 base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(task.Target);
                 CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
                 return;
             }
-            float now = mission.CurrentTime;
             Vec2 centre = RBMAI.Utilities.GetFormationCenter(formation);
             Vec2 targetCentre = RBMAI.Utilities.GetFormationCenter(task.Target);
             if (!centre.IsValid || !targetCentre.IsValid)
@@ -663,14 +744,113 @@ namespace RBMAI
             }
             // the Move point is the FRONT-centre: native lays the ranks out behind the order position
             Vec2 front = desired + _facing * (formation.Depth * 0.5f);
-            if (!SetPoint(formation, task.Target, front, now))
+            // own median, else the target's (keeps a held point when neither has one)
+            WorldPosition point;
+            if (!_target.TryGet(front, now, formation.CachedMedianPosition, task.Target.CachedMedianPosition, false, true, false, out point))
             {
                 base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(task.Target);
                 CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
                 return;
             }
-            base.CurrentOrder = MovementOrder.MovementOrderMove(_target);
+            base.CurrentOrder = MovementOrder.MovementOrderMove(point);
             CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(_facing);
+        }
+
+        // USER RULE 2026-10-30: a mounted Strike rides formed (Move to the target's near edge) until FormedApproach's go rule holds, as
+        // CavalryCharge does; the gap is React's own edge gap. True = the Move is set, false = ChargeToTarget.
+        private bool TickStrikeApproach(Mission mission, Formation formation, ReactionMonitor.ReactTask task, float now)
+        {
+            Formation target = task.Target;
+            Footprint shape;
+            if (!mission.IsFieldBattle || !formation.IsAIControlled
+                || (!formation.QuerySystem.IsCavalryFormation && !formation.QuerySystem.IsRangedCavalryFormation)
+                || !FormationGeometry.TryGet(target, FootprintMode.Current, out shape))
+            {
+                return false;
+            }
+            Vec2 centre = RBMAI.Utilities.GetFormationCenter(formation);
+            Vec2 targetCentre = RBMAI.Utilities.GetFormationCenter(target);
+            if (!centre.IsValid || !targetCentre.IsValid)
+            {
+                return false;
+            }
+            float gap = FormedApproach.Gap(formation, target);
+            bool melee = HoldLateCharge.MeleeShare(formation) >= HoldLateCharge.ContactMeleeShare;
+            bool keepLost = false;
+            if (_go)
+            {
+                if (gap <= FormedApproach.KeepDistance || melee)
+                {
+                    _farSince = float.NaN;
+                    return false;
+                }
+                if (float.IsNaN(_farSince))
+                {
+                    _farSince = now;
+                }
+                if (now - _farSince < FormedApproach.KeepSeconds)
+                {
+                    return false;
+                }
+                _go = false;
+                keepLost = true;
+            }
+            else
+            {
+                string why = FormedApproach.GoReason(formation, target, gap, centre, targetCentre, melee);
+                if (why != null)
+                {
+                    StrikeGo(task, formation, why, now);
+                    return false;
+                }
+            }
+            Vec2 edge;
+            Vec2 u;
+            if (!FormedApproach.TryLeadEdge(formation, target, shape, centre, targetCentre, gap, out edge, out u))
+            {
+                StrikeGo(task, formation, "gap=0m", now);
+                return false;
+            }
+            Vec2 aim = edge - centre;
+            Vec2 facing = (aim.LengthSquared > 0.01f) ? aim.Normalized() : u;
+            if (_strikePointTarget != target)
+            {
+                _strikePoint.Reset();
+                _strikeFacing = facing;
+            }
+            else if (!_strikeFacing.IsValid || _strikeFacing.DotProduct(facing) < FormedApproach.FacingTurnCos)
+            {
+                _strikeFacing = facing;
+            }
+            WorldPosition point;
+            if (!_strikePoint.TryGet(edge, now, target.CachedMedianPosition, formation.CachedMedianPosition, false, true, false, out point))
+            {
+                StrikeGo(task, formation, "noPoint", now);
+                return false;
+            }
+            _strikePointTarget = target;
+            base.CurrentOrder = MovementOrder.MovementOrderMove(point);
+            CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(_strikeFacing);
+            _approachTarget = target;
+            if (!_approaching)
+            {
+                _approaching = true;
+                _approachSince = now;
+                task.Owner?.LogPhase(task, formation, "strike approach", "gap=" + FormationGeometry.GapText(gap) + (keepLost ? " keepLost" : ""), now);
+            }
+            return true;
+        }
+
+        private void StrikeGo(ReactionMonitor.ReactTask task, Formation formation, string why, float now)
+        {
+            bool wasApproaching = _approaching;
+            _approaching = false;
+            _go = true;
+            _farSince = float.NaN;
+            if (wasApproaching)
+            {
+                task.Owner?.LogPhase(task, formation, "strike go", why + " after " + ReactionMonitor.Fmt0(now - _approachSince) + "s", now);
+            }
         }
 
         private static Vec2 StagePoint(ReactionMonitor.ReactTask task)
@@ -680,32 +860,6 @@ namespace RBMAI
                 return ReactionMonitor.SidePoint(task.Target, task.Side, HuntFlankOut, HuntRearOut);
             }
             return ReactionMonitor.SidePoint(task.Target, task.Side, StageFlankOut, StageRearOut);
-        }
-
-        /// <summary>Copy of a cached WorldPosition (own median, else the target's) with ONE SetVec2MT. False without a source.</summary>
-        private bool SetPoint(Formation formation, Formation target, Vec2 front, float now)
-        {
-            if (_hasTarget && (_targetPoint.DistanceSquared(front) <= RebuildDistance * RebuildDistance || now - _targetBuiltAt < RebuildSeconds))
-            {
-                return true;
-            }
-            WorldPosition source = formation.CachedMedianPosition;
-            if (!source.AsVec2.IsValid)
-            {
-                source = target.CachedMedianPosition;
-                if (!source.AsVec2.IsValid)
-                {
-                    return _hasTarget;
-                }
-            }
-            // ONE SetVec2MT on a fresh copy, kept until a rebuild (native caches the order position by its Vec2)
-            WorldPosition point = source;
-            point.SetVec2MT(front);
-            _target = point;
-            _targetPoint = front;
-            _targetBuiltAt = now;
-            _hasTarget = true;
-            return true;
         }
 
         /// <summary>AI thread, the monitor's pass.</summary>

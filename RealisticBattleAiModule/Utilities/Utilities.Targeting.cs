@@ -103,6 +103,7 @@ namespace RBMAI
             public readonly Vec2 RobustDir;
             public readonly float RobustHalfAlong;
             public readonly float RobustHalfAcross;
+            public readonly Vec2 RobustBulk; // the kept men's mean per axis
 
             public FormationUnitSnapshot(float time, Agent[] agents, int attachedCount = -1, Vec2 frameDir = default(Vec2))
             {
@@ -130,7 +131,7 @@ namespace RBMAI
                 MaxX = maxX;
                 MaxY = maxY;
                 FormationGeometry.RobustBox(Positions, Selectable, attachedCount, frameDir, out RobustCentre, out RobustDir, out RobustHalfAlong,
-                    out RobustHalfAcross, out RobustCount);
+                    out RobustHalfAcross, out RobustCount, out RobustBulk);
             }
 
             // Squared distance from a point to the bounds; 0 inside them. Only valid when Agents is not empty.

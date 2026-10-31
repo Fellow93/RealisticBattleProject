@@ -24,12 +24,17 @@ namespace RBMAI
             int maxBumps = 0;
             int minBumps = 0;
             BattleTerrain.End minEnd = BattleTerrain.End.None;
+            float centre = float.NaN;
             for (int o = -1; o <= 1; o++)
             {
                 Vec2 start = target.C2 + f.Left * (target.Frontage * o / 3f);
                 BattleTerrain.End end;
                 int bumps;
                 float length = RunUpWalk(f.Grid, start, target.Toward, out end, out bumps);
+                if (o == 0)
+                {
+                    centre = length;
+                }
                 if (float.IsNaN(max) || length > max)
                 {
                     max = length;
@@ -42,7 +47,7 @@ namespace RBMAI
                     minBumps = bumps;
                 }
             }
-            return new BattleTerrain.RunUp(max, min, minEnd, maxBumps, minBumps);
+            return new BattleTerrain.RunUp(max, min, minEnd, maxBumps, minBumps, centre);
         }
 
         /// <summary>Like Walk for a charge lane: good ground is walkable and flatter than RunUpSlope; a steep or blocked stretch up to RunUpBumpMax m is crossed (counted in bumps) once good ground follows, a longer one ends the lane. Deep water and the map edge end it at once. end = steep | blocked | water | edge | max.</summary>

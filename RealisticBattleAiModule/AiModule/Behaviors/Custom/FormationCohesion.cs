@@ -15,7 +15,8 @@ namespace RBMAI
     ///
     /// ANCHOR: the team's MAIN infantry = largest melee infantry formation of its own team, AI- or PLAYER-controlled (the player's
     /// line is only READ, never ordered), held with hysteresis (TeamMain: switch at MainSwitchRatio x men); the formation itself
-    /// is left out; a caller may name one. No anchor while the anchor is under Charge / ChargeWithTarget / Retreat (ResolveAnchor),
+    /// is left out; a caller may name one. None while the team's infantry does not lead (ArmyComposition's plan: smoothed weighted share
+    /// MainEnterStrengthShare, kept to MainKeepStrengthShare; troop type); then the position anchor (ArmyComposition.AnchorFor). No anchor while the anchor is under Charge / ChargeWithTarget / Retreat (ResolveAnchor),
     /// except a ranged formation in SupportFire keeps its engaged main (SetSupportAnchor).
     /// Footprints by the front-centre rule (the Move point is the FRONT-centre, ranks behind it): where the anchor stands NOW and,
     /// with a valid cached OrderPosition and no Charge/Retreat order, where it is HEADING.
@@ -101,24 +102,36 @@ namespace RBMAI
         }
 
 
-        private static bool IsMeleeInfantry(Formation f)
+        /// <summary>Melee infantry by the old state test AND by troop type (a dry archer formation never counts).</summary>
+        internal static bool IsMeleeInfantry(Formation f)
         {
-            return f != null && f.CountOfUnits > 0 && f.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.IsRangedForArrangement(f);
+            return f != null && f.CountOfUnits > 0 && f.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.IsRangedForArrangement(f)
+                && ArmyComposition.IsMeleeInfantryType(f);
         }
 
         // Anchor needs min(MainMinMen, ceil(MainMinShare x team men)) men, at least 1.
         private const int MainMinMen = 8;
         private const float MainMinShare = 0.25f;
 
-        private static int MinMainMen(Team team)
+        internal static int MinMainMen(Team team)
         {
             int teamMen = (team?.QuerySystem != null) ? team.QuerySystem.MemberCount : 0;
             return System.Math.Max(1, System.Math.Min(MainMinMen, (int)System.Math.Ceiling(MainMinShare * teamMen)));
         }
 
-        /// <summary>Largest melee infantry with at least MinMainMen men, or null.</summary>
-        private static Formation Largest(Team team, Formation except, bool aiOnly)
+        /// <summary>AI thread: largest melee infantry with at least MinMainMen men while the team's infantry leads (ArmyComposition's plan), else null (no hysteresis on the pick). aiOnly: AI-controlled only.</summary>
+        internal static Formation LargestMeleeInfantry(Team team, bool aiOnly)
         {
+            return (team == null) ? null : Largest(team, null, aiOnly, ArmyComposition.InfantryLeads(team));
+        }
+
+        /// <summary>Largest melee infantry with at least MinMainMen men, or null; null too while the infantry does not lead.</summary>
+        private static Formation Largest(Team team, Formation except, bool aiOnly, bool leads)
+        {
+            if (!leads)
+            {
+                return null;
+            }
             Formation best = null;
             foreach (Formation f in team.FormationsIncludingSpecialAndEmpty)
             {
@@ -134,14 +147,16 @@ namespace RBMAI
             return (best != null && best.CountOfUnits >= MinMainMen(team)) ? best : null;
         }
 
-        /// <summary>AI thread: held with hysteresis (AI- or player-controlled); read-only, never order or pull it.</summary>
+        /// <summary>AI thread: held with hysteresis (AI- or player-controlled); read-only, never order or pull it. Infantry leads by ArmyComposition's plan.</summary>
         internal static Formation TeamMain(Team team)
         {
-            if (team == null)
-            {
-                return null;
-            }
-            Formation largest = Largest(team, null, false);
+            return (team == null) ? null : TeamMainWith(team, ArmyComposition.InfantryLeads(team));
+        }
+
+        /// <summary>AI thread: TeamMain with the verdict given (ArmyComposition's build passes the one it is deciding).</summary>
+        internal static Formation TeamMainWith(Team team, bool leads)
+        {
+            Formation largest = Largest(team, null, false, leads);
             Formation held;
             if (largest == null)
             {
@@ -165,15 +180,16 @@ namespace RBMAI
             {
                 return null;
             }
+            bool leads = ArmyComposition.InfantryLeads(team);
             if (aiOnly)
             {
-                return Largest(team, formation, true);
+                return Largest(team, formation, true, leads);
             }
-            Formation main = TeamMain(team);
-            return (main == formation) ? Largest(team, formation, false) : main;
+            Formation main = TeamMainWith(team, leads);
+            return (main == formation) ? Largest(team, formation, false, leads) : main;
         }
 
-        /// <summary>The named anchor when usable, else the main infantry; null while it is under a Charge / ChargeWithTarget / Retreat order.</summary>
+        /// <summary>The named anchor when usable, else the main infantry, else (no main) the position anchor; null while it is under a Charge / ChargeWithTarget / Retreat order.</summary>
         private static Formation ResolveAnchor(Formation formation, Formation anchorOverride)
         {
             // SupportFire: a formation supporting its engaged main keeps it as anchor under Charge too
@@ -185,19 +201,20 @@ namespace RBMAI
             }
             Formation anchor = (anchorOverride != null && anchorOverride != formation && anchorOverride.CountOfUnits > 0)
                 ? anchorOverride
-                : MainInfantry(formation);
+                : (MainInfantry(formation) ?? ArmyComposition.AnchorFor(formation));
             return (anchor != null && OrderExemption(anchor) == null) ? anchor : null;
         }
 
         internal static float Limit(Formation formation, Kind kind)
         {
             bool defender = formation?.Team != null && formation.Team.Side == BattleSideEnum.Defender;
+            float scale = ArmyComposition.Lerp(1f, ArmyComposition.CavalryLimitFactor,ArmyComposition.KCav(formation?.Team));
             if (kind == Kind.Reserve)
             {
-                return defender ? ReserveLimit : AttackerMeleeLimit;
+                return (defender ? ReserveLimit : AttackerMeleeLimit) * scale;
             }
             bool ranged = RBMAI.Utilities.IsRangedForArrangement(formation);
-            return defender ? (ranged ? DefenderRangedLimit : DefenderMeleeLimit) : (ranged ? AttackerRangedLimit : AttackerMeleeLimit);
+            return (defender ? (ranged ? DefenderRangedLimit : DefenderMeleeLimit) : (ranged ? AttackerRangedLimit : AttackerMeleeLimit)) * scale;
         }
 
         /// <summary>Why the formation is never held to a limit (player | mounted | empty), or null.</summary>
@@ -647,13 +664,20 @@ namespace RBMAI
         /// <summary>"f0:Infantry gap=63m>40m".</summary>
         internal static string Describe(Formation anchor, float gap, float limit)
         {
-            return TerrainCavalry.FormationName(anchor) + " gap=" + Fmt0(gap) + "m>" + Fmt0(limit) + "m";
+            return TerrainCavalry.FormationName(anchor) + " gap=" + Fmt0(gap) + "m>" + Fmt0(limit) + "m" + KCavNote(anchor);
         }
 
         /// <summary>"f0:Infantry gap=35m<=40m".</summary>
         internal static string DescribeWithin(Formation anchor, float gap, float limit)
         {
-            return TerrainCavalry.FormationName(anchor) + " gap=" + Fmt0(gap) + "m<=" + Fmt0(limit) + "m";
+            return TerrainCavalry.FormationName(anchor) + " gap=" + Fmt0(gap) + "m<=" + Fmt0(limit) + "m" + KCavNote(anchor);
+        }
+
+        // the limit was scaled by kCav (Limit)
+        private static string KCavNote(Formation anchor)
+        {
+            float k = ArmyComposition.KCav(anchor?.Team);
+            return (k > 0f) ? " kCav=" + ArmyComposition.F2(k) : "";
         }
 
         /// <summary>Refusal text for the per-point refusal lists (no spaces, no commas): "cohesion(f0:Infantry:63>40m)".</summary>

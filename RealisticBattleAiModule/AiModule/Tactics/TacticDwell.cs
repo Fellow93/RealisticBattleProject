@@ -7,22 +7,20 @@ namespace RBMAI
     public static partial class Tactics
     {
         /// <summary>Minimum time a field-battle team keeps a tactic before it may pick another. Native re-decides every 5 s
-        /// with no dwell, and its x1.5 bonus for the current tactic is skipped by the final check for every tactic whose
-        /// ResetTacticalPositions returns false (all but DefensiveLine/Ring/HoldChokePoint), so a weight that jumps
-        /// switches at once. The 2026-10-20 22:02 log: the attacker flipped Embolon (weight 5 / 0.01 as its heavy-cavalry
-        /// share crossed 60%) and FullScaleAttack every 5-15 s, re-splitting its cavalry each time; the defender flipped
-        /// DefensiveEngagement and FullScaleAttack with both weights near 0.
+        /// with no dwell; its x1.5 current-tactic bonus (MaxBy) only stops a switch to a weight up to 1.5x, so a weight
+        /// that jumps further switches at once. The 2026-10-20 22:02 log: the attacker flipped Embolon (weight 5 / 0.01
+        /// as its heavy-cavalry share crossed 60%) and FullScaleAttack every 5-15 s, re-splitting its cavalry each time.
         /// While the dwell holds, MakeDecision is skipped except for IsDefenseApplicable (the defender tactics' weights
-        /// read it); a team with no enemy left always runs native, which forces TacticCharge.</summary>
+        /// read it); a team with no enemy left always runs native, which forces TacticCharge. RBM's own re-picks
+        /// (TacticSelection's MakeDecision prefix, which runs whatever this prefix returns) switch through the private
+        /// setter and restart the dwell.</summary>
         [HarmonyPatch(typeof(TeamAIComponent), "MakeDecision")]
         internal static class TacticDwell
         {
             private const float MinTacticDwellSeconds = 30f;
 
             /// <summary>Mission time of each team's last tactic change. Written on the AI tick and from ResetTactic (which
-            /// may run on the main thread), hence concurrent. Cleared in MissionStartReset. BattleTerrainLogic removes every
-            /// team-AI team's entry once, at the terrain publish (terrainTacticsEnabled), so the pick made before the
-            /// ground was read is re-decided with the terrain factor at the next decision.</summary>
+            /// may run on the main thread), hence concurrent. Cleared in MissionStartReset.</summary>
             internal static readonly ConcurrentDictionary<Team, float> tacticSince = new ConcurrentDictionary<Team, float>();
 
             [HarmonyPrefix]

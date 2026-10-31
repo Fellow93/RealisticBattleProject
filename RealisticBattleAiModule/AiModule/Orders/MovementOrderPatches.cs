@@ -312,9 +312,9 @@ namespace RBMAI
                     signDist = signDirection.Normalize();
                 }
 
-                if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
+                if ((enemyCav != null) && (cavDist <= signDist) && AiModule.RbmBehaviors.OverrideBehaviorCharge.BraceWorthy(__instance.Formation, enemyCav) && (signDist > 35f))
                 {
-                    if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
+                    if (AiModule.RbmBehaviors.OverrideBehaviorCharge.ChargeTargetOf(enemyCav) == __instance.Formation)
                     {
                         if (RBMAI.Utilities.CheckIfCanBrace(__instance))
                         {

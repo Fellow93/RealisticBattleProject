@@ -86,10 +86,10 @@ Formations with `aiControlled=0` (the player's own commands) are never judged.
      `RecallLoopGap` s apart. More than `RecallLoopMax` loops is a **FAIL**, fewer is a **WARN**.
    - *Bait loops*: `ChargeLoopCount` or more local `behind` / `infantry` charges (`->Charge` lines) of one formation at
      the same enemy formation (the first `fN:Class` in the reason) within `ChargeLoopWindow` s: **WARN**.
-   - *Charge starts* (USER RULE 2026-10-22: the real charge only within 50 m of its target; `Orders/ChargeGuard.cs`
+   - *Charge starts* (USER RULE 2026-10-22, 40 m since 2026-10-30: the real charge only within 40 m of its target; `Orders/ChargeGuard.cs`
      walks it there as a Move): every AI log `CHANGE ORDER` line of an AI-controlled foot formation (not
      Cavalry / HorseArcher) that switches to `Charge` / `ChargeToTarget` is checked against the last FORM sample at
-     or before it. A `distToEnemy` above `ChargeStartDist` + `ChargeStartSlack` m (50 + 30: distToEnemy is centre
+     or before it. A `distToEnemy` above `ChargeStartDist` + `ChargeStartSlack` m (40 + 30: distToEnemy is centre
      to centre) is a **WARN**. One INFO line counts the starts, the far ones and the terrain log's ChargeGuard
      `charge advance` / `charge go` / `charge drop` lines (it turns into the first WARN line when there are far starts).
 5. **Plan churn.** Counts FLANKPLAN replan/stale, SPOTS and CAVALRY replans, BATTLEPOS repicks (and how many moved
@@ -184,6 +184,14 @@ Formations with `aiControlled=0` (the player's own commands) are never judged.
     retuning it.
 15. **Approach.** The terrain log's `APPROACH` lines (TerrainApproach, the attacker main infantry's route): **INFO** per plan (chosen kind, gain, why) and the drop reasons; **WARN** when a route is dropped for `noGain` within 30 s of being taken, dropped `stalled`, or the main stands still (< 3 m in 10 s, FORM samples) while following it.
 16. **Charge flicker.** The terrain log's BEHAVIOR `ChargeGuard` lines: **WARN** when one formation's `charge advance` / `charge go` lines switch more than 3 times within 30 s (a formation that keeps releasing and losing its charge, e.g. stragglers in melee far ahead of the main body).
+17. **Army composition.** The terrain log's COMPOSITION / COMPEVENT lines and the k-driven BEHAVIOR lines (ArmyComposition): last shares / tokens / k per team, a COMPEVENT timeline (INFO); flicker, k-driven lines with every k at 0, a long wearDown hold, a token archer stand: **WARN** (details in the script's check text).
+18. **Cavalry cohesion.** Every AI melee cavalry formation (FORM class `Cavalry`, `aiControlled=1`): the time it spends under a
+    `Charge` / `ChargeToTarget` order with FORM `dev` above `CavScatterFactor` (4) x `idealDisp`. One continuous stretch
+    (sample gaps up to `CavScatterGapSec` 3 s) longer than `CavScatterWarnSec` (30 s) is a **WARN**, longer than
+    `CavScatterFailSec` (90 s) a **FAIL**, with from-to and the mean dev / idealDisp. **INFO** per formation from the
+    terrain log's BEHAVIOR `CavalryCharge` reform lines: `reform take` / `change` / `none` counts, releases by why
+    (`newCharge:<reason>`, `none`, `behaviorEnded` ...) and the reject reasons of the `none` lines. `ReformNoneWarn` (5)
+    or more `reform none` with no `reform take`: **WARN** (it never found a place to regroup).
 
 The **SUMMARY** line counts the checks per status and repeats the first six FAIL/WARN evidence lines.
 
@@ -216,6 +224,8 @@ pass `-Threshold` for a single run.
 | SupportWindow / SupportMovesMax | 60 s / 6 | 12 (with FlickerJump) |
 | (none) | | 13: the FLIP thresholds are DecisionTrace's own, in the game |
 | ChargeFlipWindow / ChargeFlipMax | 30 s / 3 | 16 |
+| CavScatterFactor / CavScatterWarnSec / CavScatterFailSec / CavScatterGapSec | 4 x / 30 s / 90 s / 3 s | 18 |
+| ReformNoneWarn | 5 | 18 |
 | PairToleranceSec | 5 s | pairing ai_/terrain_ files |
 | MinBattleSeconds | 20 s | header note for very short battles |
 

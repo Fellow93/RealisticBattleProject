@@ -149,6 +149,9 @@ namespace RBMAI
         /// <summary>One formation's charge horn at most this often: Charge, something else, Charge again does not re-blow it.</summary>
         private const float ChargeHornCooldown = 20f;
 
+        /// <summary>Chance that a mounted formation's charge blows the charge horn at all.</summary>
+        private const float ChargeHornChance = 0.5f;
+
         /// <summary>One team's charge horns start at least this far apart: a second formation charging with the first waits, it is not dropped.</summary>
         private const float TeamChargeHornGap = 2.5f;
 
@@ -1630,6 +1633,12 @@ namespace RBMAI
             int id = ChargeHornDue(formation, state, now);
             if (id < 0)
             {
+                return -1f;
+            }
+            // user rule 2026-10-30: half the charges get the horn; a miss still uses the cooldown, so a re-charge does not re-roll at once
+            if (MBRandom.RandomFloat >= ChargeHornChance)
+            {
+                state.NextChargeHornTime = now + ChargeHornCooldown;
                 return -1f;
             }
             Agent caller = PickCaller(formation, now, footOnly: false);

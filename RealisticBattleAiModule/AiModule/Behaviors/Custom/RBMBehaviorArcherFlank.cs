@@ -13,7 +13,7 @@ namespace RBMAI
         public FormationAI.BehaviorSide FlankSide = FormationAI.BehaviorSide.Middle;
 
         /// <summary>AI thread.</summary>
-        private readonly CoverSupport _glue = new CoverSupport(CoverSupport.LogQueue.Spots, "ArcherFlank");
+        private readonly CoverSupport _glue = new CoverSupport("ArcherFlank", "spot");
 
         private bool _coverFacing;
 
@@ -41,6 +41,52 @@ namespace RBMAI
             return MathF.Max(0f, files * (diameter + lineInterval) - lineInterval);
         }
 
+        internal const float CavalryBehindGap = 5f; // m behind the main's rear at kCav 1
+
+        /// <summary>AI thread.</summary>
+        private readonly CavalryBehindPlace _cavPlace = new CavalryBehindPlace("ArcherFlank", "flank");
+
+        /// <summary>Front-centre place: the anchor's front-centre + side x lateral, slid by kCav toward its rear (lateral x (1 - k), back k x (depth + CavalryBehindGap)).</summary>
+        internal static Vec2 FlankPlace(Formation ally, Vec2 side, float lateral, float kCav)
+        {
+            Vec2 back = ally.Direction;
+            back = (back.IsValid && back.LengthSquared > 0.01f) ? back.Normalized() * (kCav * (ally.Depth + CavalryBehindGap)) : Vec2.Zero;
+            return ally.CurrentPosition + side * (lateral * (1f - kCav)) - back;
+        }
+
+        private const float ApproachRangeMargin = 10f; // m beyond the missile range: still approaching
+        private const float ApproachMoveMin = 10f; // m to the order point: walking
+
+        /// <summary>
+        /// AI thread, user rule 2026-10-30: an attacker's archers still out of shooting range face where the army advances - the anchor's
+        /// facing, else toward their own move point - not the enemy. False otherwise (the caller keeps its enemy facing).
+        /// </summary>
+        internal static bool ApproachFacing(Formation archers, Formation anchor, Vec2 movePoint, out Vec2 facing)
+        {
+            facing = Vec2.Invalid;
+            if (archers?.Team == null || archers.Team.Side != BattleSideEnum.Attacker || !archers.IsAIControlled)
+            {
+                return false;
+            }
+            Vec2 at = archers.CachedAveragePosition;
+            Vec2 enemyAt = archers.QuerySystem.Team.MedianTargetFormationPosition.AsVec2;
+            if (!at.IsValid || !enemyAt.IsValid || at.Distance(enemyAt) <= archers.QuerySystem.MaximumMissileRange + archers.Depth * 0.5f + ApproachRangeMargin)
+            {
+                return false;
+            }
+            Vec2 dir = (anchor != null && anchor != archers) ? anchor.Direction : Vec2.Invalid;
+            if (!dir.IsValid || dir.LengthSquared < 0.01f)
+            {
+                if (!movePoint.IsValid || movePoint.Distance(at) <= ApproachMoveMin)
+                {
+                    return false;
+                }
+                dir = movePoint - at;
+            }
+            facing = dir.Normalized();
+            return true;
+        }
+
         private Vec2 StablePoint(Vec2 point)
         {
             if (!_flankPoint.IsValid || _flankPoint.DistanceSquared(point) > FlankPointRebuild * FlankPointRebuild)
@@ -61,7 +107,8 @@ namespace RBMAI
 
         protected override float GetAiWeight()
         {
-            return 1000f;
+            // the archer stand owns the defender's archer anchor (no stand-off, no cover steps)
+            return RBMBehaviorArcherStand.Owns(base.Formation) ? 0f : 1000f;
         }
 
         protected override void OnBehaviorActivatedAux()
@@ -84,6 +131,7 @@ namespace RBMAI
 
         protected override void CalculateCurrentOrder()
         {
+            _approachFacing = false;
             // user rule: defender archers approached by the enemy seek cover behind / beside their infantry
             if (CoverOrder())
             {
@@ -99,9 +147,8 @@ namespace RBMAI
 
             float flankRange = 10f;
 
-            // main melee infantry (AI- or player-led), else the nearest other own infantry; never itself
-            Formation allyFormation = FormationCohesion.MainInfantry(base.Formation)
-                ?? RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
+            // position anchor (main melee infantry, else the strongest other AI foot formation); never itself
+            Formation allyFormation = ArmyComposition.AnchorFor(base.Formation);
 
             WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
             Vec2 enemyDirection = (medianTargetFormationPosition.AsVec2 - averagePosition).Normalized();
@@ -115,11 +162,26 @@ namespace RBMAI
                 noAllyStandOff = position.AsVec2;
             }
 
-            if (_behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
+            bool flankSide = _behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right
+                || _behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left;
+            // an enemy of melee cavalry: EITHER behind the main melee infantry OR the flank place (kCav, hysteresis)
+            Vec2 behindMain = flankSide
+                ? _cavPlace.Place(this, allyFormation, medianTargetFormationPosition.AsVec2, base.Formation.QuerySystem.MaximumMissileRange * 0.5f + base.Formation.Depth * 0.5f)
+                : Vec2.Invalid;
+            if (behindMain.IsValid)
+            {
+                Vec2 calcPosition = StablePoint(behindMain);
+                position.SetVec2(calcPosition);
+                if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMesh() == UIntPtr.Zero)
+                {
+                    position.SetVec2((allyFormation != null) ? allyFormation.CurrentPosition - allyFormation.Direction * 10f : noAllyStandOff);
+                }
+            }
+            else if (_behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
             {
                 if (allyFormation != null)
                 {
-                    Vec2 calcPosition = StablePoint(allyFormation.CurrentPosition + allyFormation.Direction.RightVec().Normalized() * (allyFormation.Width * 0.5f + NominalLineWidth(base.Formation) * 0.5f + flankRange));
+                    Vec2 calcPosition = StablePoint(FlankPlace(allyFormation, allyFormation.Direction.RightVec().Normalized(), allyFormation.Width * 0.5f + NominalLineWidth(base.Formation) * 0.5f + flankRange, 0f));
 
                     position.SetVec2(calcPosition);
                     if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMesh() == UIntPtr.Zero)
@@ -138,7 +200,7 @@ namespace RBMAI
             {
                 if (allyFormation != null)
                 {
-                    Vec2 calcPosition = StablePoint(allyFormation.CurrentPosition + allyFormation.Direction.LeftVec().Normalized() * (allyFormation.Width * 0.5f + NominalLineWidth(base.Formation) * 0.5f + flankRange));
+                    Vec2 calcPosition = StablePoint(FlankPlace(allyFormation, allyFormation.Direction.LeftVec().Normalized(), allyFormation.Width * 0.5f + NominalLineWidth(base.Formation) * 0.5f + flankRange, 0f));
                     position.SetVec2(calcPosition);
                     if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMesh() == UIntPtr.Zero)
                     {
@@ -196,20 +258,26 @@ namespace RBMAI
                 }
             }
             base.CurrentOrder = MovementOrder.MovementOrderMove(position);
-            float angle = CurrentFacingOrder.GetDirection(Formation).AngleBetween(enemyDirection);
+            Vec2 approach;
+            _approachFacing = ApproachFacing(formation, allyFormation, position.AsVec2, out approach);
+            Vec2 wanted = _approachFacing ? approach : enemyDirection;
+            float angle = CurrentFacingOrder.GetDirection(Formation).AngleBetween(wanted);
             if (angle > 0.2f || angle < -0.2f)
             {
-                base.CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                base.CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(wanted);
             }
         }
+
+        /// <summary>AI thread: CurrentFacingOrder is the approach facing (ApproachFacing), applied in TickOccasionally.</summary>
+        private bool _approachFacing;
 
         public override void TickOccasionally()
         {
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
-            if (_glue.Covering || _glue.Supporting)
+            if (_glue.Covering || _glue.Supporting || _approachFacing)
             {
-                // face the threat / engaged enemy; back to LookAtEnemy when that ends
+                // face the threat / engaged enemy / the way the army advances; back to LookAtEnemy when that ends
                 base.Formation.SetFacingOrder(CurrentFacingOrder);
                 _coverFacing = true;
             }
@@ -299,6 +367,93 @@ namespace RBMAI
         {
             string name = GetType().Name;
             return GameTexts.FindText("str_formation_ai_sergeant_instruction_behavior_text", name);
+        }
+    }
+
+    /// <summary>ENEMY MELEE CAVALRY (kCav), user decision: an either/or archer place with hysteresis - behind the team's main melee infantry from kCav
+    /// ArmyComposition.CavalryBehindOn, the behavior's normal place under CavalryBehindOff; losing the main keeps the last behind point HoldSeconds. One instance per behavior, AI thread.</summary>
+    internal sealed class CavalryBehindPlace
+    {
+        private const float On = ArmyComposition.CavalryBehindOn;
+        private const float Off = ArmyComposition.CavalryBehindOff;
+        internal const float HoldSeconds = 6f;
+
+        private readonly string _behavior;
+        private readonly string _logPoint;
+        private bool _on;
+        private Vec2 _point = Vec2.Invalid;
+        private float _lostAt = float.NaN;
+
+        internal CavalryBehindPlace(string behavior, string logPoint)
+        {
+            _behavior = behavior;
+            _logPoint = logPoint;
+        }
+
+        /// <summary>The behind-main place (front-centre) while the choice holds, else Vec2.Invalid. Pulled toward enemyAt by up to CavalryBehindGap to stay within reach.</summary>
+        internal Vec2 Place(BehaviorComponent owner, Formation ally, Vec2 enemyAt, float reach)
+        {
+            Formation formation = owner?.Formation;
+            Team team = formation?.Team;
+            if (team == null)
+            {
+                return Vec2.Invalid;
+            }
+            float kCav = ArmyComposition.KCav(team);
+            bool want = _on ? kCav > Off : kCav >= On;
+            bool allyIsMain = ally != null && ally == FormationCohesion.TeamMain(team);
+            float now = Mission.Current.CurrentTime;
+            if (want && allyIsMain)
+            {
+                Vec2 p = RBMBehaviorArcherFlank.FlankPlace(ally, Vec2.Zero, 0f, 1f);
+                if (enemyAt.IsValid)
+                {
+                    float d = p.Distance(enemyAt);
+                    if (d > reach && d > 0.1f)
+                    {
+                        p += (enemyAt - p) * (MathF.Min(d - reach, RBMBehaviorArcherFlank.CavalryBehindGap) / d);
+                    }
+                }
+                if (!_on)
+                {
+                    Log(owner, "behindMain on kCav=" + ArmyComposition.F2(kCav) + ">=" + ArmyComposition.F2(On) + " behind " + TerrainCavalry.FormationName(ally));
+                }
+                _on = true;
+                _point = p;
+                _lostAt = float.NaN;
+                return p;
+            }
+            if (!_on)
+            {
+                return Vec2.Invalid;
+            }
+            if (want && _point.IsValid)
+            {
+                // the main is gone: the last point a few seconds, not one jump out to the flank
+                if (float.IsNaN(_lostAt))
+                {
+                    _lostAt = now;
+                }
+                if (now - _lostAt < HoldSeconds)
+                {
+                    return _point;
+                }
+            }
+            _on = false;
+            _point = Vec2.Invalid;
+            _lostAt = float.NaN;
+            Log(owner, "behindMain off " + (want ? "mainLost" : "kCav=" + ArmyComposition.F2(kCav) + "<=" + ArmyComposition.F2(Off)));
+            return Vec2.Invalid;
+        }
+
+        private void Log(BehaviorComponent owner, string why)
+        {
+            Formation formation = owner.Formation;
+            if (formation?.AI != null && formation.AI.ActiveBehavior == owner)
+            {
+                TerrainSpots.EnqueueBehavior(formation.Team, formation, Mission.Current.CurrentTime, _behavior, "kCavPlace", _logPoint, why);
+                ArmyComposition.Note(formation.Team, formation, ArmyComposition.KindGate, "kCavPlace", _behavior + " " + why);
+            }
         }
     }
 }

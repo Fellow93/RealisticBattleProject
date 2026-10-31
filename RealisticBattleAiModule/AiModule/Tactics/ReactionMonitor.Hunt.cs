@@ -276,7 +276,7 @@ namespace RBMAI
                         trigger += " notShooting";
                     }
                     ReactionEvent ev = Observe(ReactKind.R3, victim, 0, victim, a, strict, true, trigger + (horseArchers ? " horseArchers" : ""),
-                        eventGap, 0f, float.NaN, now, OldGap(victim, a));
+                        eventGap, 0f, float.NaN, now);
                     if (ev != null)
                     {
                         ev.Key = eventKey;
@@ -320,14 +320,10 @@ namespace RBMAI
         }
 
         /// <summary>The sampled speed (m/s) of an enemy formation; NaN without a velocity.</summary>
-        private float SampledSpeed(Formation formation)
+        private static float SampledSpeed(Formation formation)
         {
-            Sample s;
-            if (formation == null || !_samples.TryGetValue(formation, out s) || !s.HasVelocity)
-            {
-                return float.NaN;
-            }
-            return s.Velocity.Length;
+            Vec2 velocity;
+            return EnemyMotion.TryVelocity(formation, out velocity) ? velocity.Length : float.NaN;
         }
 
         /// <summary>User rule: a Deter against riding horse archers only while they really hurt the victim (UnderRangedAttackRatio >= R3DeterHitRatio, within R3DeterRange); else "notThreat(hits=0.04 gap=150m)".</summary>
@@ -341,7 +337,7 @@ namespace RBMAI
             float gap = EdgeGap(victim, riders);
             if (hits < R3DeterHitRatio || gap > R3DeterRange)
             {
-                return "notThreat(hits=" + Fmt2(hits) + " gap=" + FormationGeometry.Shadow(gap, OldGap(victim, riders)) + ")";
+                return "notThreat(hits=" + Fmt2(hits) + " gap=" + FormationGeometry.GapText(gap) + ")";
             }
             return null;
         }
@@ -363,9 +359,26 @@ namespace RBMAI
             return (task.HaRunChecks >= R3HaRunChecks) ? "haRunning speed=" + Fmt1(speed) + "m/s" : null;
         }
 
+        /// <summary>R3, infantry vs horse archers: null when it may push at them (the victim takes landed hits and is the infantry itself with kFoot > 0, or a friend with ArmyComposition.FootRangedEngage); else "infVsHorseArchers(...)".</summary>
+        private string InfantryHaPushRefusal(Mission mission, Formation r, Formation victim)
+        {
+            float last;
+            if (victim == null || !_lastRangedHit.TryGetValue(victim, out last) || mission.CurrentTime - last > R3HitGap)
+            {
+                return "infVsHorseArchers(noHits)";
+            }
+            // a normal army (kFoot 0) never pushes infantry at horse archers; a friend's victim needs the full kFoot band
+            bool allowed = (victim == r) ? ArmyComposition.KFoot(_team) > 0f : ArmyComposition.FootRangedEngage(_team);
+            if (!allowed)
+            {
+                return "infVsHorseArchers(kFoot=" + Fmt2(ArmyComposition.KFoot(_team)) + ")";
+            }
+            return null;
+        }
+
         /// <summary>R3: the free formation's hunt (stage side or frontal / direct, goal, time, class factor), or why it cannot hunt the target.</summary>
         private string PlanHunt(Mission mission, Formation r, Formation target, Formation victim, Vec2 rc, bool cavalry, float speed, out StageSide side,
-            out bool strikeAtOnce, out Vec2 goal, out float tta, out float classFactor, out string note, out bool deter)
+            out bool strikeAtOnce, out Vec2 goal, out float tta, out float classFactor, out string note, out bool deter, out bool pushOnly)
         {
             side = StageSide.None;
             strikeAtOnce = false;
@@ -374,18 +387,26 @@ namespace RBMAI
             classFactor = 1f;
             note = null;
             deter = false;
+            pushOnly = false;
             Vec2 ac = RBMAI.Utilities.GetFormationCenter(target);
             if (!ac.IsValid)
             {
                 return "noPosition";
             }
             bool horseArchers = target.QuerySystem.IsRangedCavalryFormation;
-            if (horseArchers)
+            if (horseArchers && !cavalry)
             {
-                if (!cavalry)
+                // infantry never hunts horse archers; it only pushes at those landing hits on it (or, against an enemy of
+                // (almost) no melee foot, on a friend): no strike, no chase (RBMBehaviorReact Help with PushOnly)
+                string noPush = InfantryHaPushRefusal(mission, r, victim);
+                if (noPush != null)
                 {
-                    return "infVsHorseArchers";
+                    return noPush;
                 }
+                pushOnly = true;
+            }
+            if (horseArchers && cavalry)
+            {
                 float haSpeed = SampledSpeed(target);
                 if (float.IsNaN(haSpeed))
                 {
@@ -430,14 +451,14 @@ namespace RBMAI
             Formation screen = ScreeningFoot(mission, _team, r, target, R3ClearTarget, out screenGap);
             if (screen != null)
             {
-                return "screened " + TerrainCavalry.FormationName(screen) + "(gap=" + FormationGeometry.Shadow(screenGap, OldGap(screen, target)) + ")";
+                return "screened " + TerrainCavalry.FormationName(screen) + "(gap=" + FormationGeometry.GapText(screenGap) + ")";
             }
             if (!cavalry)
             {
                 float gap = EdgeGap(r, target);
                 if (gap > R3InfantryMaxGap)
                 {
-                    return "far(gap=" + FormationGeometry.Shadow(gap, OldGap(r, target)) + ")";
+                    return "far(gap=" + FormationGeometry.GapText(gap) + ")";
                 }
                 string blocked = HuntPathBlocked(mission, r, target, rc, ac);
                 if (blocked != null)
@@ -446,9 +467,9 @@ namespace RBMAI
                 }
                 goal = ac;
                 tta = gap / speed;
-                strikeAtOnce = true;
+                strikeAtOnce = !pushOnly;
                 classFactor = ClassInfantryVsRanged;
-                note = "direct";
+                note = pushOnly ? "haPush kFoot=" + Fmt2(ArmyComposition.KFoot(_team)) : "direct";
                 return null;
             }
             string closed;

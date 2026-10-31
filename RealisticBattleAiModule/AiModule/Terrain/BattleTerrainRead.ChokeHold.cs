@@ -371,44 +371,96 @@ namespace RBMAI
         /// <summary>The archers' place; left invalid when none fits.</summary>
         private static void PlaceArchers(Frame f, BattleTerrain.ChokeHoldPlace place)
         {
-            Grid grid = f.Grid;
-            float holdHeight = grid.HeightAt(place.Hold);
-            BattleTerrain.ArcherSpot bestSpot = null;
-            foreach (BattleTerrain.ArcherSpot spot in f.Terrain.Spots.Defender.Spots)
+            HoldArcherRules rules = new HoldArcherRules
             {
-                Vec2 rel = spot.Position - place.Hold;
-                if (rel.Length > ChokeArcherSpotRange || Vec2.DotProduct(rel, place.Facing) > ChokeArcherMaxAhead
-                    || Vec2.DotProduct(spot.Position - place.Choke, place.Facing) >= 0f)
+                SpotRange = ChokeArcherSpotRange,
+                SpotMaxAhead = ChokeArcherMaxAhead,
+                SpotBehindOf = place.Choke,
+                Behind = ChokeArcherBehind,
+                Search = ChokeArcherSearch,
+                MaxSlope = ChokeArcherMaxSlope,
+                MinBehind = ChokeArcherMinBehind
+            };
+            Vec2 archer;
+            string source;
+            float gain;
+            if (PlaceHoldArchers(f.Grid, f.Terrain.Spots.Defender.Spots, place.Hold, place.Facing, rules, out archer, out source, out gain))
+            {
+                place.Archer = archer;
+                place.ArcherSource = source;
+                place.ArcherGain = gain;
+            }
+        }
+
+        /// <summary>The cavalry reserve's place: the dry walkable cell nearest the point ChokeReserveBehind m behind the hold point.</summary>
+        private static void PlaceReserve(Grid grid, BattleTerrain.ChokeHoldPlace place)
+        {
+            Vec2 reserve = PlaceHoldReserve(grid, place.Hold, place.Facing, ChokeReserveBehind, ChokeReserveSearch);
+            if (reserve.IsValid)
+            {
+                place.Reserve = reserve;
+            }
+        }
+
+        /// <summary>A hold's archer place rules (the choke hold's and the battle position's own constants).</summary>
+        private struct HoldArcherRules
+        {
+            public float SpotRange; // a defender archer spot within this of the hold ...
+            public float SpotMaxAhead; // ... at most this far ahead of it along the facing ...
+            public Vec2 SpotBehindOf; // ... and behind this point along the facing (Invalid = no such test)
+            public float Behind; // else the highest cell round the point this far behind the hold ...
+            public float Search; // ... within this radius ...
+            public float MaxSlope; // ... dry, walkable, off the edge, at most this steep ...
+            public float MinBehind; // ... and at least this far behind the hold
+        }
+
+        /// <summary>Shared by the choke hold and the battle position: the best-scored defender archer spot that fits, else the highest dry cell behind the hold; false when none fits. gain = height over the hold (NaN unknown).</summary>
+        private static bool PlaceHoldArchers(Grid grid, IReadOnlyList<BattleTerrain.ArcherSpot> spots, Vec2 hold, Vec2 facing, HoldArcherRules rules,
+            out Vec2 archer, out string source, out float gain)
+        {
+            archer = Vec2.Invalid;
+            source = null;
+            gain = float.NaN;
+            float holdHeight = grid.HeightAt(hold);
+            BattleTerrain.ArcherSpot bestSpot = null;
+            if (spots != null)
+            {
+                foreach (BattleTerrain.ArcherSpot spot in spots)
                 {
-                    continue;
-                }
-                if (bestSpot == null || spot.Score > bestSpot.Score)
-                {
-                    bestSpot = spot;
+                    Vec2 rel = spot.Position - hold;
+                    if (rel.Length > rules.SpotRange || Vec2.DotProduct(rel, facing) > rules.SpotMaxAhead
+                        || (rules.SpotBehindOf.IsValid && Vec2.DotProduct(spot.Position - rules.SpotBehindOf, facing) >= 0f))
+                    {
+                        continue;
+                    }
+                    if (bestSpot == null || spot.Score > bestSpot.Score)
+                    {
+                        bestSpot = spot;
+                    }
                 }
             }
             if (bestSpot != null)
             {
-                place.Archer = bestSpot.Position;
-                place.ArcherSource = bestSpot.Id;
-                place.ArcherGain = IsPlausible(holdHeight) ? bestSpot.Height - holdHeight : float.NaN;
-                return;
+                archer = bestSpot.Position;
+                source = bestSpot.Id;
+                gain = IsPlausible(holdHeight) ? bestSpot.Height - holdHeight : float.NaN;
+                return true;
             }
-            Vec2 centre = place.Hold - place.Facing * ChokeArcherBehind;
+            Vec2 centre = hold - facing * rules.Behind;
             int bestCell = -1;
             float bestHeight = float.NegativeInfinity;
-            ForCellsWithin(grid, centre, ChokeArcherSearch, k =>
+            ForCellsWithin(grid, centre, rules.Search, k =>
             {
                 if (!grid.IsWalkable(k) || grid.Wet[k] || grid.NearEdge(k) || !IsPlausible(grid.Heights[k]))
                 {
                     return;
                 }
                 float slope = grid.Slopes[k];
-                if (float.IsNaN(slope) || slope > ChokeArcherMaxSlope)
+                if (float.IsNaN(slope) || slope > rules.MaxSlope)
                 {
                     return;
                 }
-                if (Vec2.DotProduct(grid.CellCentre(k) - place.Hold, place.Facing) > -ChokeArcherMinBehind)
+                if (Vec2.DotProduct(grid.CellCentre(k) - hold, facing) > -rules.MinBehind)
                 {
                     return;
                 }
@@ -418,21 +470,23 @@ namespace RBMAI
                     bestCell = k;
                 }
             });
-            if (bestCell >= 0)
+            if (bestCell < 0)
             {
-                place.Archer = grid.CellCentre(bestCell);
-                place.ArcherSource = "behind";
-                place.ArcherGain = IsPlausible(holdHeight) ? bestHeight - holdHeight : float.NaN;
+                return false;
             }
+            archer = grid.CellCentre(bestCell);
+            source = "behind";
+            gain = IsPlausible(holdHeight) ? bestHeight - holdHeight : float.NaN;
+            return true;
         }
 
-        /// <summary>The cavalry reserve's place: the dry walkable cell nearest the point ChokeReserveBehind m behind the hold point.</summary>
-        private static void PlaceReserve(Grid grid, BattleTerrain.ChokeHoldPlace place)
+        /// <summary>Shared by the choke hold and the battle position: the dry walkable cell (off the edge) nearest the point behind m behind the hold, within search; Invalid with none.</summary>
+        private static Vec2 PlaceHoldReserve(Grid grid, Vec2 hold, Vec2 facing, float behind, float search)
         {
-            Vec2 centre = place.Hold - place.Facing * ChokeReserveBehind;
+            Vec2 centre = hold - facing * behind;
             int bestCell = -1;
             float bestDistance = float.MaxValue;
-            ForCellsWithin(grid, centre, ChokeReserveSearch, k =>
+            ForCellsWithin(grid, centre, search, k =>
             {
                 if (!grid.IsWalkable(k) || grid.Wet[k] || grid.NearEdge(k))
                 {
@@ -445,10 +499,7 @@ namespace RBMAI
                     bestCell = k;
                 }
             });
-            if (bestCell >= 0)
-            {
-                place.Reserve = grid.CellCentre(bestCell);
-            }
+            return (bestCell >= 0) ? grid.CellCentre(bestCell) : Vec2.Invalid;
         }
 
         /// <summary>Calls <paramref name="visit"/> for every cell whose centre lies within <paramref name="radius"/> of <paramref name="centre"/>.</summary>
