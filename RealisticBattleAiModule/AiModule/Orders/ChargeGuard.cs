@@ -10,7 +10,7 @@ using TaleWorlds.MountAndBlade;
 namespace RBMAI
 {
     /// <summary>
-    /// User rule: infantry charges only when its target is within 50 m. An AI (and player) foot formation may DECIDE to engage from any
+    /// User rule: infantry charges only when its target is within ChargeStartDistance (40 m). An AI (and player) foot formation may DECIDE to engage from any
     /// distance, but until the target is close it ADVANCES in formation: a Move to a point StandOff m short of the target's near edge,
     /// facing it, keeping its arrangement and pace. Cavalry, sieges and sallies are never touched.
     ///
