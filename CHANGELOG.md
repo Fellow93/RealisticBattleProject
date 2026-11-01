@@ -28,6 +28,9 @@
 - AI archers switch between tight and loose ranks far less often, so they spend less time re-forming.
 - Fewer than 30 AI archers stay in one group instead of splitting into two tiny ones.
 - Smaller armies no longer split their infantry into several small blocks.
+- Fixed: a rare battle crash or stutter caused by AI horse archers, flank guards, archers and advancing infantry checking the ground off the main thread.
+- Fixed: AI infantry bracing against cavalry, or stepping back from skirmishers, could march back to a spot it had left long before; it now holds where it stands.
+- Fixed: AI flank guards with no room on their flank (map edge, water) rode into their own infantry; they now wait behind it.
 - Formations react to enemy movement more steadily and turn less often; choke-point lines hold and return more reliably.
 - The Reserve Plug battle plan is disabled for now.
 - Cavalry charge horns sound less often.

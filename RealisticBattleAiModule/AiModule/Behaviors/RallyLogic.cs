@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -118,8 +119,8 @@ namespace RBMAI
         /// <summary>Re-anchor the hold point if the main body has drifted this far from it.</summary>
         private const float AnchorDrift = 25f;
 
-        // Cleared per mission by MissionStartReset.
-        internal static readonly Dictionary<Formation, State> states = new Dictionary<Formation, State>();
+        // Cleared per mission by MissionStartReset. Concurrent: the AI log (AiBehaviorLogic, OnMissionTick) reads it while the team tick inserts.
+        internal static readonly ConcurrentDictionary<Formation, State> states = new ConcurrentDictionary<Formation, State>();
 
         // Per-call scratch; emptied again before PullFarMenToNearestCells returns so no Agent outlives the call.
         private static readonly List<Agent> _farScratch = new List<Agent>(64);
@@ -142,13 +143,7 @@ namespace RBMAI
 
         private static State GetState(Formation formation)
         {
-            State state;
-            if (!states.TryGetValue(formation, out state))
-            {
-                state = new State();
-                states[formation] = state;
-            }
-            return state;
+            return states.GetOrAdd(formation, _ => new State());
         }
 
         /// <summary>True while the formation should hold and gather its far men. Re-evaluated once a second.</summary>

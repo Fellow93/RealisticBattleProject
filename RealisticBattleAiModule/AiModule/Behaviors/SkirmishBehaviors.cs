@@ -928,7 +928,7 @@ namespace RBMAI
                 return false;
             }
             probe.SetVec2(point);
-            return probe.GetNavMesh() != UIntPtr.Zero;
+            return probe.GetNavMeshMT() != UIntPtr.Zero;
         }
 
         private const float OrbitStep = 25f;
@@ -1080,7 +1080,7 @@ namespace RBMAI
                 return false;
             }
             probe.SetVec2(point);
-            return probe.GetNavMesh() != UIntPtr.Zero;
+            return probe.GetNavMeshMT() != UIntPtr.Zero;
         }
 
         // The whole block inside the map, not just its front: the order point is its front and it faces the target
@@ -1259,7 +1259,7 @@ namespace RBMAI
                     // copy of the probe each time, as the other probes get).
                     WorldPosition spot = probe;
                     spot.SetVec2(point);
-                    if (spot.GetNavMesh() == UIntPtr.Zero)
+                    if (spot.GetNavMeshMT() == UIntPtr.Zero)
                     {
                         continue;
                     }
@@ -1620,7 +1620,8 @@ namespace RBMAI
                     {
                         LogOrbitMode(__instance.Formation, GetRotationState(__instance.Formation), "FALL_BACK", targetFormation, null);
                     }
-                    position = new WorldPosition(Mission.Current.Scene, new Vec3(__instance.Formation.QuerySystem.AverageAllyPosition.x, __instance.Formation.QuerySystem.AverageAllyPosition.y, __instance.Formation.Team.GetMedianPosition(__instance.Formation.Team.GetAveragePosition()).GetNavMeshZ() + 100f));
+                    position = __instance.Formation.CachedMedianPosition;
+                    position.SetVec2MT(__instance.Formation.QuerySystem.AverageAllyPosition);
                 }
                 else
                 {
@@ -1805,7 +1806,7 @@ namespace RBMAI
                     }
                 }
             }
-            if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(position.AsVec2))
+            if (position.GetNavMeshMT() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(position.AsVec2))
             {
                 if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                 {

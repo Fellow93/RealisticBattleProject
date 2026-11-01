@@ -47,7 +47,7 @@ namespace RBMAI
             {
                 return true;
             }
-            bool isFormationUnderRangedAttack = agent.Formation.QuerySystem?.UnderRangedAttackRatio >= 0.33f;
+            bool isFormationUnderRangedAttack = agent.Formation.QuerySystem?.UnderRangedAttackRatioReadOnly >= 0.33f;
 
             // the floors lift native's pace, but a man ahead of his slot keeps native's low value (else the fastest walk out in front). Charge is left alone.
             if (limitIsMultiplier && agent.Formation.AI.ActiveBehavior.GetType() != typeof(BehaviorCharge) && IsAheadOfSlot(agent))
@@ -90,7 +90,6 @@ namespace RBMAI
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))
             {
-                float currentTime = MBCommon.GetTotalMissionTime();
                 // shield wall walk-in only near the enemy
                 if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder && !isFormationUnderRangedAttack
                     && IsNearEnemy(agent))

@@ -157,7 +157,7 @@ namespace RBMAI
             // backing off can leave the map: hold in place then
             WorldPosition standOffProbe = position;
             standOffProbe.SetVec2(noAllyStandOff);
-            if (!Mission.Current.IsPositionInsideBoundaries(noAllyStandOff) || standOffProbe.GetNavMesh() == UIntPtr.Zero)
+            if (!Mission.Current.IsPositionInsideBoundaries(noAllyStandOff) || standOffProbe.GetNavMeshMT() == UIntPtr.Zero)
             {
                 noAllyStandOff = position.AsVec2;
             }
@@ -172,7 +172,7 @@ namespace RBMAI
             {
                 Vec2 calcPosition = StablePoint(behindMain);
                 position.SetVec2(calcPosition);
-                if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMesh() == UIntPtr.Zero)
+                if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMeshMT() == UIntPtr.Zero)
                 {
                     position.SetVec2((allyFormation != null) ? allyFormation.CurrentPosition - allyFormation.Direction * 10f : noAllyStandOff);
                 }
@@ -184,7 +184,7 @@ namespace RBMAI
                     Vec2 calcPosition = StablePoint(FlankPlace(allyFormation, allyFormation.Direction.RightVec().Normalized(), allyFormation.Width * 0.5f + NominalLineWidth(base.Formation) * 0.5f + flankRange, 0f));
 
                     position.SetVec2(calcPosition);
-                    if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMesh() == UIntPtr.Zero)
+                    if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMeshMT() == UIntPtr.Zero)
                     {
                         calcPosition = allyFormation.CurrentPosition;
                         calcPosition -= allyFormation.Direction * 5f;
@@ -202,7 +202,7 @@ namespace RBMAI
                 {
                     Vec2 calcPosition = StablePoint(FlankPlace(allyFormation, allyFormation.Direction.LeftVec().Normalized(), allyFormation.Width * 0.5f + NominalLineWidth(base.Formation) * 0.5f + flankRange, 0f));
                     position.SetVec2(calcPosition);
-                    if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMesh() == UIntPtr.Zero)
+                    if (!Mission.Current.IsPositionInsideBoundaries(calcPosition) || position.GetNavMeshMT() == UIntPtr.Zero)
                     {
                         calcPosition = allyFormation.CurrentPosition;
                         calcPosition -= allyFormation.Direction * 10f;

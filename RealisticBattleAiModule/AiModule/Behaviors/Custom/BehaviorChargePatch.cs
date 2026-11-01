@@ -14,6 +14,19 @@ namespace RBMAI.AiModule.RbmBehaviors
     {
         public static Dictionary<Formation, WorldPosition> cavHoldPositions = new Dictionary<Formation, WorldPosition> { };
         public static Dictionary<Formation, WorldPosition> skirmisherRetreatPositions = new Dictionary<Formation, WorldPosition> { };
+        // A stored hold point is kept only while the formation is still on it; once it has moved on (won ground under another
+        // behavior since) a fresh point is stored, else it was marched back to the old spot.
+        internal static WorldPosition HoldPoint(Dictionary<Formation, WorldPosition> storage, Formation formation, WorldPosition positionNew)
+        {
+            if (storage.TryGetValue(formation, out WorldPosition stored) && stored.IsValid
+                && stored.AsVec2.Distance(RBMAI.Utilities.GetFormationCenter(formation)) <= formation.Depth / 2f + 10f)
+            {
+                return stored;
+            }
+            storage[formation] = positionNew;
+            return positionNew;
+        }
+
         // Formation -> mission time enemy cavalry last charged it
         public static Dictionary<Formation, float> braceLastThreatTime = new Dictionary<Formation, float> { };
 
@@ -273,29 +286,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                         if (isOnlyCavRemaining)
                         {
                             Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
-                            WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
-
-                            WorldPosition storedPosition = WorldPosition.Invalid;
-                            cavHoldPositions.TryGetValue(__instance.Formation, out storedPosition);
-
-                            if (!storedPosition.IsValid)
-                            {
-                                cavHoldPositions[__instance.Formation] = positionNew;
-                                ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                            }
-                            else
-                            {
-                                float storedPositonDistance = (storedPosition.AsVec2 - RBMAI.Utilities.GetFormationCenter(__instance.Formation)).Normalize();
-                                if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
-                                {
-                                    cavHoldPositions[__instance.Formation] = positionNew;
-                                    ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                                }
-                                else
-                                {
-                                    ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-                                }
-                            }
+                            ____currentOrder = MovementOrder.MovementOrderMove(HoldPoint(cavHoldPositions, __instance.Formation, RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation)));
                             if (cavDist > 10f)
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
@@ -332,29 +323,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                             if ((chargedAt || braceHeld) && !braceCooldown)
                             {
                                 Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
-                                WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
-
-                                WorldPosition storedPosition = WorldPosition.Invalid;
-                                cavHoldPositions.TryGetValue(__instance.Formation, out storedPosition);
-
-                                if (!storedPosition.IsValid)
-                                {
-                                    cavHoldPositions[__instance.Formation] = positionNew;
-                                    ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                                }
-                                else
-                                {
-                                    float storedPositonDistance = (storedPosition.AsVec2 - RBMAI.Utilities.GetFormationCenter(__instance.Formation)).Normalize();
-                                    if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
-                                    {
-                                        cavHoldPositions[__instance.Formation] = positionNew;
-                                        ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                                    }
-                                    else
-                                    {
-                                        ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-                                    }
-                                }
+                                ____currentOrder = MovementOrder.MovementOrderMove(HoldPoint(cavHoldPositions, __instance.Formation, RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation)));
                                 if (cavDist > 10f)
                                 {
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
@@ -383,19 +352,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                     {
                         WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                         positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 7f);
-
-                        WorldPosition storedPosition = WorldPosition.Invalid;
-                        skirmisherRetreatPositions.TryGetValue(__instance.Formation, out storedPosition);
-
-                        if (!storedPosition.IsValid)
-                        {
-                            skirmisherRetreatPositions[__instance.Formation] = positionNew;
-                            ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                        }
-                        else
-                        {
-                            ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-                        }
+                        ____currentOrder = MovementOrder.MovementOrderMove(HoldPoint(skirmisherRetreatPositions, __instance.Formation, positionNew));
                         return false;
                     }
                     EndCavalryHold(__instance.Formation, isActiveBehavior);

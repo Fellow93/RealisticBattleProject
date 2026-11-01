@@ -194,20 +194,7 @@ namespace RBMAI
                         if (cavDist < BraceDistance && AiModule.RbmBehaviors.OverrideBehaviorCharge.ChargeTargetOf(enemyCav) == __instance.Formation)
                         {
                             Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
-                            WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
-
-                            WorldPosition storedPosition = WorldPosition.Invalid;
-                            positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
-
-                            if (!storedPosition.IsValid)
-                            {
-                                positionsStorage.Add(__instance.Formation, positionNew);
-                                ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                            }
-                            else
-                            {
-                                ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-                            }
+                            ____currentOrder = MovementOrder.MovementOrderMove(AiModule.RbmBehaviors.OverrideBehaviorCharge.HoldPoint(positionsStorage, __instance.Formation, RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation)));
                             if (cavDist > 10f)
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
@@ -225,20 +212,7 @@ namespace RBMAI
                     }
                     else if (significantEnemy != null && signDist < 60f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.33f))
                     {
-                        WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
-
-                        WorldPosition storedPosition = WorldPosition.Invalid;
-                        positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
-
-                        if (!storedPosition.IsValid)
-                        {
-                            positionsStorage.Add(__instance.Formation, positionNew);
-                            ____currentOrder = MovementOrder.MovementOrderMove(positionNew);
-                        }
-                        else
-                        {
-                            ____currentOrder = MovementOrder.MovementOrderMove(storedPosition);
-                        }
+                        ____currentOrder = MovementOrder.MovementOrderMove(AiModule.RbmBehaviors.OverrideBehaviorCharge.HoldPoint(positionsStorage, __instance.Formation, RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation)));
                         return false;
                     }
                     positionsStorage.Remove(__instance.Formation);
@@ -303,7 +277,7 @@ namespace RBMAI
                     WorldPosition advancePosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                     advancePosition.SetVec2(advanceVec2);
 
-                    if (Mission.Current.IsPositionInsideBoundaries(advanceVec2) && advancePosition.GetNavMesh() != UIntPtr.Zero)
+                    if (Mission.Current.IsPositionInsideBoundaries(advanceVec2) && advancePosition.GetNavMeshMT() != UIntPtr.Zero)
                     {
                         ____currentOrder = MovementOrder.MovementOrderMove(advancePosition);
                     }

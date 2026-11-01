@@ -1064,9 +1064,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             // coincident centres divide by zero / GetNavMeshZ NaN off the navmesh: a NaN weight silently loses every comparison; fall back to 1f
             if (length > float.Epsilon)
             {
-                WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(querySystem.Formation);
-                // enemy height from the raw median (valid Z, no navmesh query)
-                float slope = (medianPosition.GetNavMeshZ() - enemy.Formation.CachedMedianPosition.GetNavMeshZ()) / length;
+                // both heights from the raw medians (valid Z, no navmesh query)
+                float slope = (querySystem.Formation.CachedMedianPosition.GetNavMeshZ() - enemy.Formation.CachedMedianPosition.GetNavMeshZ()) / length;
                 if (!float.IsNaN(slope))
                 {
                     slopeFactor = MBMath.Lerp(0.9f, 1.1f, (MBMath.ClampFloat(slope, -0.58f, 0.58f) + 0.58f) / 1.16f);

@@ -112,42 +112,24 @@ namespace RBMAI
                 bool closePost = HoldsClosePost(__instance.Formation);
                 Vec2 v =(__instance.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - RBMAI.Utilities.GetFormationCenter(____mainFormation)).Normalized();
                 Vec2 vec;
-                if (____behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right)
+                bool right = ____behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right;
+                if (right || ____behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left)
                 {
-                    vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + distanceFromMainFormation);
+                    Vec2 side = (right ? v.RightVec() : v.LeftVec()).Normalized();
+                    vec = ____mainFormation.CurrentPosition + side * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + distanceFromMainFormation);
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                     vec += ____mainFormation.Direction * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + distanceOffsetFromMainFormation);
                     position.SetVec2(vec);
-                    if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || closePost)
+                    if (position.GetNavMeshMT() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || closePost)
                     {
-                        vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + closerDistanceFromMainFormation);
+                        vec = ____mainFormation.CurrentPosition + side * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                         vec += ____mainFormation.Direction;
                         position.SetVec2(vec);
-                        if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec))
+                        if (position.GetNavMeshMT() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec))
                         {
-                            vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized();
-                            vec -= ____mainFormation.Direction * 5f;
-                            position.SetVec2(vec);
-                        }
-                    }
-                }
-                else if (____behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left)
-                {
-                    vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + distanceFromMainFormation);
-                    vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
-                    vec += ____mainFormation.Direction * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + distanceOffsetFromMainFormation);
-                    position.SetVec2(vec);
-                    if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || closePost)
-                    {
-                        vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + closerDistanceFromMainFormation);
-                        vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
-                        vec += ____mainFormation.Direction;
-                        position.SetVec2(vec);
-                        if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec))
-                        {
-                            vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized();
-                            vec -= ____mainFormation.Direction * 10f;
+                            // no room on the flank (map edge, water): wait behind the main line, never inside it
+                            vec = ____mainFormation.CurrentPosition - ____mainFormation.Direction * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + 5f);
                             position.SetVec2(vec);
                         }
                     }
