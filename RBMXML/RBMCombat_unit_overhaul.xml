@@ -9720,9 +9720,9 @@
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.GRE_steppe_arrows" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
-				 id="Item.GRE_bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item3"
                  id="Item.khuzait_sword_3_t3" />
       <equipment slot="Body"
@@ -9740,7 +9740,7 @@
       <equipment slot="Item0"
                  id="Item.nordic_shortbow" />
       <equipment slot="Item1"
-                 id="Item.GRE_steppe_arrows" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
                  id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item3"
@@ -9760,7 +9760,7 @@
       <equipment slot="Item0"
                  id="Item.composite_steppe_bow" />
       <equipment slot="Item1"
-                 id="Item.GRE_steppe_arrows" />
+                 id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item2"
                  id="Item.GRE_bodkin_arrows_c" />
       <equipment slot="Item3"
@@ -10201,7 +10201,7 @@
       <equipment slot="Item0"
                  id="Item.noble_bow" />
       <equipment slot="Item1"
-                 id="Item.GRE_bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
                  id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
@@ -10221,7 +10221,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_war_bow" />
       <equipment slot="Item1"
-                 id="Item.GRE_bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
                  id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
@@ -10241,7 +10241,7 @@
       <equipment slot="Item0"
                  id="Item.steppe_heavy_bow" />
       <equipment slot="Item1"
-                 id="Item.GRE_bodkin_arrows_c" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item2"
                  id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"

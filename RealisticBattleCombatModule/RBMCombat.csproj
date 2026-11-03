@@ -220,7 +220,6 @@
     <Compile Include="CombatModule\Ranged\RangedRework.StuckMissiles.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.FirePotSplash.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.Crosshair.cs" />
-    <Compile Include="CombatModule\Ranged\RangedWeaponStats.cs" />
     <Compile Include="CombatModule\Ranged\RealisticWeaponCollision.cs" />
     <!-- Horse -->
     <Compile Include="CombatModule\Horse\HorseChanges.MountStats.cs" />

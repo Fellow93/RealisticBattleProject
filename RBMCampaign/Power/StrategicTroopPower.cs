@@ -1563,8 +1563,8 @@ namespace RBMCampaign
         /// was never a statement about what it does to a man.
         ///
         /// So the launcher is priced the way SimulationWeaponModel.GetMissileMagnitude prices it, off the same
-        /// constants, because MissileSpeed is not a speed at all: RBM overwrites it with the draw weight in pounds
-        /// (RangedRework caches the XML value into RangedWeaponStats and writes it back). Bows, crossbows and slings
+        /// constants, because MissileSpeed is not a speed at all: RBM's XML holds the draw weight in pounds there.
+        /// Bows, crossbows and slings
         /// then sit on ONE scale -- the energy each puts behind the shot -- and no tier is involved anywhere.
         /// </summary>
         private static float LauncherEnergyOf(ItemObject item, WeaponComponentData weapon)

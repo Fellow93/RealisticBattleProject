@@ -38,6 +38,11 @@
 - Cavalry charge horns sound less often.
 - Fixed: commanding a formation as a sergeant, the AI could take your men away, leaving you with "no units under your command".
 
+### Combat
+- Bows, crossbows and slings no longer change the weapon's stored stats during a battle to set their arrow speed. Shots fly the same, and a weapon's stats can no longer be left wrong if a battle ends abnormally.
+- Khuzait Archers now carry two quivers of 50 g bodkins and Khuzait Marksmen two of 70 g bodkins, instead of two arrow types of different weights each, which the AI could aim wrongly with.
+- Fixed: the Running Throw perk now adds damage only for the speed your run puts behind a throw. Before, it measured against the weapon's listed speed rather than its actual throw speed.
+
 ## v4.8.0 (changes since v4.7.0)
 
 ### Compatibility

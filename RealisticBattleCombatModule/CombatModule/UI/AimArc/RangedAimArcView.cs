@@ -398,14 +398,10 @@ namespace RBMCombat
             }
             else if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
-                // Same as the shot prefix: RBM's launch speed from the cached draw weight (the launcher's shared
-                // MissileSpeed holds the draw weight outside the prefix), plus the shooter's speed along the shot.
-                int drawWeight = RangedRework.rangedWeaponStats.TryGetValue(RangedRework.GetRangedWeaponKey(launcher), out RangedWeaponStats stats)
-                    ? stats.getDrawWeight()
-                    : usage.MissileSpeed;
+                // Same as the shot prefix: RBM's launch speed from the draw weight, plus the shooter's speed along the shot.
                 int launchSpeed = launcherClass == WeaponClass.Sling
-                    ? MissileBallistics.GetSlingSpeed(agent, launcher, usage, drawWeight)
-                    : MissileBallistics.GetLauncherSpeed(agent, launcher, usage, drawWeight);
+                    ? MissileBallistics.GetSlingSpeed(agent, launcher, usage)
+                    : MissileBallistics.GetLauncherSpeed(agent, launcher, usage);
                 if (launchSpeed <= 0)
                 {
                     return false;
