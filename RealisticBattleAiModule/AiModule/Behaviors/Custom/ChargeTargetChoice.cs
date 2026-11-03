@@ -131,6 +131,39 @@ namespace RBMAI
             return best;
         }
 
+        /// <summary>The nearest significant enemy foot formation within EngagedGap of <paramref name="own"/>, null with none.</summary>
+        internal static Formation FootInContact(Formation own)
+        {
+            Mission mission = Mission.Current;
+            if (own == null || own.Team == null || mission == null)
+            {
+                return null;
+            }
+            Formation best = null;
+            float bestGap = EngagedGap;
+            foreach (Team team in mission.Teams)
+            {
+                if (team == null || !team.IsEnemyOf(own.Team))
+                {
+                    continue;
+                }
+                foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
+                {
+                    if (enemy == null || enemy.CountOfUnits <= 0 || IsMounted(enemy) || !ThreatSignificance.IsSignificant(own, enemy))
+                    {
+                        continue;
+                    }
+                    float gap = FormationGeometry.Gap(own, FootprintMode.Current, enemy, FootprintMode.ScatterAware);
+                    if (gap <= bestGap)
+                    {
+                        bestGap = gap;
+                        best = enemy;
+                    }
+                }
+            }
+            return best;
+        }
+
         /// <summary>
         /// Riders may be picked: AI-controlled, and not a hold's local charge (USER RULE: the hedgehog square and the choke line
         /// wait for cavalry and charge infantry only).

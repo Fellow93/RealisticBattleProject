@@ -367,8 +367,15 @@ namespace RBMAI.AiModule.RbmBehaviors
                     Formation current = chargingNow ? ____currentOrder.TargetFormation : RiderHold.HeldRiders(__instance);
                     significantEnemy = ChargeTargetChoice.Prefer(__instance.Formation, significantEnemy, current);
                     // riders it cannot reach: hold formed facing them instead of chasing (the block scattered over ~270 s, log 16-33-20)
-                    if (ChargeTargetChoice.IsMounted(significantEnemy) && ChargeTargetChoice.RidersAllowed(__instance.Formation)
-                        && !ChargeTargetChoice.Catchable(__instance.Formation, significantEnemy, chargingNow && significantEnemy == current)
+                    bool ridersOutOfReach = ChargeTargetChoice.IsMounted(significantEnemy) && ChargeTargetChoice.RidersAllowed(__instance.Formation)
+                        && !ChargeTargetChoice.Catchable(__instance.Formation, significantEnemy, chargingNow && significantEnemy == current);
+                    // already fighting foot: keep fighting it, a hold here stops the block mid-melee
+                    Formation footInContact = ridersOutOfReach ? ChargeTargetChoice.FootInContact(__instance.Formation) : null;
+                    if (footInContact != null)
+                    {
+                        significantEnemy = footInContact;
+                    }
+                    else if (ridersOutOfReach
                         && RiderHold.TryHold(__instance, __instance.Formation, significantEnemy, isActiveBehavior, out WorldPosition holdPoint, out Vec2 holdFacing))
                     {
                         ____currentOrder = MovementOrder.MovementOrderMove(holdPoint);

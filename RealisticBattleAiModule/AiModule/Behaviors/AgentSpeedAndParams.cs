@@ -43,34 +43,38 @@ namespace RBMAI
                     return false;
                 }
             }
-            if (agent.Formation?.AI?.ActiveBehavior == null)
+            // a player formation's behavior is only what its team AI would pick: a player charge order paces as the AI charge
+            Type behavior = !agent.Formation.IsAIControlled && IsChargeOrder(agent.Formation)
+                ? typeof(BehaviorCharge)
+                : agent.Formation.AI?.ActiveBehavior?.GetType();
+            if (behavior == null)
             {
                 return true;
             }
             bool isFormationUnderRangedAttack = agent.Formation.QuerySystem?.UnderRangedAttackRatioReadOnly >= 0.33f;
 
             // the floors lift native's pace, but a man ahead of his slot keeps native's low value (else the fastest walk out in front). Charge is left alone.
-            if (limitIsMultiplier && agent.Formation.AI.ActiveBehavior.GetType() != typeof(BehaviorCharge) && IsAheadOfSlot(agent))
+            if (limitIsMultiplier && behavior != typeof(BehaviorCharge) && IsAheadOfSlot(agent))
             {
                 return true;
             }
 
-            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) ||
-                agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryAttackFlank))
+            if (behavior == typeof(RBMBehaviorForwardSkirmish) ||
+                behavior == typeof(RBMBehaviorInfantryAttackFlank))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.9f)
                 {
                     desiredSpeed = 0.9f;
                 }
             }
-            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorProtectFlank))
+            if (behavior == typeof(BehaviorProtectFlank))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.9f)
                 {
                     desiredSpeed = 0.9f;
                 }
             }
-            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorAdvance))
+            if (behavior == typeof(BehaviorAdvance))
             {
                 if (limitIsMultiplier)
                 {
@@ -80,7 +84,7 @@ namespace RBMAI
                     }
                 }
             }
-            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup))
+            if (behavior == typeof(BehaviorRegroup))
             {
                 // regrouping men run flat out, no formation pacing
                 if (limitIsMultiplier)
@@ -88,7 +92,7 @@ namespace RBMAI
                     desiredSpeed = 1f;
                 }
             }
-            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))
+            if (behavior == typeof(BehaviorCharge))
             {
                 // shield wall walk-in only near the enemy
                 if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder && !isFormationUnderRangedAttack
@@ -107,14 +111,14 @@ namespace RBMAI
                     }
                 }
             }
-            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherFlank))
+            if (behavior == typeof(RBMBehaviorArcherFlank))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.9f)
                 {
                     desiredSpeed = 0.9f;
                 }
             }
-            if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorArcherSkirmish))
+            if (behavior == typeof(RBMBehaviorArcherSkirmish))
             {
                 if (limitIsMultiplier && desiredSpeed < 0.9f)
                 {
@@ -127,6 +131,12 @@ namespace RBMAI
         private const float ShieldWallWalkDistance = 30f; // m
 
         private const float AheadOfSlotSlack = 1.5f; // m past his slot along the facing before the floors stop lifting his pace
+
+        private static bool IsChargeOrder(Formation formation)
+        {
+            OrderType order = formation.GetReadonlyMovementOrderReference().OrderType;
+            return order == OrderType.Charge || order == OrderType.ChargeWithTarget;
+        }
 
         // movement worker thread: same read native's GetDesiredSpeedInFormation does on this job
         private static bool IsAheadOfSlot(Agent agent)

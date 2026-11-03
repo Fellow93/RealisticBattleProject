@@ -19,8 +19,10 @@
 - An attacking army whose arrows can't hurt an enemy shield wall eventually attacks instead of shooting forever.
 - AI infantry now braces against charging cavalry, but no longer for a handful of riders.
 - AI infantry no longer chases enemy cavalry it can't catch and scatter across the field: it holds its formation facing the riders and fights them when they come in.
+- Fixed: AI infantry fighting enemy infantry no longer stops mid-fight to hold against cavalry it can't reach; it keeps fighting the infantry in front of it.
 - AI infantry keeps its formation a little longer, breaking into the charge at 40 m from its target instead of 50 m.
 - Charging infantry no longer slows to a walk behind comrades who are running ahead of them; it keeps pace with them instead.
+- Fixed: infantry you order to charge no longer slows to a walk, one step at a time, once it gets close to the enemy. (Thanks to order_without_power.)
 - Infantry stops a step short of the comrade in front instead of bumping into him, and no longer shoves forward when packed in a crowd.
 - The AI judges the distance to scattered enemies (charging troops, cavalry) by where most of their men are, instead of by a few stragglers far apart.
 - Attacking archers face the way their army advances while out of range, instead of walking sideways.
