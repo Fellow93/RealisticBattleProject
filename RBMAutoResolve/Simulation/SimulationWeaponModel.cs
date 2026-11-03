@@ -327,7 +327,7 @@ namespace RBMAutoResolve
         private static float GetMissileMagnitude(WeaponComponentData launcher, WeaponComponentData ammo, float ammoWeight, int skill)
         {
             // RBM repurposes MissileSpeed as the DRAW WEIGHT in pounds for a bow, and as the sling's length for a
-            // sling (RangedWeaponStats.drawWeight).
+            // sling.
             float drawWeight = launcher.MissileSpeed;
             if (drawWeight <= 0f || ammoWeight <= 0f)
             {

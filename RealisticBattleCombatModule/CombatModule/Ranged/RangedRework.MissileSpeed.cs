@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -18,137 +19,43 @@ namespace RBMCombat
 {
     public partial class RangedRework
     {
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("EquipItemsFromSpawnEquipment")]
-        private class OverrideEquipItemsFromSpawnEquipment
-        {
-            private static bool Prefix(ref Agent __instance)
-            {
-                ArrayList stringRangedWeapons = new ArrayList();
-                MissionWeapon arrow = MissionWeapon.Invalid;
-                bool firstProjectile = true;
-
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                {
-                    if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
-                    {
-                        MissionWeapon missionWeapon = __instance.Equipment[equipmentIndex];
-                        WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
-
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
-                        {
-                            RangedWeaponStats rangedWeaponStatNew = new RangedWeaponStats(missionWeapon.CurrentUsageItem.MissileSpeed);
-                            RangedWeaponStats rangedWeaponStatOld;
-                            if (!rangedWeaponStats.TryGetValue(GetRangedWeaponKey(missionWeapon), out rangedWeaponStatOld))
-                            {
-                                rangedWeaponStats[GetRangedWeaponKey(missionWeapon)] = rangedWeaponStatNew;
-                            }
-                            stringRangedWeapons.Add(missionWeapon);
-                        }
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.Arrow) || (wsd[0].WeaponClass == (int)WeaponClass.Bolt) || (wsd[0].WeaponClass == (int)WeaponClass.SlingStone))
-                        {
-                            if (firstProjectile)
-                            {
-                                arrow = missionWeapon;
-                                firstProjectile = false;
-                            }
-                        }
-                    }
-                }
-
-                foreach (MissionWeapon missionWeapon in stringRangedWeapons)
-                {
-                    int calculatedMissileSpeed = 50;
-                    if (!missionWeapon.Equals(MissionWeapon.Invalid) && !arrow.Equals(MissionWeapon.Invalid))
-                    {
-                        float ammoWeight = arrow.GetWeight() / arrow.Amount;
-
-                        int msModifier = 0;
-                        if (missionWeapon.ItemModifier != null)
-                        {
-                            msModifier = missionWeapon.ItemModifier.ModifyHitPoints(50) - 50;
-                        }
-
-                        WeaponStatsData[] mwWsd = missionWeapon.GetWeaponStatsData();
-                        if (mwWsd != null && mwWsd.Length > 0 && mwWsd[0].WeaponClass == (int)WeaponClass.Sling)
-                        {
-                            // Slings use assignSlingMissileSpeed so skill and equipment weight
-                            // (armor/shield) are factored in from the start.
-                            // Do NOT call missionWeapon.GetWeaponData(true) here: with needBatchedVersionForMeshes
-                            // it acquires two native PhysicsShape resources that vanilla always pairs with
-                            // DeinitializeManagedPointers(), and this prefix runs inside the spawn equip batch.
-                            // Only the ItemObject is needed, which the MissionWeapon exposes directly.
-                            ItemObject slingItem = missionWeapon.Item;
-                            SkillObject slingSkill = (slingItem == null) ? DefaultSkills.Athletics : slingItem.RelevantSkill;
-                            int slingEf = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, slingSkill);
-                            float slingEffectiveSkillDR = Utilities.GetEffectiveSkillWithDR(slingEf);
-
-                            float slingArmorModifier = 0;
-                            WeaponClass slingShieldType = WeaponClass.Undefined;
-                            for (EquipmentIndex ei = EquipmentIndex.WeaponItemBeginSlot; ei < EquipmentIndex.NumAllWeaponSlots; ei++)
-                            {
-                                if (__instance.Equipment != null && !__instance.Equipment[ei].IsEmpty && __instance.Equipment[ei].IsShield())
-                                    slingShieldType = __instance.Equipment[ei].CurrentUsageItem.WeaponClass;
-                            }
-                            slingArmorModifier += MBMath.ClampFloat(ArmorRework.getShoulderArmor(__instance) - 20f, 0f, 100f);
-                            slingArmorModifier += MBMath.ClampFloat(ArmorRework.getArmArmor(__instance) - 20f, 0f, 100f);
-
-                            calculatedMissileSpeed = Utilities.assignSlingMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier, slingEffectiveSkillDR, slingArmorModifier, slingShieldType);
-                        }
-                        else
-                        {
-                            calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier);
-                        }
-                        rangedWeaponMW[GetRangedWeaponKey(missionWeapon)] = missionWeapon;
-
-                        MissileSpeedProperty.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                    }
-                    else if (!missionWeapon.Equals(MissionWeapon.Invalid))
-                    {
-                        rangedWeaponMW[GetRangedWeaponKey(missionWeapon)] = missionWeapon;
-                        MissileSpeedProperty.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                    }
-                }
-
-                return true;
-            }
-
-            private static void Postfix(Agent __instance)
-            {
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                {
-                    if (__instance.Equipment != null && !__instance.Equipment[equipmentIndex].IsEmpty)
-                    {
-                        MissionWeapon mw = __instance.Equipment[equipmentIndex];
-                        WeaponStatsData[] wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData();
-
-                        if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
-                        {
-                            MissileSpeedProperty.SetValue(__instance.Equipment[equipmentIndex].CurrentUsageItem, rangedWeaponStats[GetRangedWeaponKey(mw)].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                        }
-                    }
-                }
-            }
-        }
-
+        // Bow/crossbow/sling MissileSpeed in the item data is the XML draw weight (sling: length) and is never written.
+        // The engine reads a launch speed in two places only: the per-agent WeaponStatsData handed over in
+        // Agent.WeaponEquipped (RangedRework.EquipWield sets it there, the AI aims with it) and the shot below, whose
+        // prefix sets the velocity and whose transpiler hands native AddMissile the same speed as baseSpeed.
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("OnAgentShootMissile")]
         [UsedImplicitly]
         [MBCallback]
         private class OverrideOnAgentShootMissile
         {
-            // The launcher's dictionary key, built once in the prefix and handed to the postfix with the item and
-            // modifier it was built from; the postfix rebuilds it if the slot holds anything else by then.
-            private struct ShotKey
+            // Launch speed of the shot in progress, 0 when RBM did not set one. Main thread only.
+            private static int _shotSpeed;
+
+            private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                public ItemObject Item;
-                public ItemModifier Modifier;
-                public string Key;
+                // float baseSpeed = shooterAgent.Equipment[...].GetModifiedMissileSpeedForCurrentUsage();
+                MethodInfo original = AccessTools.Method(typeof(MissionWeapon), nameof(MissionWeapon.GetModifiedMissileSpeedForCurrentUsage));
+                MethodInfo replacement = AccessTools.Method(typeof(OverrideOnAgentShootMissile), nameof(ShotBaseSpeed));
+                foreach (CodeInstruction code in instructions)
+                {
+                    if (code.Calls(original))
+                    {
+                        code.opcode = OpCodes.Call;
+                        code.operand = replacement;
+                    }
+                    yield return code;
+                }
             }
 
-            private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance, out ShotKey __state)
+            private static int ShotBaseSpeed(ref MissionWeapon launcher)
             {
-                __state = default;
+                return _shotSpeed > 0 ? _shotSpeed : launcher.GetModifiedMissileSpeedForCurrentUsage();
+            }
+
+            private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+            {
+                _shotSpeed = 0;
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 // The first usage's class, what GetWeaponStatsData()[0].WeaponClass held, without building the
                 // stats of every usage.
@@ -163,13 +70,15 @@ namespace RBMCombat
                 if (thrownClass == WeaponClass.Javelin || thrownClass == WeaponClass.ThrowingAxe || thrownClass == WeaponClass.ThrowingKnife || thrownClass == WeaponClass.Stone)
                 {
                     MissileAimTrace.BeginThrow(shooterAgent, thrownClass, position, engineLaunchVelocity, velocity, ItemObject.GetAirFrictionConstant(thrownClass, missionWeapon.CurrentUsageItem.WeaponFlags));
+                    // The throw leaves at RBM's speed (WeaponEquipped prefix), so Running Throw counts only what the run adds.
+                    // A copy of one piece, as vanilla's shot does: the last throw may already have emptied the slot.
+                    MissionWeapon thrownPiece = missionWeapon;
+                    thrownPiece.Amount = 1;
+                    _shotSpeed = RBMConfig.MissileBallistics.GetThrowSpeed(shooterAgent, thrownPiece);
                 }
 
                 if ((weaponClass == WeaponClass.Bow) || (weaponClass == WeaponClass.Crossbow) || (weaponClass == WeaponClass.Sling))
                 {
-                    string min = GetRangedWeaponKey(missionWeapon);
-                    __state = new ShotKey { Item = missionWeapon.Item, Modifier = missionWeapon.ItemModifier, Key = min };
-
                     float ammoWeight;
                     if (missionWeapon.AmmoWeapon.Item != null && missionWeapon.Item != null && !missionWeapon.AmmoWeapon.IsEmpty && missionWeapon.AmmoWeapon.Amount > 0)
                     {
@@ -180,13 +89,6 @@ namespace RBMCombat
                     else
                     {
                         ammoWeight = 0.07f;
-                    }
-
-                    RangedWeaponStats rws;
-                    if (!rangedWeaponStats.TryGetValue(min, out rws))
-                    {
-                        rangedWeaponMW[min] = missionWeapon;
-                        rangedWeaponStats[min] = new RangedWeaponStats(missionWeapon.CurrentUsageItem.MissileSpeed);
                     }
 
                     int msModifier = 0;
@@ -201,15 +103,15 @@ namespace RBMCombat
                         // Slings factor in the shooter's skill and equipment weight on every shot. Same function as
                         // the equip patch (what the engine aims with) and RBMAI's reach gate; it adds the modifier
                         // bonus itself.
-                        calculatedMissileSpeed = RBMConfig.MissileBallistics.GetSlingSpeed(shooterAgent, missionWeapon, missionWeapon.CurrentUsageItem, rangedWeaponStats[min].getDrawWeight());
+                        calculatedMissileSpeed = RBMConfig.MissileBallistics.GetSlingSpeed(shooterAgent, missionWeapon, missionWeapon.CurrentUsageItem);
                     }
                     else
                     {
-                        calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, rangedWeaponStats[min].getDrawWeight() + msModifier);
+                        calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier);
                     }
 
                     // A modded launcher whose draw weight plus a negative modifier is <= 0 gives sqrt(negative) = NaN,
-                    // cast to int.MinValue. That would go into the weapon stats AddMissile reads, so keep the engine's shot.
+                    // cast to int.MinValue. That would go into AddMissile's baseSpeed, so keep the engine's shot.
                     if (calculatedMissileSpeed <= 0)
                     {
                         return true;
@@ -236,7 +138,7 @@ namespace RBMCombat
                         : ItemObject.GetAirFrictionConstant(missionWeapon.CurrentUsageItem.AmmoClass, (WeaponFlags)0);
                     MissileAimTrace.BeginShot(shooterAgent, weaponClass, position, engineVelocity, velocity, calculatedMissileSpeed, ammoWeight, flightFriction);
 
-                    SetMissileSpeed(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed);
+                    _shotSpeed = calculatedMissileSpeed;
                 }
 
                 //if (shooterAgent != null && !shooterAgent.IsAIControlled && !BannerlordConfig.DisplayTargetingReticule && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
@@ -260,8 +162,9 @@ namespace RBMCombat
                 return true;
             }
 
-            private static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance, ShotKey __state)
+            private static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
             {
+                _shotSpeed = 0;
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 WeaponClass weaponClass = missionWeapon.GetWeaponComponentDataForUsage(0).WeaponClass;
 
@@ -275,42 +178,7 @@ namespace RBMCombat
                         }
                     }
                 }
-                if ((weaponClass == WeaponClass.Bow) || (weaponClass == WeaponClass.Crossbow) || (weaponClass == WeaponClass.Sling))
-                {
-                    string key = __state.Key != null && __state.Item == missionWeapon.Item && __state.Modifier == missionWeapon.ItemModifier
-                        ? __state.Key
-                        : GetRangedWeaponKey(missionWeapon);
-                    SetMissileSpeed(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[key].getDrawWeight());
-                }
                 MissileAimTrace.CommitShot(__instance);
-            }
-        }
-
-        [UsedImplicitly]
-        [MBCallback]
-        [HarmonyPatch(typeof(Mission))]
-        private class OverrideEndMission
-        {
-            [HarmonyPrefix]
-            [HarmonyPatch("EndMission")]
-            private static bool PrefixOnEndMissionResult(ref Mission __instance)
-            {
-                foreach (KeyValuePair<string, MissionWeapon> mw in rangedWeaponMW)
-                {
-                    WeaponStatsData[] wsd = mw.Value.GetWeaponStatsData();
-                    if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
-                    {
-                        if (rangedWeaponStats.ContainsKey(GetRangedWeaponKey(mw.Value)))
-                        {
-                            MissileSpeedProperty.SetValue(mw.Value.CurrentUsageItem, rangedWeaponStats[GetRangedWeaponKey(mw.Value)].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-                        }
-                    }
-                }
-                // Every shared WeaponComponentData.MissileSpeed is back at its draw weight now, so the caches
-                // can be dropped; the next mission re-captures them on spawn/shot.
-                rangedWeaponMW.Clear();
-                rangedWeaponStats.Clear();
-                return true;
             }
         }
     }

@@ -81,30 +81,24 @@ namespace RBMCombat
                                     weaponStatsData[i].ThrustSpeed = (__instance.IsPlayerControlled || RBMConfig.RBMConfig.rangedReloadAffectsAi) ? thrustSpeed : MathF.Ceiling(thrustSpeed * 0.45f);
                                 }
 
-                                MissionWeapon mw = __instance.Equipment[equipmentSlot];
-                                RangedWeaponStats rws;
-                                if (rangedWeaponStats.TryGetValue(GetRangedWeaponKey(mw), out rws))
+                                WeaponComponentData bowUsage = __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0);
+                                if ((ef) < bowUsage.MissileSpeed + 9f) // 70 more skill needed to unlock speed shooting
                                 {
-                                    if ((ef) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
-                                    {
-                                        __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
-                                        weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                    }
-                                    else
-                                    {
-                                        __instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
-                                        weaponStatsData[i].WeaponFlags = (ulong)__instance.Equipment[equipmentSlot].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                    }
+                                    bowUsage.WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
                                 }
+                                else
+                                {
+                                    bowUsage.WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
+                                }
+                                weaponStatsData[i].WeaponFlags = (ulong)bowUsage.WeaponFlags;
                             }
 
-                            // The engine aims with the MissileSpeed it is handed here. Outside the spawn patch the
-                            // launcher's shared MissileSpeed holds its draw weight, so a re-equip (sheathed-bow unload,
-                            // pick-up) would have the AI aim with that while the shot prefix launches at the real speed.
+                            // The engine aims with the MissileSpeed it is handed here, a per-agent copy: the launch
+                            // speed for this agent's ammo. The item's own MissileSpeed stays the XML draw weight.
                             // Slings get theirs in the switch below, once armor and shield are known.
                             if ((WeaponClass)weaponStatsData[i].WeaponClass == WeaponClass.Bow || (WeaponClass)weaponStatsData[i].WeaponClass == WeaponClass.Crossbow)
                             {
-                                int launchSpeed = RBMConfig.MissileBallistics.GetLauncherSpeed(__instance, missionWeapon, missionWeapon.GetWeaponComponentDataForUsage(i), GetCachedDrawWeight(missionWeapon));
+                                int launchSpeed = RBMConfig.MissileBallistics.GetLauncherSpeed(__instance, missionWeapon, missionWeapon.GetWeaponComponentDataForUsage(i));
                                 if (launchSpeed > 0)
                                 {
                                     weaponStatsData[i].MissileSpeed = launchSpeed;
@@ -182,7 +176,7 @@ namespace RBMCombat
                                         weaponData.AirFrictionConstant = ItemObject.GetAirFrictionConstant(missionWeapon.GetWeaponComponentDataForUsage(i).AmmoClass, (WeaponFlags)0);
 
                                         // Same function as the shot prefix and RBMAI's reach gate.
-                                        int slingSpeed = RBMConfig.MissileBallistics.GetSlingSpeed(__instance, missionWeapon, missionWeapon.GetWeaponComponentDataForUsage(i), GetCachedDrawWeight(missionWeapon));
+                                        int slingSpeed = RBMConfig.MissileBallistics.GetSlingSpeed(__instance, missionWeapon, missionWeapon.GetWeaponComponentDataForUsage(i));
                                         if (slingSpeed > 0)
                                         {
                                             weaponStatsData[i].MissileSpeed = slingSpeed;
@@ -195,20 +189,6 @@ namespace RBMCombat
                 }
                 return true;
             }
-        }
-
-        // The launcher's draw weight, caching it the way the shot prefix does. The cache is filled before the spawn
-        // patch overwrites the shared MissileSpeed, so a miss here reads a draw weight, not a launch speed.
-        private static int GetCachedDrawWeight(MissionWeapon launcher)
-        {
-            string key = GetRangedWeaponKey(launcher);
-            if (!rangedWeaponStats.TryGetValue(key, out RangedWeaponStats stats))
-            {
-                stats = new RangedWeaponStats(launcher.CurrentUsageItem.MissileSpeed);
-                rangedWeaponMW[key] = launcher;
-                rangedWeaponStats[key] = stats;
-            }
-            return stats.getDrawWeight();
         }
 
         [HarmonyPatch(typeof(Agent))]
@@ -251,20 +231,16 @@ namespace RBMCombat
                                     {
                                         int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, skill);
 
-                                        RangedWeaponStats rws;
-                                        if (rangedWeaponStats.TryGetValue(GetRangedWeaponKey(mw), out rws))
+                                        WeaponComponentData bowUsage = __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0);
+                                        if ((effectiveSkill) < bowUsage.MissileSpeed + 9f) // 70 more skill needed to unlock speed shooting
                                         {
-                                            if ((effectiveSkill) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
-                                            {
-                                                __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
-                                                wsd.WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                            }
-                                            else
-                                            {
-                                                __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
-                                                wsd.WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
-                                            }
+                                            bowUsage.WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
                                         }
+                                        else
+                                        {
+                                            bowUsage.WeaponFlags &= ~WeaponFlags.UnloadWhenSheathed;
+                                        }
+                                        wsd.WeaponFlags = (ulong)bowUsage.WeaponFlags;
                                     }
                                 }
                                 else

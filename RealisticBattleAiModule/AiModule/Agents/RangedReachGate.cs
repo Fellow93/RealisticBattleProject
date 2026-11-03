@@ -158,14 +158,13 @@ namespace RBMAI
                 {
                     return holdWithoutTarget;
                 }
-                // Outside RBMCombat's spawn and shot patches the launcher's MissileSpeed holds its draw weight. A throw
-                // flies at the speed RBMCombat's WeaponEquipped prefix gave the engine (MissileBallistics.GetThrowSpeed).
+                // A throw flies at the speed RBMCombat's WeaponEquipped prefix gave the engine (MissileBallistics.GetThrowSpeed).
                 // AI javelins thrown at 30-40 m targets came down 10-23 m out (THROW/LAND log, 2026-10-01).
                 int speed = thrown
                     ? RBMConfig.MissileBallistics.GetThrowSpeed(agent, launcher)
                     : launcherClass == WeaponClass.Sling
-                        ? RBMConfig.MissileBallistics.GetSlingSpeed(agent, launcher, launcher.CurrentUsageItem, launcher.CurrentUsageItem.MissileSpeed)
-                        : RBMConfig.MissileBallistics.GetLauncherSpeed(agent, launcher, launcher.CurrentUsageItem, launcher.CurrentUsageItem.MissileSpeed);
+                        ? RBMConfig.MissileBallistics.GetSlingSpeed(agent, launcher, launcher.CurrentUsageItem)
+                        : RBMConfig.MissileBallistics.GetLauncherSpeed(agent, launcher, launcher.CurrentUsageItem);
                 if (speed <= 0)
                 {
                     return false;

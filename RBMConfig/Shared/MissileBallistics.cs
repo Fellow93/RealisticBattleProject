@@ -147,17 +147,17 @@ namespace RBMConfig
         /// <summary>
         /// The speed RBMCombat's shot prefix will give a bow/crossbow missile: same formula, draw weight + modifier bonus,
         /// and the per-missile weight of the loaded arrow/bolt, else of the first stack of the usage's ammo class.
-        /// 0 when the agent carries no ammo for it. drawWeight is passed in because the launcher's own MissileSpeed holds
-        /// the real launch speed, not the draw weight, inside RBMCombat's spawn and shot patches.
+        /// 0 when the agent carries no ammo for it. The usage's MissileSpeed is the XML draw weight (RBMCombat never
+        /// overwrites it).
         /// </summary>
-        public static int GetLauncherSpeed(Agent agent, MissionWeapon launcher, WeaponComponentData usage, int drawWeight)
+        public static int GetLauncherSpeed(Agent agent, MissionWeapon launcher, WeaponComponentData usage)
         {
             float ammoWeight = GetLauncherAmmoWeight(agent, launcher, usage);
             if (ammoWeight <= 0f)
             {
                 return 0;
             }
-            return CalculateMissileSpeed(ammoWeight, usage.ItemUsage, drawWeight + GetLauncherModifierBonus(launcher));
+            return CalculateMissileSpeed(ammoWeight, usage.ItemUsage, usage.MissileSpeed + GetLauncherModifierBonus(launcher));
         }
 
         /// <summary>
@@ -323,10 +323,10 @@ namespace RBMConfig
         /// <summary>
         /// The speed RBMCombat gives a sling stone, at equip (what the engine aims with) and on the shot: the sling
         /// formula from the per-stone weight (as GetLauncherAmmoWeight), the shooter's effective skill, his shield and his
-        /// shoulder and arm armor, and draw weight + modifier bonus. 0 when the agent carries no stones. drawWeight is
-        /// passed in for the same reason as in GetLauncherSpeed.
+        /// shoulder and arm armor, and the usage's MissileSpeed (sling length) + modifier bonus. 0 when the agent carries
+        /// no stones.
         /// </summary>
-        public static int GetSlingSpeed(Agent agent, MissionWeapon launcher, WeaponComponentData usage, int drawWeight)
+        public static int GetSlingSpeed(Agent agent, MissionWeapon launcher, WeaponComponentData usage)
         {
             float ammoWeight = GetLauncherAmmoWeight(agent, launcher, usage);
             if (ammoWeight <= 0f)
@@ -347,7 +347,7 @@ namespace RBMConfig
             }
             float armorModifier = MBMath.ClampFloat(ShoulderArmor(agent) - 20f, 0f, 100f) + MBMath.ClampFloat(ArmArmor(agent) - 20f, 0f, 100f);
 
-            return SlingSpeed(ammoWeight, drawWeight + GetLauncherModifierBonus(launcher), effectiveSkillDR, armorModifier, shieldType);
+            return SlingSpeed(ammoWeight, usage.MissileSpeed + GetLauncherModifierBonus(launcher), effectiveSkillDR, armorModifier, shieldType);
         }
 
         public const float Gravity = 9.806f;
