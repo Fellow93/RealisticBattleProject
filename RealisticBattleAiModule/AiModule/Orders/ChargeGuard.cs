@@ -410,7 +410,9 @@ namespace RBMAI
                     input = formation.GetReadonlyMovementOrderReference();
                     return;
                 }
-                if (go == "keep")
+                // A player re-aiming a running charge gets the new pick: keeping the old one made RBM's SetTargetFormation postfix
+                // re-issue the pick forever (stack overflow).
+                if (go == "keep" && !playerPick)
                 {
                     Formation released = state.HasReleasedOrder ? state.ReleasedOrder.TargetFormation : null;
                     if (released != null && released != target && released.CountOfUnits > 0 && ChargeTargetChoice.IsMounted(released)
