@@ -264,8 +264,9 @@ namespace RBMAI
         private const float TargetFocusCloseRange = 4f; // m
         private const float TargetFocusSlack = 8f; // m
 
-        // `formations` may be the shared cached list: read only. Null when the focus has nobody selectable.
-        public static Agent NearestAgentFocused(Vec2 unitPosition, List<Formation> formations, Formation focus)
+        // `formations` may be the shared cached list: read only. Null when the focus has nobody selectable. A player's pick
+        // (playerPick) gives way only to a man within TargetFocusCloseRange (self-defence), however much nearer he is.
+        public static Agent NearestAgentFocused(Vec2 unitPosition, List<Formation> formations, Formation focus, bool playerPick = false)
         {
             Agent focused = null;
             float focusDistance = float.MaxValue;
@@ -287,7 +288,7 @@ namespace RBMAI
             {
                 return null;
             }
-            float limit = MathF.Max(TargetFocusCloseRange, focusDistance - TargetFocusSlack);
+            float limit = playerPick ? TargetFocusCloseRange : MathF.Max(TargetFocusCloseRange, focusDistance - TargetFocusSlack);
             Agent other = null;
             for (int f = 0; f < formations.Count; f++)
             {

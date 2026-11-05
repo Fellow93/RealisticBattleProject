@@ -160,6 +160,27 @@ namespace RBMAI
         }
 
         /// <summary>
+        /// SetTargetFormation postfix, player formations: "charge that formation" arrives as a plain Charge, then the pick. A charge that
+        /// went at once at the nearest formation, which was the pick, is never re-issued, so it would be re-applied as the plain Charge
+        /// and lose the pick: store the pick.
+        /// </summary>
+        internal static void RememberPlayerPick(Formation formation, Formation pick)
+        {
+            State state;
+            if (formation == null || pick == null || !States.TryGetValue(formation, out state))
+            {
+                return;
+            }
+            lock (state)
+            {
+                if (state.HasPlayerOrder && state.PlayerOrder.OrderEnum == MovementOrder.MovementOrderEnum.Charge)
+                {
+                    state.PlayerOrder = MovementOrder.MovementOrderChargeToTarget(pick);
+                }
+            }
+        }
+
+        /// <summary>
         /// SetMovementOrder prefix: a far charge becomes the advance Move; any other order ends the charge intent. <paramref name="original"/>
         /// is the order as given, before a plain Charge was turned into a charge at the nearest large formation (kept for a player's re-applies).
         /// </summary>
@@ -711,6 +732,14 @@ namespace RBMAI
                             {
                                 _reapplying = false;
                                 DecisionTrace.Exit(reapplyFrame);
+                            }
+                            // SetMovementOrder ends by clearing the target formation, which is how the engine tells every man which
+                            // enemy formation to go for: set the pick again, or the men drift to the nearest enemy. Outside _reapplying,
+                            // so the SetTargetFormation postfix treats a changed aim as the player's own re-target.
+                            Formation pick = playerOrder.TargetFormation;
+                            if (playerOrder.OrderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget && pick != null && pick.CountOfUnits > 0)
+                            {
+                                __instance.SetTargetFormation(pick);
                             }
                         }
                         else

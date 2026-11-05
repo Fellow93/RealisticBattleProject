@@ -253,6 +253,7 @@ namespace RBMAI
                 {
                     return;
                 }
+                ChargeGuard.RememberPlayerPick(__instance, targetFormation);
                 MovementOrder current = __instance.GetReadonlyMovementOrderReference();
                 // A far charge is walked as ChargeGuard's Move: its aim is the guard's target.
                 bool advancing = ChargeGuard.IsAdvancingToCharge(__instance);

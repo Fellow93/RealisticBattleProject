@@ -339,7 +339,10 @@ namespace RBMAI
                         }
                         else
                         {
-                            targetAgent = Utilities.NearestAgentFromFormation(unit.Position.AsVec2, __instance.TargetFormation);
+                            // The player's pick ("charge that formation"): another enemy only within reach. Nobody in it to take
+                            // (all routing): the formation's normal choice.
+                            targetAgent = Utilities.NearestAgentFocused(unit.Position.AsVec2, Utilities.FindSignificantFormationsCached(__instance), __instance.TargetFormation, playerPick: true)
+                                ?? GetCachedCorrectTarget(unit, aiDecision);
                         }
                     }
 
