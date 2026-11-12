@@ -6,7 +6,7 @@ This page covers installing RBM, turning it on in the launcher, what it does abo
 
 | | |
 |---|---|
-| Game version | Mount & Blade II: Bannerlord **v1.5.4** or newer |
+| Game version | Mount & Blade II: Bannerlord **v1.5.7** or newer |
 | RBM version | v4.8.1 |
 | Required modules | Native, SandBoxCore, Sandbox, StoryMode, CustomBattle |
 | Optional modules RBM knows about | BirthAndDeath, RTS Camera, RTS Camera Command System |
@@ -58,10 +58,11 @@ RBM is split into parts you can turn on and off separately. All of them are on b
 | Switch | What it covers | Notes |
 |---|---|---|
 | **RBM Combat** | Damage, armor, weapon and missile physics, ranged reload, and RBM's reworked items, troops and siege engines. See [Combat & Armor](features/combat.md) and [Ranged Combat](features/ranged.md). | Off returns combat to the base game. RBM's spear and weapon animation parameters only change after a **game restart**. |
-| **RBM AI** | Formation tactics and behaviors, siege AI, AI blocking and parrying, the frontline system, AI kicks and bashes, and the posture and stamina systems. See [Battle AI](features/ai.md). | Off returns battle AI to the base game. |
-| **Posture System** | The posture meter, and the stamina system and posture bars that depend on it. See [Posture & Stamina](features/posture.md). | Needs **RBM AI** on. Turning it off also turns off the Stamina System and the Posture GUI. |
+| **RBM AI** | Formation tactics and behaviors, battle plans, siege AI, AI blocking and parrying and the frontline system. See [Battle AI](features/ai.md). | Off returns battle AI to the base game. |
+| **RBM Stance** | The posture and stamina systems, AI kicks and bashes, and the combat slow motion. See [Posture & Stamina](features/posture.md). | Works with RBM AI on or off. |
 | **RBM Tournament** | Tiered tournaments: opponents, arena gear, prizes and renown follow your tier. See [Tournaments](features/tournament.md). | Off restores the base game's tournaments. |
-| **RBM Campaign** | The troop spoils economy, wages and upkeep, settlement wealth, village and town production, caravans, equipment-aware auto-resolve and troop power. See [Campaign](features/campaign.md). | RBM's additions to the campaign screens only change after a **game restart**. |
+| **RBM Campaign** | The troop spoils economy, wages and upkeep, settlement wealth, village and town production, caravans, patrols, mercenary companies and troop power. See [Campaign](features/campaign.md). | RBM's additions to the campaign screens only change after a **game restart**. |
+| **Detailed Auto Resolve** | Equipment-aware auto-resolve. See [Detailed auto-resolve](features/campaign.md#detailed-auto-resolve). | Works with RBM Campaign on or off. |
 
 When a switch is off, the options that belong to it stop working, even if they are still set to on.
 
@@ -109,12 +110,19 @@ Documents\Mount and Blade II Bannerlord\Configs\RBM\logs\
 | Folder | Contents | Turned on by |
 |---|---|---|
 | `battles` | Every blow of a fought battle and every blocked or parried melee blow, standings every 15 seconds, and a summary | *Field Battle Logging* (needs RBM Combat) |
+| `troopperks` | Which troop perks took effect in a battle | *Troop Perk Logging* (needs RBM Combat) |
 | `ai` | Each team's tactic and each formation's behavior and orders, second by second | *AI Behavior Logging* (needs RBM AI) |
-| `simulation` | Every auto-resolved battle | *Detailed Auto Resolve Logging* (needs RBM Campaign) |
+| `terrain` | How the AI reads the battlefield's ground | *Battle Terrain Logging* (needs RBM AI) |
+| `deepwater` | Deep water walled off in a battle, and soldiers stuck in it | *Deep Water Path Logging* (needs RBM AI) |
+| `simulation` | Every auto-resolved battle | *Detailed Auto Resolve Logging* (needs Detailed Auto Resolve) |
 | `powerCalculation` | Daily troop power breakdown of every party | *Troop Power Logging* |
 | `campaign` | The spoils economy: purses, loot, upgrades, food | *Spoils Logging* (needs RBM Campaign) |
 | `economy` | Village production, villager parties, town rations | *Economy Logging* |
 | `caravans` | Supply caravans dispatched, sold, lost | *Caravan Logging* |
-| `garrison` | Garrison refill activity | Always written while RBM Campaign is on |
+| `garrison` | Garrison refill activity and AI armies forming | *Garrison Refill Logging* (needs RBM Campaign) |
+| `mercenaries` | Mercenary companies and their contracts | *Mercenary Companies Logging* |
+| `partybudget` | AI clans' party budgets and whether their leaders can raise an army | *Party Budget Logging* (needs RBM Campaign) |
+| `stuckparties` | Map parties that have not moved for a day | *Stuck Party Logging* (needs RBM Campaign) |
+| `patrols` | Settlement patrols raised, refilled, paid and stood down | *Patrol Logging* |
 
-All of these are off by default except the garrison log. The campaign-side folders keep only their 10 most recent files and delete older ones automatically. The *Armor Penetration Messages* option prints the blunt and penetrating damage of every blow you deal or take to the in-game message log instead of a file.
+All of these are off by default. The campaign-side folders keep only their 10 most recent files and delete older ones automatically. The *Armor Penetration Messages* option prints the blunt and penetrating damage of every blow you deal or take to the in-game message log instead of a file.

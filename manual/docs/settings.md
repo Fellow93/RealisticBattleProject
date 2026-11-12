@@ -6,8 +6,9 @@ main menu, not from inside a running campaign or battle.
 
 How the screen works:
 
-- Settings are grouped into five collapsible sections: **RBM Combat**, **RBM AI**, **RBM Campaign**,
-  **RBM Tournament** and **RBM Debug & Logging**. Every section starts collapsed; click its title to
+- Settings are grouped into seven collapsible sections: **RBM Combat**, **RBM AI**, **RBM Stance
+  (Posture/Stamina/Kick)**, **RBM Campaign**, **RBM Auto Resolve**, **RBM Tournament** and **RBM Debug &
+  Logging**. Every section starts collapsed; click its title to
   open it. The RBM Campaign section is split further into sub-groups, which start open, and RBM Combat
   holds a collapsed **Advanced Armor** sub-group.
 - Hover over a setting's name to see a tooltip explaining it.
@@ -51,7 +52,7 @@ items, troops and siege engines.
 | Armor Effectiveness | 1.00 | Armor counts as this many times its value. Higher means armored troops take less damage from every weapon; lower means armor protects less. Unarmored troops are unaffected. Also affects auto-resolve and troop power. The Advanced Armor settings below are applied on top of the armor value this one produces. Range 0.25–3, in steps of 0.05. |
 | **Advanced Armor** (sub-group) | | Collapsed by default. Fine control over how armor turns a hit into damage. |
 | ↳ Armor Multiplier | 2.00 | How strongly armor absorbs blunt trauma (the damage that gets through armor without penetrating it). That part of a hit is scaled by 100 / (100 + armor × this value). Higher makes armored troops tankier; lower makes them die faster. Penetrating damage is unchanged. Multiplies with Armor Effectiveness: Armor Effectiveness 1.5 with this at 2 makes armor count 3× in this curve. Also affects auto-resolve and troop power. Range 0.5–4. |
-| ↳ Blunt Trauma Multiplier | 1.00 | Scales blunt trauma for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. It does not make armor count for more; it only changes how much a stopped hit still hurts. Also affects auto-resolve. Range 0–3. |
+| ↳ Blunt Trauma Multiplier | 0.90 | Scales blunt trauma for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. It does not make armor count for more; it only changes how much a stopped hit still hurts. Also affects auto-resolve. Range 0–3. |
 | ↳ Armor Penetration Threshold | 1.00 | Scales how much of a blow armor stops outright: the part of a hit above armor × weapon factor × this value penetrates, and the rest becomes blunt trauma. Higher makes armored troops tankier, since more hits fail to penetrate; lower lets more damage straight through. Shields use the same rule. Multiplies with Armor Effectiveness (1.5 there with 1.2 here makes armor stop 1.8× as much as at the defaults). Also affects auto-resolve. Range 0–3. |
 | Troop Overhaul | Active (Recommended) | Replaces the troop trees of the main cultures, plus mercenaries, minor-faction troops, militia and tournament fighters, with RBM's versions (new equipment, skills and upgrade paths). **Inactive** keeps the base game's troops, still using RBM's item changes. |
 | ↳ Passive Shoulder Shields | Disabled | Lets RBM troops keep the shoulder-strapped versions of their shields, which stay on the shoulder while they fight with another weapon. Disabled swaps them for the normal hand-held versions. Needs Troop Overhaul active. |
@@ -66,22 +67,23 @@ items, troops and siege engines.
 | Realistic Arrow Arc | Disabled | Your bow and crossbow shots leave about 5 degrees above where you aim, so they fly a higher arc and the crosshair no longer marks where they land. Player only; slings and thrown weapons are unaffected. |
 | Ranged aim arc (player, experimental) | Disabled | Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land, using the real shot's launch speed and air drag. Also covers javelins, throwing axes, throwing knives and stones. In third person, when you aim up the camera lifts and tilts down so the landing point of a high shot stays on screen; your aim is unchanged, and the crosshair is hidden while the camera is moved. Player only. |
 | Thrust weapon preference for AI (default at 0.05) | 0.05 | Dropdown from 0.01 to 1.00 in steps of 0.05. Scales the thrust damage figures weapons carry, which the AI weighs when choosing between thrusting and swinging. RBM undoes the scale when it works out piercing damage, so stabs hit about as hard at any setting; lower values make the AI favour swings. |
+| Troop Perks | Enabled | Lets regular soldiers have hero perks, given per troop type in the mod's troop perks file (`ModuleData/rbm_troop_perks.xml`). Only personal perks have an effect, in battle and in auto-resolve (which also needs Auto Resolve Perks). A troop's perks are listed in its tooltip and on its encyclopedia page. This setting also shows a troop's tooltip when you hover its row on the party screen (needs RBM Campaign, and a game restart to follow a change). |
 
 ---
 
 ## RBM AI
 
-RBM's battle AI: formation tactics and behaviors, siege AI, AI blocking and parrying, the posture and
-stamina systems, the frontline system and AI kicks and bashes.
+RBM's battle AI: formation tactics and behaviors, battle plans, siege AI, AI blocking and parrying and
+the frontline system. Posture, stamina, AI kicks and bashes and the combat slow motion have their own
+section, [RBM Stance](#rbm-stance-posturestaminakick).
 
 !!! warning "Module Status switches the whole section"
     Disabling **Module Status (RBM AI)** returns battle AI to the base game, and every other option in
-    this section stops working, including Slow Motion in Combat.
+    this section stops working. The RBM Stance section is not affected.
 
 | Setting | Default | What it does |
 |---|---|---|
 | Module Status (RBM AI) | Enabled | Master switch for RBM's battle AI. Disabled returns battle AI to the base game. |
-| Slow Motion in Combat | Enabled | Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. The posture-break slowdown needs the Posture System. |
 | Frontline System | Enabled | Per-soldier jostling inside a charging infantry or archer line: every couple of seconds each man decides whether to press in, step back, close on a neighbour, slide around a flank or hold his rank. Disabled leaves melee lines on RBM's plain charge. Cavalry and archer free-charge rules and unit facing are unaffected either way. The six sliders below are greyed out while this is disabled. |
 | ↳ Frontline Sidestep Weight | 1.00 | Multiplier on the left and right "slide sideways past the man in front" choices. Above 1 makes lines spread wide around a stalled front rank. Range 0–3. |
 | ↳ Frontline Close Ranks Weight | 1.00 | Multiplier on the "close the gap to my nearest neighbour" choice. Above 1 makes lines huddle tighter and shield walls hold better; below 1 lets them spread. Range 0–3. |
@@ -89,21 +91,44 @@ stamina systems, the frontline system and AI kicks and bashes.
 | ↳ Frontline Attack Weight | 1.00 | Multiplier on the "press forward at my target" choice. Above 1 makes lines more aggressive and thinner; below 1 makes them hang back. Range 0–3. |
 | ↳ Frontline Decision Hold | 2.00 | Once a man picks a move he sticks with it for a random 0 to this many seconds before reconsidering. Higher is steadier and cheaper to run; lower makes the line twitchier. Range 0–10. |
 | ↳ Frontline Min Formation Size | 25 | Formations with fewer men than this skip the frontline system and charge normally. Range 0–200. |
-| Posture System | Enabled | Blocks, parries and hits wear down a posture meter that recovers over time. When it runs out the soldier can be staggered, drop his weapon or shield, be knocked off his horse, or take damage that crushes through his guard. Disabling it also switches off the Stamina System and the Posture GUI. |
-| ↳ Stamina System (requires Posture) | Enabled | Attacking, blocking and being hit drain stamina, faster in heavy armor and slower with high Athletics. A tired soldier hits weaker, moves, swings and reloads slower, blocks worse and loses posture faster; above 85% stamina he slowly regains health. Greyed out, and switched off automatically, when the Posture System is disabled. |
-| ↳ Player Posture Multiplier | 1x | Options **1x**, **1.5x**, **2x**. Multiplies your own character's maximum posture and posture recovery, and with the Stamina System on also your maximum stamina and its recovery. AI soldiers are unaffected. Needs the Posture System. |
-| ↳ Posture GUI | Enabled | Shows your own posture bar in battle (and stamina bar, with the Stamina System on), and for a few seconds after you trade blows with an enemy, his name, health, posture and stamina. Needs the Posture System. |
-| AI Kick and Bash | Enabled | AI soldiers kick, shield bash and weapon bash. Kicks and bashes deal real damage, cost posture and stamina, and can knock an enemy down. Applies to the player's kicks and bashes too. |
+| Formation shouts | Enabled | Soldiers of every formation, on both sides, repeat the orders they are given and AI captains call out their own; the main infantry marches to its culture's call, a charge gives its war cry, the men yell and roar when the lines meet, and cavalry blow horns. Sound only; behaviour is unchanged. |
+| Staggered order reaction (experimental) | Disabled | When a formation is given a new order, yours or the AI's, each soldier starts to carry it out after his own short delay, longer the further he stands from whoever gave it, instead of the whole formation moving at once. Charges and retreats are not held back. |
+| Deep water blocks AI paths | Enabled | In field battles, water about 1 m deep or deeper gets an invisible wall at its edge that nobody can pass, you included, and AI formations form up around it. Soldiers who still end up in it are walked or swum back to the nearest shore. Missiles fly over it, and shallow fords and bridges stay open. If it would cut the two armies off from each other it is switched off for that battle. Takes effect from the next battle. |
+| Terrain-aware battle plans | Enabled | AI armies weigh the battlefield (room to manoeuvre, flank routes, height, water, charge run-up, fields of fire) when choosing and carrying out a battle plan. Disabled leaves the choice to culture, commander and army make-up only. |
+| AI reacts to the battle | Enabled | In field battles AI armies watch the fight and answer what happens: a free formation helps one of theirs that is attacked, cavalry rides out to meet enemy cavalry going round a flank or at the archers, and free cavalry hits the flank or rear of an enemy formation stuck in melee. Disabled leaves only the battle plan's own moves. |
+| Shield wall share | 60% | Options 40% to 90% in steps of 10%. How much of an AI infantry formation must be shield-wall soldiers (a large shield in hand, not holding a throwing weapon) before it forms a shield wall when the enemy is near. It opens again when the share drops 10% below this. Lower means more shield walls. |
 | Keep Battle (Last Stand) | Disabled | In sieges RBM keeps defenders from losing morale as their comrades fall, so a garrison holds the walls to the last man. With this enabled, once fewer than 50 defenders remain and they have less than half the attackers' strength, losses shake them twice as hard, so the survivors can break and fall back for a last stand in the keep. |
 | Vanilla AI Block/Parry/Attack | Disabled | Leaves AI soldiers' blocking, parrying and melee attack decisions on the base game's values instead of RBM's skill-based ones. It also lets the Combat AI difficulty option weaken RBM's AI aim as strongly as it does in the base game. |
+
+---
+
+## RBM Stance (Posture/Stamina/Kick)
+
+The posture and stamina systems, AI kicks and bashes and the combat slow motion. This section works with
+RBM AI on or off.
+
+!!! warning "Module Status switches the whole section"
+    Disabling **Module Status (RBM Stance)** returns blocking, stamina and kicks to the base game, and
+    every other option in this section stops working.
+
+| Setting | Default | What it does |
+|---|---|---|
+| Module Status (RBM Stance) | Enabled | Master switch for RBM's posture and stamina systems, AI kicks and bashes and the combat slow motion. |
+| Posture System | Enabled | Blocks, parries and hits wear down a posture meter that recovers over time. When it runs out the soldier can be staggered, drop his weapon or shield, be knocked off his horse, or take damage that crushes through his guard. Disabling it also switches off the Stamina System and the Posture GUI. |
+| ↳ Stamina System | Enabled | Attacking, blocking and being hit drain stamina, faster in heavy armor and slower with high Athletics. A tired soldier hits weaker, moves, swings and reloads slower, blocks worse and loses posture faster; above 85% stamina he slowly regains health. Greyed out, and switched off automatically, when the Posture System is disabled. |
+| ↳ Player Posture Multiplier | 1x | Options **1x**, **1.5x**, **2x**. Multiplies your own character's maximum posture and posture recovery, and with the Stamina System on also your maximum stamina and its recovery. AI soldiers are unaffected. Needs the Posture System. |
+| ↳ Posture GUI | Enabled | Shows your own posture bar in battle (and stamina bar, with the Stamina System on), and for a few seconds after you trade blows with an enemy, his name, health, posture and stamina. Needs the Posture System. |
+| ↳ Large Vertical Bars | Disabled | Shows your posture and stamina as two large vertical bars at the right edge of the screen, instead of the small bars at the bottom right. Needs the Posture System and Posture GUI. |
+| AI Kick and Bash | Enabled | AI soldiers kick, shield bash and weapon bash. Kicks and bashes deal real damage, cost posture and stamina, and can knock an enemy down. Applies to the player's kicks and bashes too. With the Posture System off they still deal their damage and knock men down. |
+| Slow Motion in Combat | Enabled | Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. The posture-break slowdown needs the Posture System. |
 
 ---
 
 ## RBM Campaign
 
 The campaign overhaul: the troop spoils economy, wages and upkeep, settlement wealth, village and town
-production, caravans, equipment-aware auto-resolve and troop power, and RBM's additions to the campaign
-screens.
+production, caravans, patrols, mercenary companies and troop power, and RBM's additions to the campaign
+screens. Detailed Auto Resolve has its own section, [RBM Auto Resolve](#rbm-auto-resolve).
 
 Several settings below refer to **spoils**: each troop stack in a party has its own purse, filled from
 battle loot, plunder and its wages, and spent on upgrades, upkeep, food, carousing, healing and
@@ -123,14 +148,12 @@ luxuries. One point of spoils is worth one gold.
 | Village Production | 0.50 | Multiplier on every village's daily output, together with its warehouse size and its production tooltip. Below 1 throttles the countryside, above 1 floods it. Range 0.01–2. |
 | Starting Gold Multiplier | 5.0x | Multiplies the gold character creation hands out at the start of a new campaign. Only applies to a new game; a loaded save keeps its own gold. Range 1–50, in steps of 0.5. |
 | Deserter Raiders | Enabled | Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Disabled leaves deserters on vanilla behavior. |
+| Mercenary Companies | Enabled | Adds two neutral mercenary companies for each main culture. They never join a kingdom on their own: they roam, hunt bandits and hire tavern mercenaries until an army leader pays gold to take them on (AI lords when they gather an army, you from the army management screen). A contract lasts until the army breaks up or the leader can no longer pay the daily fee. Disabling it disbands the companies already in a save within an in-game hour; do that, and play an hour, before you switch RBM Campaign off. |
 | Kingdom Supply Caravans | Enabled | Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it. Real goods and money move, and the caravan can be raided. Disabled leaves the map on vanilla caravans alone. |
 | ↳ Caravan Investment | Enabled | On a route from a wealthy town to a struggling one, the caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays once it recovers. Needs Kingdom Supply Caravans. |
 | AI Lords Buy Equipment | Enabled | AI lords spend gold in towns to upgrade their own battle gear to items of their culture. Disable it if another mod manages lord equipment. |
 | Inventory Weight Column | Enabled | Adds a weight column to the item rows of the inventory and trade screens, showing what one item weighs. Takes effect after restarting the game. |
-| Equipment Based Troop Power | Enabled | Party strength (what the encounter screen shows, and what AI lords weigh before attacking, fleeing or gathering armies) is worked out from each troop's gear, training and horse and his commander's perks, instead of his tier alone. Auto-resolve itself is not affected, so the shown strength no longer predicts it exactly. |
-| Detailed Auto Resolve | Enabled | Auto-resolve works out every simulated blow from the troops' actual gear (armor on each body part, shields and real missiles) instead of their tier alone. Disabled returns auto-resolve to the base game, and switches off the two options below with it. |
-| ↳ Auto Resolve Routing | Disabled | In auto-resolve, a side cut down to fewer than 50 men and losing clearly worse than its enemy may break and flee instead of fighting to the last man; the survivors escape. The more one-sided the fight, the likelier the break. Siege assaults are not affected. Needs Detailed Auto Resolve. |
-| ↳ Auto Resolve Perks | Enabled | In auto-resolve, troops are split into formations under captains as in a real battle, and each captain's own combat perks apply to his formation; the commander's hit-point perks also reach his men. Replaces the base game's flat bonus for the number of captain perks. Needs Detailed Auto Resolve. |
+| Equipment Based Troop Power | Enabled | Party strength (what the encounter screen shows, and what AI lords weigh before attacking, fleeing or gathering armies) is worked out from each troop's gear, training and horse and his commander's perks, instead of his tier alone. Auto-resolve itself is not affected, so the shown strength no longer predicts it exactly. Needs RBM Combat; with it off the game's own strength is used. |
 | Spectate AI Battles | Disabled | When two AI sides meet in a field battle or siege assault with enough men on each side, offers to let you watch it from a free camera. What you watch is only a copy: the battle on the map resolves on its own. Needs the RTS Camera mod. |
 | ↳ Spectate Minimum Troops Per Side | 100 | How many men both sides must field before a battle between two AI lords is offered for spectating. Range 10–1000. |
 
@@ -182,6 +205,20 @@ back, disable the RBM Campaign module.
 | Luxury Buy Chance | 0.02 | Chance each hour that a stack idling in a settlement with more spoils than its reserve cap buys a luxury from the settlement's market. 0 stops it. Range 0–1. |
 | Heal Cost per Tier | 10 | Gold a wounded man's stack pays, per tier he holds, to have him mended faster while resting in a settlement. Paid from the stack's spoils and left in the settlement. 0 stops paid healing. Range 0–100. |
 | Heal Rate per Hour | 0.05 | The most of a stack's wounded that paid healing can mend in one hour, so a deep purse buys a faster recovery, not an instant one. Range 0–1. |
+| Settlement Patrols | Enabled | Every town and castle can keep a patrol if its own money can pay for it, Guard House or not. The settlement's treasury (and a town's citizens, from their savings above a reserve) pays for the men's kit and their daily wages and upkeep; the Guard House, the Coastal Guard Edict and the Patrols perk make the patrol bigger and better. A settlement that can no longer pay stands its patrol down and its men rejoin the garrison. Your clan's gold is never touched. Needs Troop Upgrade Cost above 0; without it, or disabled, the base game's patrols apply. Switching it off mid-campaign is safe; removing RBM from a save with RBM patrols is not. |
+| ↳ Patrol Budget Share | 0.020 | The share of a settlement's patrol funds it sets aside for its patrol each day, before the Guard House, edict and perk bonuses. Divided by what one soldier costs a day, it sets how many men the patrol has, between 12 and 60. 0 keeps every patrol at the smallest size. Needs Settlement Patrols. Range 0–0.1. |
+
+---
+
+## RBM Auto Resolve
+
+Equipment-aware auto-resolve. This section works with RBM Campaign on or off.
+
+| Setting | Default | What it does |
+|---|---|---|
+| Detailed Auto Resolve | Enabled | Auto-resolve works out every simulated blow from the troops' actual gear (armor on each body part, shields and real missiles) instead of their tier alone. Disabled returns auto-resolve to the base game, and switches off the two options below with it. |
+| ↳ Auto Resolve Routing | Disabled | In auto-resolve, a side cut down to fewer than 50 men and losing clearly worse than its enemy may break and flee instead of fighting to the last man; the survivors escape. The more one-sided the fight, the likelier the break. Siege assaults are not affected. Needs Detailed Auto Resolve. |
+| ↳ Auto Resolve Perks | Enabled | In auto-resolve, troops are split into formations under captains as in a real battle, and each captain's own combat perks apply to his formation; the commander's hit-point perks also reach his men, and troops with perks of their own (Troop Perks setting, needs RBM Combat) fight with them. Replaces the base game's flat bonus for the number of captain perks. Needs Detailed Auto Resolve. |
 
 ---
 
@@ -200,14 +237,22 @@ into a `logs` folder next to the config file (`Documents\Mount and Blade II Bann
 
 | Setting | Default | What it does |
 |---|---|---|
-| Developer Mode | Disabled | Developer extras: an in-battle stats overlay, an "RBM Developer Stats" block in weapon tooltips and the siege archer-point debug pass. The stats overlay needs RBM AI; besides damage by troop type and kick and bash attempts, it counts melee hits and each kind of block and parry. Takes effect from the next battle. |
+| Developer Mode | Disabled | Developer extras: an in-battle stats overlay, an "RBM Developer Stats" block in weapon tooltips and the siege archer-point debug pass. The stats overlay needs RBM AI; besides damage by troop type and kick and bash attempts, it counts melee hits and each kind of block and parry, and shows each side's ranked battle plans and how it reads the ground. In battle, Ctrl+Shift+D shows the terrain features and AI decisions on the battlefield, and Ctrl+Shift+W (with Deep water blocks AI paths on) shows where the AI can walk. Takes effect from the next battle. |
 | Field Battle Logging | Disabled | Writes every blow of a fought battle to `logs/battles`, one file per battle: attacker, target, weapon, body part, armor, damage and health left, plus the standings every 15 seconds and a summary at the end. Melee blows that are blocked or parried are logged too, by type (chamber, weapon block or parry, shield block or parry, wrong-side shield), and the summary counts them per side. Arenas and town visits are left out. Only runs while RBM Combat is enabled. |
+| Troop Perk Logging | Disabled | For each battle, writes to `logs/troopperks` which perks from the troop perks file the game actually checked for the troops that fought: perks that took effect, perks checked where their effect does not apply, and perks never checked. For testing the troop perks file. Needs Troop Perks and RBM Combat. Takes effect from the next battle. |
 | AI Behavior Logging | Disabled | Writes, second by second, every team's chosen tactic and every formation's behavior and movement order to `logs/ai`. Needs RBM AI. Takes effect from the next battle. |
+| Deep Water Path Logging | Disabled | For each field battle, writes to `logs/deepwater` how much of the map was blocked as deep water and how deep it was, whether the two armies could still reach each other, and any soldier stuck in the water. Needs Deep water blocks AI paths and RBM AI. Takes effect from the next battle. |
+| Battle Terrain Logging | Disabled | For each field battle, writes to `logs/terrain` how the AI reads the battlefield once the armies are deployed: heights and slopes, frontages, open ground and obstacles, narrow gaps, flanking routes, hills, charge run-ups, fields of fire and weather. Needs RBM AI. Takes effect from the next battle. |
 | Armor Penetration Messages | Disabled | Prints the blunt trauma and armor penetration damage of every blow you deal or take to the message log. |
-| Detailed Auto Resolve Logging | Disabled | Writes every auto-resolved battle to `logs/simulation`: the sides and their parties, troop power, charge and volley figures, and the outcome including routed men. Needs RBM Campaign. |
+| Detailed Auto Resolve Logging | Disabled | Writes every auto-resolved battle to `logs/simulation`: the sides and their parties, troop power, charge and volley figures, and the outcome including routed men. Needs Detailed Auto Resolve. |
 | ↳ Auto Resolve Per-Hit Detail | Disabled | Adds every simulated blow to the auto-resolve log (thousands of lines for a big battle). Needs Detailed Auto Resolve and Detailed Auto Resolve Logging. |
-| Troop Power Logging | Disabled | Once a day, writes every party's troop power breakdown to `logs/powerCalculation`: its commander's perks and each troop stack's power per man. Needs Equipment Based Troop Power. |
+| Troop Power Logging | Disabled | Once a day, writes every party's troop power breakdown to `logs/powerCalculation`: its commander's perks and each troop stack's power per man. Needs Equipment Based Troop Power and RBM Combat. |
 | Spoils Logging | Disabled | Writes the spoils economy to `logs/campaign`: purse changes, loot awards, troop upgrades and their supply-town draws, recruit gear, food and carousing. Needs RBM Campaign. |
 | ↳ Verbose Logging | Disabled | Adds a line for every troop stack to the spoils log; disabled keeps only the party-level summaries. Needs Spoils Logging. |
 | Economy Logging | Disabled | Writes the village-to-town goods and food chain to `logs/economy`: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose; only useful for tuning the economy. |
 | Caravan Logging | Disabled | Writes the supply-caravan system to `logs/caravans`: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans. |
+| Garrison Refill Logging | Disabled | Writes to `logs/garrison` the lords sent to refill from their own surplus garrisons, the troops those garrisons hand over, and AI armies forming and dispersing. Needs RBM Campaign. |
+| Mercenary Companies Logging | Disabled | Writes the mercenary companies to `logs/mercenaries`: companies created, respawned and destroyed, where they roam and what they hire, every contract (hire, daily pay, end and the reason) and which companies an AI army passed over and why. Needs Mercenary Companies. |
+| Party Budget Logging | Disabled | Writes the AI lords' party budgets to `logs/partybudget`: once a day per clan its gold, income, daily wage budget and each war party's share, and per clan leader whether he could raise an army. Needs RBM Campaign. |
+| Stuck Party Logging | Disabled | Writes to `logs/stuckparties` every map party that has a destination but has not moved for a day: where it is, where it is trying to go, whether it is at sea, and whether the game found a path; a second line when it moves again. For reporting parties stuck on coasts. Needs RBM Campaign. |
+| Patrol Logging | Disabled | Writes the settlement patrols to `logs/patrols`: each patrol raised and refilled, its daily wage and upkeep, patrols stood down (and why) or lost, and a settlement's patrol funds, budget and size on days they changed. Needs Settlement Patrols and RBM Campaign. |

@@ -30,7 +30,9 @@ The threshold factor tells you how much armor resists each weapon. A **lower** n
 | Throwing knife | 5 | 15% | 3 | 15% |
 | Sling stone | 10 | 50% | 6 | 60% |
 
-**Blunt** blows (maces, hammers, the flat of a weapon) work differently. Armor stops them up to five times its value, and 70% of the stopped part comes through as trauma. That is why blunt weapons stay useful against heavily armored targets.
+**Blunt** blows (maces, hammers, the flat of a weapon, sling stones) work differently. Armor stops them up to five times its value (ten for sling stones), and 60% of the stopped part comes through as trauma. That is why blunt weapons stay useful against heavily armored targets. Each weapon type's blunt threshold and blunt share can be tuned in the combat settings.
+
+The armor's material changes the trauma of every blow: **mail** lets 20% more through, **plate** 20% less.
 
 Other rules that change the threshold:
 
@@ -105,6 +107,7 @@ Shields take damage by weapon type:
 - **Blunt blows** do a bit less.
 - Weapons with a **bonus against shields** do double.
 - **Javelins and throwing axes** hit shields very hard. Arrows and bolts do far less.
+- The attacker's skill adds nothing to the damage a blocked blow does to a shield.
 
 A blow that hits a shield slung on someone's back is treated as blocked by it. The **Pavise Shield** and **Deployable Pavise Shield** have 10 shield armor. For missiles and shields, see [Ranged Combat](ranged.md).
 
@@ -119,7 +122,7 @@ A blow that hits a shield slung on someone's back is treated as blocked by it. T
 
 ## Kicks, bashes and punches
 
-With **AI Kick and Bash** on (default), kicks, shield bashes and weapon bashes, yours included, do real blunt damage instead of the base game's token amount. Damage is based on Athletics with a smaller share of your weapon skill, plus what you strike with: boots for a kick, the shield's weight for a shield bash, the weapon's weight for a pommel or haft shove. A kick lands harder than a punch thrown with the same skill. A bash blocked by a shield, or a kick into a raised shield, does no damage. Kicks and bashes also cost posture and stamina and can knock a man down. See [Posture & Stamina](posture.md).
+With **AI Kick and Bash** on (default), kicks, shield bashes and weapon bashes, yours included, do real blunt damage instead of the base game's token amount. All three reach about a pace, and armor passes on less of their trauma than of a weapon's. Damage is based on Athletics with a smaller share of your weapon skill, plus what you strike with: boots for a kick, the shield's weight for a shield bash, the weapon's weight for a pommel or haft shove. A kick lands harder than a punch thrown with the same skill. A bash blocked by a shield, or a kick into a raised shield, does no damage. Kicks and bashes also cost posture and stamina and can knock a man down, who then falls where he stands. See [Posture & Stamina](posture.md).
 
 Punches work the same way, based on Athletics and your gloves (heavier, harder gloves hit harder).
 
@@ -130,7 +133,7 @@ With the [stamina system](posture.md) on, a tired fighter hits up to 15% weaker.
 ## Horses
 
 - **Speed** depends on your Riding skill compared with the horse's difficulty (up to 10% faster or slower), the total weight of horse, rider and gear, and the conditions. Rain and night (outdoors) each cost 10%. A horse without a harness loses 10% of its speed stat.
-- **Charge damage** comes from momentum: speed times the combined weight of horse, rider, armor and weapons. A charging horse also takes some damage itself, reduced by its chest armor.
+- **Charge damage** comes from momentum: speed times the combined weight of horse, rider, armor and weapons. The horse counts with its own weight, so heavy mounts such as destriers and war camels hit hardest, light horses less and pack animals much less. A charging horse also takes some damage itself, reduced by its chest armor.
 - **Rearing.** A moving horse never rears. A standing or slow horse rears only when hit from the front, by a polearm thrust or by a missile that does enough damage.
 - **Dismounting.** A strong couched or braced lance hit to a rider's head, neck, chest or shoulders can unseat him. Higher Riding skill resists it.
 
@@ -143,7 +146,11 @@ Item tooltips get an **RBM Stats** section, calculated for the selected characte
 - **Throwing weapons:** relevant skill, launch speed, and a damage table.
 - **Shields:** shield armor.
 
+## Troop perks
+
+With **Troop Perks** on (default), regular troops can have hero perks, given per troop type by the mod. They work with their normal effect in battle and, with auto-resolve's perk setting on, in auto-resolve, but only the personal part of a perk counts: a troop is never a captain or party leader. A troop's perks are listed in its tooltip and on its encyclopedia page.
+
 ## Other changes
 
 - **Destructible objects** (gates, siege engines) take reduced damage from cuts and even less from thrusts and missiles. Fire does five times the damage to flammable objects.
-- **Slow Motion in Combat** (default on, needs RBM AI) briefly slows the battle when you kill or knock out an enemy or break his posture. See [Posture & Stamina](posture.md).
+- **Slow Motion in Combat** (default on, part of RBM Stance) briefly slows the battle when you kill or knock out an enemy or break his posture. See [Posture & Stamina](posture.md).

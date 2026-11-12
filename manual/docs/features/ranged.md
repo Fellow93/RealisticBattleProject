@@ -16,7 +16,7 @@ Some general rules:
 
 - **Heavier arrows and bolts** leave the string slower but carry more of the bow's energy.
 - **Item modifiers** on a bow or crossbow change its draw weight.
-- **Your own movement adds** to the launch speed when you shoot a bow, crossbow or sling on the move.
+- **Your own movement adds** to the launch speed when you shoot a bow, crossbow or sling on the move. The **Running Throw** perk adds damage only for the extra speed your run puts behind a throw.
 - With **RBM AI** on, the base game's weather penalties are removed: rain and snow no longer slow bows and crossbows, and fog no longer shortens missile range.
 
 ## Missile damage
@@ -56,6 +56,8 @@ The reload part of this setting only affects you, unless **Ranged reload applies
 
 ## Missiles and shields
 
+- **Only real hits.** A shield only catches missiles that actually hit it. It doesn't pull in near misses, in custom battles as in the campaign.
+- **Arrow Catcher.** With this perk, missiles caught on your raised shield cost less posture, stamina and shield damage.
 - **Wooden shields.** Most arrows and bolts stick. About 15% shatter and about 5% glance off.
 - **Metal shields.** Nothing goes through and nothing sticks: missiles bounce off. Arrows and bolts shatter 80% of the time. The shield still takes the hit's damage.
 - **Shields on the back** block missiles like a raised shield and take the damage. Missiles that can pierce shields (or a thrower with the Impale perk) go through a wooden shield on the back into the man carrying it.
@@ -88,4 +90,4 @@ Each missile gets its own time, up to 40% shorter or longer, so a volley doesn't
 
 ## Posture and stamina
 
-With the [Posture & Stamina](posture.md) systems on, shooting and throwing cost posture and stamina. Bows cost the most posture per shot, crossbows very little, and thrown weapons are in between. Skill reduces both costs. Crossbows pay their stamina cost when you finish spanning them, not when you shoot. Being hit by missiles also drains posture, and a big enough hit can stagger you. Details are on the posture page.
+With the [Posture & Stamina](posture.md) systems on, shooting and throwing cost posture and stamina. Bows cost the most posture per shot, crossbows very little, and thrown weapons are in between. Skill reduces both costs. Crossbows pay their stamina cost when you finish spanning them, not when you shoot. Being hit by a missile also drains posture by the damage it does (a missile caught on your raised shield costs only a little), and a big enough hit can stagger you. Details are on the posture page.

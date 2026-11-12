@@ -15,8 +15,9 @@ The RBM Campaign module reworks how money, troops and goods move around Calradia
 - **Auto-resolve looks at equipment.** Battles resolved on the map are decided by what the men wear and carry,
   not only by their tier.
 
-Everything on this page needs the **RBM Campaign** toggle. Turn it off and the campaign plays like the base
-game. Most rules can be tuned or switched off separately; see [Settings](../settings.md).
+Everything on this page needs the **RBM Campaign** toggle, except detailed auto-resolve, which has its own
+switch. Turn it off and the campaign plays like the base game. Most rules can be tuned or switched off
+separately; see [Settings](../settings.md).
 
 ## Spoils: every troop stack has a purse
 
@@ -99,7 +100,8 @@ depends on whose war it is:
 The gold you pay goes to the town you are in, or the nearest one not at war with you. Your finance screen shows
 "Troop maintenance" and "Maintenance paid from troop spoils" lines, and each troop shows its maintenance per
 man under its wage. Freshly recruited stacks arrive with 20 days of maintenance already in their purse
-(setting: *Recruit Maintenance Days*).
+(setting: *Recruit Maintenance Days*). The same goes for every new man on the map: garrison and militia
+recruits, caravan guards, rebels and the armies lords start a campaign with.
 
 **Food.** When your party stops in a settlement, stacks whose rations have run out buy their own food off the
 local market with their spoils: enough for 20 days by default (setting: *Food Days Bought*). Better-paid troops
@@ -179,7 +181,8 @@ A town has two separate pools of money:
 - **Treasury** is the town as an institution. It pays the garrison, militia, administration, walls and
   construction.
 
-Castles and villages have a single pool. Hovering a settlement on the map shows its purses.
+Castles and villages have a single pool. Hovering a settlement on the map shows its purses, rounded (hold
+Alt for the exact amounts), and its troops by type and tier.
 
 ### Your income as an owner
 
@@ -214,6 +217,7 @@ also goes into its wealth.
 - Garrisons recruit on their own only while the treasury holds at least 15 days of the fief's whole bill, a few
   men per day at most (more with Barracks), and each recruit's gear is paid by the treasury. If the treasury
   drops below 7 days of the garrison's own bill and nobody subsidises it, the garrison loses 2 men a day.
+  Untick a garrison's auto recruitment and it stops growing.
 - Garrisons no longer take the notables' volunteers, so those stay available for you.
 - Garrison morale is fixed, so garrisons do not desert.
 - Garrisons drill: they gain experience each day, more when the treasury is well stocked, plus a flat bonus from
@@ -221,11 +225,13 @@ also goes into its wealth.
 
 ### Militia
 
-- Militia have a **soft cap** of 40% of the settlement's base (prosperity for towns, hearths for villages,
-  and for castles the average hearths of their villages). Barracks, a castle's Guard House, Training Fields,
+- Town and castle militia have a **soft cap** of 40% of the settlement's base (prosperity for towns, and for
+  castles the average hearths of their villages). Barracks, a castle's Guard House, Training Fields,
   the Train Militia and Raise Troops projects (while they run) and the Citizenship, Cantons and Bolster the
   Fyrd (War Sails) policies raise it, up to 70%. Serfdom lowers it. The castle Guard House and these four
   policies no longer add or remove militia each day; they only move the soft cap.
+- **Villages** are the exception: their soft cap is 10% of hearths (policies can raise it to 18%) and their
+  hard cap 20%, so a village fields a few dozen farmers, enough for looters but not for a lord.
 - Above the soft cap, growth slows more and more the closer the militia get to the **hard cap** of 75%, and
   it can never pass it. Militia standing above the hard cap (after a siege, for example) disband at 5% of the
   excess a day, and their kit is refunded. The militia tooltip shows both caps.
@@ -235,6 +241,23 @@ also goes into its wealth.
   nothing, plus gear maintenance. If the settlement cannot hold 20 days of the militia's pay, they shrink by one
   man a day.
 - When a settlement is besieged or raided, the notables' waiting volunteers join the defence.
+
+### Patrols
+
+With *Settlement Patrols* on (the default), every town and castle can keep a patrol, Guard House or not, as
+long as its own money can pay for it. Your clan's gold is never touched.
+
+- The patrol is paid from the settlement's treasury, and in a town also from the citizens' savings above a
+  reserve. It pays the men's kit when the patrol is raised and for every man replaced, and their wages and
+  upkeep every day.
+- Its size (12 to 60 men) and quality grow with that money (setting: *Patrol Budget Share*) and with the Guard
+  House, the Coastal Guard Edict and the Patrols perk.
+- Its men come from the garrison first; only the rest are recruited. A patrol tops up at home instead of
+  being rebuilt for free, and when it is stood down (because the settlement can no longer pay, for example)
+  its men return to the garrison.
+- Patrols march faster than other parties, and every patrol raises its settlement's security.
+
+Switching patrols off mid-campaign is safe; removing RBM from a save that has RBM patrols is not.
 
 ### Other costs and starvation
 
@@ -258,6 +281,9 @@ also goes into its wealth.
 **Village production.** Villages produce goods every day in proportion to their hearths: a common set (grain,
 charcoal, crude iron, hides, wool, planks, flax and more), their own specialities, and a few goods typical of
 their culture. Horse-breeding villages also raise horses. Output is scaled by the *Village Production* setting.
+
+**Village growth.** A village's hearths no longer grow without end: they close in on a land capacity of about
+twice the village's starting size, and a village above it shrinks back toward it.
 
 **Convoys.** Each village sends one convoy to its town once its warehouse is half full. Convoys carry far more
 than in the base game and are escorted by village militia (up to 12 guards, depending on cargo value). They
@@ -300,7 +326,8 @@ and luxury goods.
 ## Caravans
 
 - Forming a caravan costs about ten times the base game's price, and it carries ten times the seed capital.
-  Your caravan pays you a tenth of its purse above its seed capital each day.
+  Your caravan keeps 100,000 of its cash as working money and pays you a tenth of anything above that each
+  day, from its first day on the road. It keeps that cash in hand instead of turning it all into cargo.
 - **Kingdom supply caravans** (setting: *Kingdom Supply Caravans*) carry goods from towns with a surplus to
   towns running short, inside a kingdom and to kingdoms with a trade agreement. Besides the goods townsfolk
   buy, they carry the workshop materials leather, linen, wool, flax and iron ingots. A caravan carries up to 10
@@ -344,22 +371,40 @@ The base game's influence-based mercenary pay is replaced. The ruler you serve p
 with your influence and renown, and reimburses your doubled field-troop wages, as far as the ruler can afford.
 Your finance screen shows the lines "Mercenary stipend", "Mercenary wage pay" and "Mercenary troop wages".
 
+## Mercenary companies
+
+With *Mercenary Companies* on (the default), each main culture has two neutral mercenary companies, made of
+tavern mercenaries. They never join a kingdom on their own: they roam, hunt bandits and hire men until an
+army leader pays gold to take them on. AI lords hire them when they gather an army, and you can hire one
+from the army management screen, where each company shows its price. A contract lasts until the army breaks
+up or its leader can no longer pay the daily fee.
+
+Switching the setting off disbands the companies within an in-game hour. If you want to turn RBM Campaign
+off, switch Mercenary Companies off first and play an hour.
+
 ## How AI lords behave
 
 - **Recruiting.** Understrength lords head for their own fiefs, where recruiting is free, and refill from
   their own garrisons when those hold surplus troops.
+- **Budgets.** AI clans pay their parties from a real daily budget. Parties led by companions and by lords
+  other than the clan leader get a share of it and can borrow from the clan leader to recruit, so they field
+  better troops.
+- **Armies.** A lord needs a party strength of 700 to raise an army and can call more lords to it. AI armies
+  carry more food and keep the pack animals they need.
 - **Equipment** (setting: *AI Lords Buy Equipment*). In towns, AI lords upgrade their own gear with better items
   of their culture.
 - **Pack animals.** AI lords buy pack animals and spare riding horses to travel faster.
 - **Sieges.** AI lords need more strength than in the base game before they start a siege.
-- **Respawn.** Released or respawning AI lords appear at one of their own clan's fiefs.
+- **Respawn.** Released or respawning AI lords always appear at a town or castle, one of their own clan's
+  if it has any. Instead of getting a free army they take their men from that garrison: free at their own
+  clan's fief, paid for at anyone else's.
 - **Deserters** (setting: *Deserter Raiders*). Deserter bands hunt villager convoys and caravans and raid weak
   villages, instead of only wandering.
 
 ## Detailed auto-resolve
 
 With **Detailed Auto Resolve** on (the default), battles resolved on the map are decided by the men's actual
-equipment and skill instead of their tier:
+equipment and skill instead of their tier. It has its own switch and works with RBM Campaign on or off.
 
 - **Armor and weapons matter.** Every blow is run through the armor rules of the combat module you use (RBM
   Combat or the base game's). Maces and spears do better against heavy armor, as they do on the field.
@@ -372,7 +417,9 @@ equipment and skill instead of their tier:
   cavalry hit harder. Cavalry charge again and again on open ground, less in forests and villages, and not in
   sieges.
 - **Captains and perks** (setting: *Auto Resolve Perks*). Each formation gets a captain (your Order of Battle is
-  respected), and their real perks apply.
+  respected), and their real perks apply. Lords' and companions' own combat perks count, and so do troops' own
+  perks (*Troop Perks* setting): hit points, ammo, damage, armor penetration, armor and damage taken work as in
+  a fought battle.
 - **Sieges.** Assaults go through an approach under fire and then fighting at the breaches, ladders and towers.
   Siege engines fire during the battle.
 - **You fight too.** When you send your troops, your character takes part and can be wounded, as AI lords
@@ -386,8 +433,8 @@ Each simulated round takes less campaign time than in the base game. While you w
 resolved, a panel shows the current phase, each side's remaining infantry, ranged and cavalry, and a battle
 chronicle.
 
-**Troop power.** With **Equipment Based Troop Power** on, the strength shown on the encounter screen (and used
-by the AI to decide whether to fight or flee) is also based on equipment. Hover the power bar to see each troop
+**Troop power.** With **Equipment Based Troop Power** on (it also needs RBM Combat), the strength shown on the
+encounter screen (and used by the AI to decide whether to fight or flee) is also based on equipment. Hover the power bar to see each troop
 type's strength.
 
 Turning Detailed Auto Resolve off restores the base game's auto-resolve completely.
@@ -409,10 +456,12 @@ It tracks the economy over the last 30 days:
 - **Towns** tab: every town grouped by kingdom, with prosperity, citizen wealth, treasury and market food;
   where income and expenses come from; food eaten; demand and stock for each good; workshop output; and events
   such as sieges and changes of owner.
+- **Clan finances** tab: your clan's income and expenses, by day and by source.
 
 ## Other interface changes
 
 - **Building tooltips** describe what each building does under RBM.
+- Hovering a troop on the **party screen** shows its tooltip (with the *Troop Perks* setting on).
 - The **Town Management** project grid shows more buildings per row.
 - The **refining** screen has room for recipes with three inputs.
 - Settlement nameplates on the map briefly show when parties carouse there, and when your party buys food or
@@ -423,5 +472,5 @@ It tracks the economy over the last 30 days:
 Several settings in the RBM Debug & Logging section write log files to
 `Documents\Mount and Blade II Bannerlord\Configs\RBM\logs\` (the same folder as RBM's `config.xml`):
 `simulation\` for auto-resolved battles, `campaign\` for spoils, `economy\` for production and food, and
-`caravans\` and `powerCalculation\` for those systems. All are off by default and only needed for checking or
-reporting problems.
+`caravans\`, `powerCalculation\`, `garrison\`, `mercenaries\`, `partybudget\`, `stuckparties\` and `patrols\`
+for those systems. All are off by default and only needed for checking or reporting problems.

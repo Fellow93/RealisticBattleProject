@@ -1,9 +1,10 @@
 # Battle AI
 
 RBM replaces much of the base game's battle AI, from army tactics down to how a single soldier blocks, steps
-and picks his weapon. Armies use tactics that suit their culture. Archers skirmish and pull back behind their
-infantry. Cavalry charge through, reform and charge again. Infantry lines advance at the pace of their slowest
-men and jostle for position once they meet the enemy. Soldiers fight according to their skill.
+and picks his weapon. Armies use tactics that suit their army, their culture and the ground. Archers shoot from a
+good spot and take cover behind their infantry. Cavalry rides in formation until close, charges, then pulls back
+to regroup. Infantry lines advance at the pace of their slowest men, charge only when close and jostle for
+position once they meet the enemy. Soldiers fight according to their skill.
 
 Everything on this page needs the **RBM AI** toggle (on by default). Turning it off returns the battle AI to
 the base game. A few parts also need **RBM Combat**, as noted below. The posture and stamina system is part of
@@ -19,12 +20,14 @@ signature tactic, which gets a bonus:
 |---|---|---|---|
 | Attacker | **Embolon**: heavy cavalry forms a wedge in front of the infantry | Empire | a cavalry wing of 20+ riders, at least 10% of the army (best from 30%), mostly barded heavy horse |
 | Attacker | **Split Skirmishers**: javelin troops form a separate screen | Aserai | a strong infantry force (60+ men, 25% stronger than the enemy's) with enough javelin men |
-| Attacker | **Split Infantry**: the infantry splits into a center and two flanks | Sturgia | 45+ infantry, at least 35% of the army, best when it outnumbers the enemy's infantry |
+| Attacker | **Split Infantry**: the infantry splits into a center and two flanks | Sturgia | 80+ infantry, at least 35% of the army, best when it outnumbers the enemy's infantry |
 | Attacker | **Split Archers**: archers deploy on both flanks | Battania | 30+ archers, at least 12% of the army (best from 35%) |
 | Attacker | **Ranged Harassment** (from the base game) | Khuzait | a large share of archers and horse archers, more than the enemy's |
 | Attacker | Full-scale attack | none | infantry |
 | Defender | Split Archers (defensive version) | Battania | as above |
 | Defender | Split Infantry (defensive version) | Sturgia | as above |
+| Defender | **Hold the Choke**: the infantry blocks a narrow pass, bridge or ford | Sturgia | 40+ infantry, at least 30% of the army, and such a passage it can reach well before the enemy |
+| Defender | **Hedgehog**: the infantry forms a square (a circle when surrounded) with room for its archers | Battania | 40+ infantry, at least 30% of the army, mostly with polearms or shields, against an enemy much stronger in cavalry |
 | Defender | Defensive line, defensive engagement, full-scale attack | none | (base game rules) |
 
 Each tactic is rated by how well the army suits it, and the best one is used. That rating is then adjusted:
@@ -47,7 +50,20 @@ the defensive ring and the coordinated retreat, are not used in field battles.
 **Split Infantry** puts about a sixth of the infantry on each flank, filled first with men carrying two-handed
 axes and polearms. **Split Skirmishers** puts up to a fifth of the infantry, the lower-tier javelin troops, in a
 separate formation that skirmishes ahead of the main line. In **Split Archers**, the infantry waits for its
-archers if they fall too far behind.
+archers if they fall too far behind. An army keeps its plan for at least 30 seconds.
+
+**Reading the ground** (setting *Terrain-aware battle plans*, on by default). In field battles the AI reads the
+ground once the armies have deployed and uses it in its plans. Defenders pick where to fight: a hill, crest,
+narrow pass, bridge or ford they can reach well before the enemy, and the more they are outnumbered the harder
+they look for such ground. Flank groups go round the enemy's open side, and flanks covered by water, cliffs or
+woods are not guarded. Archers take nearby hills, cavalry charges along clear runs and avoids woods and rough
+ground, and foot formations loosen up in woods. An attacker looks for a better way in, round a held bridge or
+pass or toward an open flank, and goes straight in once close. Sides under about 60 men, bandits and sally-outs
+skip these plans.
+
+**Deep water** (setting *Deep water blocks AI paths*, on by default). Water about 1 m deep or more is walled off
+for everyone (missiles pass). AI paths and formations go round it, and soldiers who end up in it are walked back
+out. Fords and bridges stay open.
 
 ## How a battle unfolds
 
@@ -60,13 +76,13 @@ forward (6 m every 4 seconds) while its archers shoot, or simply advances if it 
 
 **Battle joined.** The tactic switches to attack once the infantry lines are close (around 70 to 95 m depending
 on the tactic), once a good part of the main infantry is already fighting in melee, or once the enemy has only
-cavalry left. From then on the infantry charges, archers skirmish on their own, and cavalry charge.
+cavalry left. From then on the infantry charges, archers shoot from their own spot, and cavalry charge.
 
 **Reacting to the battle** (setting "AI reacts to the battle", on by default). Through both phases each AI army
 checks the fight once a second and can give one free formation a short job on top of its plan:
 
-- **Help.** One of its formations is attacked in melee, or an enemy group closes in on it (its archers, a flank
-  group, the hidden reserve). The nearest free infantry walks over and joins the fight, or free cavalry rides to the
+- **Help.** One of its formations is attacked in melee, or an enemy group closes in on it (its archers or a flank
+  group). The nearest free infantry walks over and joins the fight, or free cavalry rides to the
   attacker's flank or rear and charges. A defending line holding its position that will come to help by itself is
   given about 3 seconds to do so first. The main line's head-on fight with your main line does not count.
 - **Cut off cavalry.** Your cavalry rides round its line, at its archers or at its rear. Free cavalry rides out to
@@ -111,7 +127,16 @@ riders stay near). Your own formations are never moved, but an allied AI army de
 big line still gets help against a group a fifth of its size (it judges as if it had at most 100 men). In a small
 army with no free formation, the main line may step out to help its own archers when they are attacked right next to
 it and no other enemy infantry is near, and goes back to its place soon after. Formations holding a choke point or a
-hedgehog and the hidden reserve keep their jobs.
+hedgehog keep their jobs.
+
+**Armies with little or no infantry.** An army whose infantry is less than about a quarter of its strength does
+not build its plan round an infantry line, and a handful of men of one kind (under about 10% and 60 men) is never
+treated as a main body. A defending army of mostly archers picks a spot and stands there, shooting and fighting in
+place instead of backing away endlessly. What infantry it has stands just in front of the archers and charges
+enemy infantry that comes within 40 m; a few riders or horse archers ride beside the main body instead of going
+off on their own. An attacker whose arrows can't hurt the enemy, for example a shield wall, eventually closes in
+instead of shooting forever. Armies heavy on cavalry and horse archers also get their own handling; normal mixed
+armies fight as before.
 
 ## Infantry
 
@@ -124,8 +149,18 @@ These pacing rules also apply to your own formations when you give them a Move o
 enemy, an AI infantry formation of 30 or more men picks its own arrangement: a **shield wall** if most men carry
 a large shield, **loose** order if most carry two-handed weapons, otherwise a **line**.
 
+**Charging in formation.** AI infantry marches up in formation and breaks into the charge only within 40 m of
+its target (about 10 m for a shield wall, square or circle), so it arrives as a block instead of a tired crowd.
+Your own foot formations do the same when you order a charge from far away. Charging men keep pace with
+comrades running ahead of them, stop a step short of the man in front, and fight the formation they charged
+instead of scattering after passing horsemen. In smaller armies the infantry stays in one block instead of
+splitting into several small ones.
+
 **Bracing against cavalry.** When enemy cavalry within 150 m charges an AI infantry formation that is not yet
-fighting, the infantry stops, forms a shield wall and turns to face the horsemen.
+fighting, the infantry stops, forms a shield wall and turns to face the horsemen. A handful of riders (fewer than
+5, or under a tenth of the infantry's men) is not enough to make it brace. Infantry does not chase cavalry it
+can't catch: it holds its formation facing the riders and fights them when they come in, but keeps fighting
+enemy infantry that is already on it.
 
 **Javelin volleys.** When an AI infantry formation is busy throwing javelins at a nearby enemy, it holds its
 ground (or steps back a little) to finish its volley before closing in.
@@ -167,12 +202,14 @@ how long each decision is held and how much each choice is favored.
 
 ## Archers
 
-**Skirmishing.** Once the battle is joined, AI archers keep to an effective shooting distance. They close in
-until they are in range, shoot, and pull back when the enemy gets too close, provided they have infantry to hide
-behind. Each formation approaches from a slightly different angle. If the enemy has only cavalry left, the
-archers stand and shoot. If an army is almost all archers, they simply charge.
+**After contact.** Once the lines meet, AI archers stand and shoot from one place with a clear view instead of
+running back and forth. They stand their ground against cavalry and horse archers, take cover beside or behind
+their infantry from enemy infantry, and shoot back at enemy archers. They pick line or loose order by the
+situation and form a loose ring when surrounded.
 
-**Before contact,** archers stand just behind their own infantry and shoot over it.
+**Before contact,** archers stand just behind their own infantry, about 4 ranks deep, and shoot over it.
+Attacking archers move with their army and face the way it advances. Fewer than 30 archers stay in one group
+instead of splitting into two.
 
 **Holding fire out of reach** (needs RBM Combat). AI bowmen, crossbowmen, slingers and javelin throwers do not
 shoot at targets their missiles cannot physically reach.
@@ -188,16 +225,18 @@ fewer arrows left joins the infantry, and a rider with a bow and ammunition join
 
 ## Cavalry
 
-**Repeated charges.** AI cavalry charges the enemy's infantry first, then its archers. Riders ride through the
-enemy, carry on past, then reform and charge again. If they get stuck in melee for several seconds, they pull
-out. They reform quickly, and cut the reform short if they come under fire or an enemy approaches. They are more
-eager to charge downhill, and less eager to charge other cavalry.
+**Charges.** AI cavalry charges the enemy's infantry first, then its archers. It rides in formation until
+about 35 m from its target and only then breaks into the charge. Riders ride through the enemy, carry on past,
+then regroup on open ground before charging again, and keep their target instead of switching
+mid-fight. If they get stuck in melee for several seconds, they pull out. Under fire they charge again only once
+regrouped. They are more eager to charge downhill, and less eager to charge other cavalry.
 
 **Flank guards.** Before contact, cavalry guards the flanks of the main infantry, out to the side and somewhat
 forward. It only charges enemy cavalry within about 70 m of its post, or any enemy within about 35 m; horse
 archers and arrow fire do not draw it out. The charge is called off when the enemy pulls away, when the riders
 get about 60 m from their post or start to scatter, or after 25 seconds. The riders then regroup at the post and
-wait 5 seconds before they can charge again.
+wait 5 seconds before they can charge again. With no room on their flank (map edge, water) they wait behind the
+infantry, and once their own infantry is gone they attack.
 
 **Embolon** (Empire). Heavy cavalry forms a wedge in front of the advancing infantry before the battle is
 joined.
@@ -224,7 +263,10 @@ infantry, dash forward to throwing range, throw for a few seconds, fall back, an
 ## Defending
 
 A defending formation holds a position and freezes there, facing the enemy, once the enemy is within 200 m.
-Defensive positions are kept away from the map edge.
+Defensive positions are kept away from the map edge. Holding lines are hard to bait: small groups, distant
+archers and passing riders don't draw them out. They fight in place, charge only real infantry that reaches
+them and return to their post afterwards. Defending cavalry reserves wait behind their line and ride out after
+your horsemen only when strong enough, staying close to their army.
 
 ## Reinforcements and rallying
 
