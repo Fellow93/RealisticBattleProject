@@ -31,6 +31,7 @@ namespace RBMConfig
 
         // The online player manual the "RBM Manual" badge (under the changelog badge) opens.
         private const string ManualUrl = "https://fellow93.github.io/RealisticBattleProject/";
+        private const string PatreonUrl = "https://www.patreon.com/cw/Philozoraptor";
 
         // The native menu layer is 1 and its brightness/exposure prompts 2. The badge shares the menu's order
         // (they never overlap) so a first-run brightness prompt still covers it; the modal viewer goes above both.
@@ -138,7 +139,7 @@ namespace RBMConfig
             string newest = NewestVersion();
             bool unseen = newest != null && !string.Equals(newest, RBMConfig.lastSeenChangelogVersion, StringComparison.Ordinal);
 
-            _badgeVM = new RBMChangelogBadgeVM(() => _openRequested = true, OpenManual) { HasUnseen = unseen };
+            _badgeVM = new RBMChangelogBadgeVM(() => _openRequested = true, OpenManual, OpenPatreon) { HasUnseen = unseen };
             _badgeLayer = new GauntletLayer("RBMChangelogBadge", BadgeLayerOrder);
             _badgeLayer.LoadMovie(BadgeMovie, _badgeVM);
             // Mouse only, like the native menu layer: the badge never takes keyboard focus from the menu.
@@ -228,13 +229,23 @@ namespace RBMConfig
         // the click instead of being deferred to Tick.
         private static void OpenManual()
         {
+            OpenUrl(ManualUrl);
+        }
+
+        private static void OpenPatreon()
+        {
+            OpenUrl(PatreonUrl);
+        }
+
+        private static void OpenUrl(string url)
+        {
             try
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(ManualUrl) { UseShellExecute = true });
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
             }
             catch (Exception e)
             {
-                TaleWorlds.Library.Debug.Print("[RBM] Could not open the manual " + ManualUrl + ": " + e.Message);
+                TaleWorlds.Library.Debug.Print("[RBM] Could not open " + url + ": " + e.Message);
             }
         }
 

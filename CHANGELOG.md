@@ -2,6 +2,9 @@
 
 ## v4.8.1 (changes since v4.8.0)
 
+### Other
+- The title screen has a "Support RBM on Patreon" button under "RBM Manual"; it opens the RBM Patreon page in your browser.
+
 ### Campaign
 - Fixed: your caravans' income was stuck at 0. They pay out from the first day again and no longer sink all their money into cargo, and RBM's supply caravans are no longer listed among your caravans.
 - Fixed: after you win a field battle, enemies killed or routed no longer add extra wounded and prisoners to the defeated party.

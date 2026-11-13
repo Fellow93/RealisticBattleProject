@@ -254,15 +254,18 @@ namespace RBMConfig
     {
         private readonly Action _onOpen;
         private readonly Action _onOpenManual;
+        private readonly Action _onOpenPatreon;
 
         private string _badgeText;
         private string _manualText;
+        private string _patreonText;
         private bool _hasUnseen;
 
-        internal RBMChangelogBadgeVM(Action onOpen, Action onOpenManual)
+        internal RBMChangelogBadgeVM(Action onOpen, Action onOpenManual, Action onOpenPatreon)
         {
             _onOpen = onOpen;
             _onOpenManual = onOpenManual;
+            _onOpenPatreon = onOpenPatreon;
             RefreshValues();
         }
 
@@ -271,6 +274,19 @@ namespace RBMConfig
             base.RefreshValues();
             BadgeText = new TextObject("{=RBM_CHG_001}RBM Changelog").ToString();
             ManualText = new TextObject("{=RBM_CHG_006}RBM Manual").ToString();
+            PatreonText = new TextObject("{=RBM_CHG_007}Support RBM on Patreon").ToString();
+        }
+
+        public void ExecuteOpenPatreon()
+        {
+            _onOpenPatreon?.Invoke();
+        }
+
+        [DataSourceProperty]
+        public string PatreonText
+        {
+            get => _patreonText;
+            set { if (value != _patreonText) { _patreonText = value; OnPropertyChangedWithValue(value, "PatreonText"); } }
         }
 
         public void ExecuteOpen()

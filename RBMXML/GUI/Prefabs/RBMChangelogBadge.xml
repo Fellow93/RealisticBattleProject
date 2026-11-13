@@ -42,6 +42,18 @@
 							</Children>
 						</ButtonWidget>
 
+						<!-- Opens the RBM Patreon page in the browser. -->
+						<ButtonWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="46"
+									  HorizontalAlignment="Right" MarginTop="8"
+									  Brush="RBMChangelog.Badge" Command.Click="ExecuteOpenPatreon"
+									  DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+							<Children>
+								<TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent"
+											MarginLeft="22" MarginRight="22" DoNotAcceptEvents="true"
+											Brush="RBMChangelog.Badge.Text" Text="@PatreonText" />
+							</Children>
+						</ButtonWidget>
+
 					</Children>
 				</ListPanel>
 
