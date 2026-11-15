@@ -1,9 +1,14 @@
 # Changelog
 
-## v4.8.1 (changes since v4.8.0)
+## v4.8.2 (changes since v4.8.1)
 
 ### Other
 - The title screen has a "Support RBM on Patreon" button under "RBM Manual"; it opens the RBM Patreon page in your browser.
+
+### Combat
+- Fixed: a crash (ArgumentOutOfRangeException in CalculateVisualSpeeds) when a weapon was equipped or shown in a tooltip with a usage mode its item does not have, seen with other item mods.
+
+## v4.8.1 (changes since v4.8.0)
 
 ### Campaign
 - Fixed: your caravans' income was stuck at 0. They pay out from the first day again and no longer sink all their money into cargo, and RBM's supply caravans are no longer listed among your caravans.
@@ -45,7 +50,6 @@
 - Bows, crossbows and slings no longer change the weapon's stored stats during a battle to set their arrow speed. Shots fly the same, and a weapon's stats can no longer be left wrong if a battle ends abnormally.
 - Khuzait Archers now carry two quivers of 50 g bodkins and Khuzait Marksmen two of 70 g bodkins, instead of two arrow types of different weights each, which the AI could aim wrongly with.
 - Fixed: the Running Throw perk now adds damage only for the speed your run puts behind a throw. Before, it measured against the weapon's listed speed rather than its actual throw speed.
-- Fixed: a crash (ArgumentOutOfRangeException in CalculateVisualSpeeds) when a weapon was equipped or shown in a tooltip with a usage mode its item does not have, seen with other item mods.
 
 ## v4.8.0 (changes since v4.7.0)
 
