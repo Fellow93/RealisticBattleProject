@@ -86,7 +86,8 @@ namespace RBMCombat
             swingSpeedReal = -1;
             thrustSpeedReal = -1;
             handlingReal = -1;
-            if (!weapon.IsEmpty && weapon.Item != null && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
+            // GetWeaponWithUsageIndex throws on a usage index the item does not have (other mods' items, stale slot).
+            if (!weapon.IsEmpty && weapon.Item != null && weapon.Item.Weapons != null && weaponUsageIndex >= 0 && weaponUsageIndex < weapon.Item.Weapons.Count && weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex) != null)
             {
                 int swingSpeed = weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex);
                 int handling = weapon.GetModifiedHandlingForUsage(weaponUsageIndex);
