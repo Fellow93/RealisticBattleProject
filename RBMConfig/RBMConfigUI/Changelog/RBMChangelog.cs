@@ -32,6 +32,7 @@ namespace RBMConfig
         // The online player manual the "RBM Manual" badge (under the changelog badge) opens.
         private const string ManualUrl = "https://fellow93.github.io/RealisticBattleProject/";
         private const string PatreonUrl = "https://www.patreon.com/cw/RealisticBattleMod";
+        private const string DiscordUrl = "https://discord.com/invite/WujvQGJbs4";
 
         // The native menu layer is 1 and its brightness/exposure prompts 2. The badge shares the menu's order
         // (they never overlap) so a first-run brightness prompt still covers it; the modal viewer goes above both.
@@ -139,7 +140,7 @@ namespace RBMConfig
             string newest = NewestVersion();
             bool unseen = newest != null && !string.Equals(newest, RBMConfig.lastSeenChangelogVersion, StringComparison.Ordinal);
 
-            _badgeVM = new RBMChangelogBadgeVM(() => _openRequested = true, OpenManual, OpenPatreon) { HasUnseen = unseen };
+            _badgeVM = new RBMChangelogBadgeVM(() => _openRequested = true, OpenManual, OpenPatreon, OpenDiscord) { HasUnseen = unseen };
             _badgeLayer = new GauntletLayer("RBMChangelogBadge", BadgeLayerOrder);
             _badgeLayer.LoadMovie(BadgeMovie, _badgeVM);
             // Mouse only, like the native menu layer: the badge never takes keyboard focus from the menu.
@@ -235,6 +236,11 @@ namespace RBMConfig
         private static void OpenPatreon()
         {
             OpenUrl(PatreonUrl);
+        }
+
+        private static void OpenDiscord()
+        {
+            OpenUrl(DiscordUrl);
         }
 
         private static void OpenUrl(string url)

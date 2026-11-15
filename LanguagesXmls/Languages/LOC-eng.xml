@@ -618,6 +618,7 @@
 	<string id="RBM_CHG_005" text="The changelog could not be read." />
 	<string id="RBM_CHG_006" text="RBM Manual" />
 	<string id="RBM_CHG_007" text="Support RBM on Patreon" />
+	<string id="RBM_CHG_008" text="RBM Discord" />
 	<!-- Config Screen: RBM Debug & Logging Section Strings -->
 	<string id="RBM_DBG_001" text="RBM Debug &amp; Logging" />
 	<string id="RBM_DBG_002" text="Developer Mode" />

@@ -261,8 +261,24 @@ namespace RBMConfig
         private string _patreonText;
         private bool _hasUnseen;
 
-        internal RBMChangelogBadgeVM(Action onOpen, Action onOpenManual, Action onOpenPatreon)
+        private readonly Action _onOpenDiscord;
+        private string _discordText;
+
+        public void ExecuteOpenDiscord()
         {
+            _onOpenDiscord?.Invoke();
+        }
+
+        [DataSourceProperty]
+        public string DiscordText
+        {
+            get => _discordText;
+            set { if (value != _discordText) { _discordText = value; OnPropertyChangedWithValue(value, "DiscordText"); } }
+        }
+
+        internal RBMChangelogBadgeVM(Action onOpen, Action onOpenManual, Action onOpenPatreon, Action onOpenDiscord)
+        {
+            _onOpenDiscord = onOpenDiscord;
             _onOpen = onOpen;
             _onOpenManual = onOpenManual;
             _onOpenPatreon = onOpenPatreon;
@@ -275,6 +291,7 @@ namespace RBMConfig
             BadgeText = new TextObject("{=RBM_CHG_001}RBM Changelog").ToString();
             ManualText = new TextObject("{=RBM_CHG_006}RBM Manual").ToString();
             PatreonText = new TextObject("{=RBM_CHG_007}Support RBM on Patreon").ToString();
+            DiscordText = new TextObject("{=RBM_CHG_008}RBM Discord").ToString();
         }
 
         public void ExecuteOpenPatreon()

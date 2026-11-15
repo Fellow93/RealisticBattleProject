@@ -4,6 +4,10 @@
 
 ### Other
 - The title screen has a "Support RBM on Patreon" button under "RBM Manual"; it opens the RBM Patreon page in your browser.
+- The title screen has an "RBM Discord" button under it, which opens the RBM Discord invite in your browser.
+
+### Campaign
+- Fixed: a crash (NullReferenceException in DeploymentMissionController.SetupTeams) when watching an AI siege assault if RTS Camera did not take control of a troop.
 
 ### Combat
 - Fixed: a crash (ArgumentOutOfRangeException in CalculateVisualSpeeds) when a weapon was equipped or shown in a tooltip with a usage mode its item does not have, seen with other item mods.

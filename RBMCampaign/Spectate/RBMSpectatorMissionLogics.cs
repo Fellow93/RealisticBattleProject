@@ -3,6 +3,7 @@ using System.Reflection;
 using HarmonyLib;
 using SandBox.Missions.MissionLogics;
 using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.Core;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.ComponentInterfaces;
@@ -336,6 +337,25 @@ namespace RBMCampaign
         public RBMSpectatorSiegeBridge(bool previousCommandMode)
         {
             _previousCommandMode = previousCommandMode;
+        }
+
+        // Runs after RTSCamera's prefix and before SetupTeams derefs InitialPlayerAgent: if RTSCamera possessed
+        // nobody, stand in any living troop of the watched team so the deployment controller does not NRE.
+        public override void OnBattleSideSpawned(BattleSideEnum side)
+        {
+            Team team = Mission.PlayerTeam;
+            if (team == null || team.Side != side || Mission.InitialPlayerAgent != null)
+            {
+                return;
+            }
+            foreach (Agent agent in team.ActiveAgents)
+            {
+                if (agent.IsHuman && agent.IsActive())
+                {
+                    AccessTools.Field(typeof(Mission), "_initialPlayerAgent").SetValue(Mission, agent);
+                    return;
+                }
+            }
         }
 
         public override void OnRemoveBehavior()
