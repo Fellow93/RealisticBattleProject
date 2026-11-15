@@ -441,6 +441,8 @@ The honest list. Sorted by size.
 | Alley income | conjured | vanilla | `CalculateHeroIncomeFromAssets` adds a flat 30/day per owned alley to a gang leader's purse with no counterparty debit. It was net zero until the notable converter stopped destroying his surplus (below), and is now a real faucet: 30/day/alley, 60–120 a town. Closing it means charging the townspeople for the racket, which is a gameplay decision, not plumbing. |
 | Perk-based tax mints | conjured | vanilla | `Tollgates`, `TravelingRumors`, Naval `Salvage` add straight to `TradeTaxAccumulated` with no counterparty. Small. |
 | Player's starting gold | conjured | `RBMEconomyCampaignBehavior` | Deliberate, once: `CampaignStartingGoldMultiplier` (5×) on what character creation handed out. |
+| AI lords' starting gold | conjured | `RBMEconomyCampaignBehavior` | Deliberate, once on a new game: `AiLordStartingGoldMultiplier` (10×, a constant, not a setting) on vanilla's opening purse (leader 50k + 10k × tier, +50k ruler; other lords 10k). |
+| Mercenary company founding gold | conjured | `MercenaryCompanies.CreateCompany` | 40k × `AiLordStartingGoldMultiplier` = 400k, at every founding (respawns included). |
 | Worldgen seeding | conjured | `SettlementGoldFunnel`, `SettlementWealth` | Deliberate, once. `Town.OnInit` deals every town 20,000 through the same `ChangeGold` as everything else; the funnel books it as `Source.Seed` so it is not counted as a trade or charged a market fee. A new campaign then re-seeds citizen wealth, treasuries and village purses to the figures in §1.1. |
 
 ### Clamps that swallow a shortfall

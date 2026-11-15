@@ -227,8 +227,21 @@ namespace RBMCampaign
         /// new-game path alone, so it cannot rewrite an existing campaign's settlements. Those will
         /// converge on their own through the equilibrium term instead.
         /// </summary>
+        // Also applied to a mercenary company's founding gold (MercenaryCompanies.CreateCompany).
+        internal const float AiLordStartingGoldMultiplier = 10f;
+
         private void OnNewGameCreatedFollowUpEnd(CampaignGameStarter starter)
         {
+            // AI lords face the same repriced economy as the player, so their vanilla opening purse
+            // (TradeCampaignBehavior.InitializeTrade, already run by now) is scaled up too.
+            foreach (Hero hero in Hero.AllAliveHeroes)
+            {
+                if (hero.IsLord && hero.Clan != Clan.PlayerClan && hero.Gold > 0)
+                {
+                    hero.ChangeHeroGold((int)MathF.Round(hero.Gold * (AiLordStartingGoldMultiplier - 1f)));
+                }
+            }
+
             // Rebuild the countryside sums first. This hook runs after trade bounds are assigned, but
             // the cache may already hold a copy taken mid-worldgen, before castle villages had one.
             RBMProsperityEquilibrium.InvalidateHearthCache();

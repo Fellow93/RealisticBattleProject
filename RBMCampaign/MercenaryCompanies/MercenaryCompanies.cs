@@ -52,7 +52,7 @@ namespace RBMCampaign
         private const int CompanyTier = 3;
 
         // Gold the founding leader starts with: enough to pay his men for a while and buy tavern mercenaries.
-        private const int StartingGold = 40000;
+        private const int StartingGold = (int)(40000 * RBMEconomyCampaignBehavior.AiLordStartingGoldMultiplier);
 
         // Share of the party size limit a newly spawned company party is filled to (template + culture troops).
         private const float InitialFillShare = 0.6f;
