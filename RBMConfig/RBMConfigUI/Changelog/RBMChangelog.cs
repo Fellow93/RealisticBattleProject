@@ -31,7 +31,7 @@ namespace RBMConfig
 
         // The online player manual the "RBM Manual" badge (under the changelog badge) opens.
         private const string ManualUrl = "https://fellow93.github.io/RealisticBattleProject/";
-        private const string PatreonUrl = "https://www.patreon.com/cw/Philozoraptor";
+        private const string PatreonUrl = "https://www.patreon.com/cw/RealisticBattleMod";
 
         // The native menu layer is 1 and its brightness/exposure prompts 2. The badge shares the menu's order
         // (they never overlap) so a first-run brightness prompt still covers it; the modal viewer goes above both.
