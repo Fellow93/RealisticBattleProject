@@ -12,6 +12,7 @@
 
 ### Combat
 - Fixed: a crash (ArgumentOutOfRangeException in CalculateVisualSpeeds) when a weapon was equipped or shown in a tooltip with a usage mode its item does not have, seen with other item mods.
+- Fixed: the "duplicate key sequence 'dagger_blade_13_blunt'" error in the game log when loading RBM's crafting pieces.
 
 ## v4.8.1 (changes since v4.8.0)
 

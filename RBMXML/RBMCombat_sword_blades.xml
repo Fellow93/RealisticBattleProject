@@ -2515,34 +2515,6 @@
       <Material id="Iron6" count="3" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="dagger_blade_13_blunt"
-                 name="{=GFBFgA7R}Broad Blunt Dagger Blade"
-                 tier="2"
-                 piece_type="Blade"
-                 mesh="dagger_blade_13"
-                 length="29"
-                 weight="0.475"
-                 is_hidden="true">
-
-    <BladeData stack_amount="3"
-               physics_material="metal_weapon"
-               body_name="bo_knife_a"
-               holster_mesh="throwing_dagger_quiver_1"
-               holster_mesh_length="35.8">
-      <Thrust damage_type="Pierce"
-              damage_factor="0.8" />
-      <Swing damage_type="Cut"
-             damage_factor="0.6" />
-    </BladeData>
-    <Flags>
-      <Flag name="Civilian"
-            type="ItemFlags" />
-    </Flags>
-    <Materials>
-      <Material id="Iron3"
-                count="2" />
-    </Materials>
-  </CraftingPiece>
   <!-- #endregion -->
   <!-- #gladius -->
     <CraftingPiece id="dagger_blade_11" name="{=ykTYTbek}Throwing Knife Blade" tier="2" piece_type="Blade" mesh="dagger_blade_11" length="30" weight="0.250">
