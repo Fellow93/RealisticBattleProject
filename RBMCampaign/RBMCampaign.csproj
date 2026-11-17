@@ -464,6 +464,7 @@
     <Compile Include="Settlements\PrisonLabour.cs" />
     <Compile Include="UI\BuildingEffectTooltips.cs" />
     <Compile Include="UI\ProjectEffectHeaders.cs" />
+    <Compile Include="UI\RBMPlayerRoleNoticeBehavior.cs" />
     <Compile Include="Settlements\Construction.cs" />
     <Compile Include="Settlements\Construction.Materials.cs" />
     <Compile Include="Settlements\Construction.Patches.cs" />

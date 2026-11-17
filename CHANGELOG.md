@@ -7,6 +7,7 @@
 - The title screen has an "RBM Discord" button under it, which opens the RBM Discord invite in your browser.
 
 ### Campaign
+- A popup now tells you what RBM Campaign changes for your role (adventurer, mercenary, vassal or ruler): at the start of a new game, once when you load an existing save, and whenever your role changes.
 - AI lords now start a new campaign with 10x their usual gold, and a newly founded mercenary company starts with 10x as well. Existing lords and companies in a save are not changed.
 - Fixed: a crash (NullReferenceException in DeploymentMissionController.SetupTeams) when watching an AI siege assault if RTS Camera did not take control of a troop.
 

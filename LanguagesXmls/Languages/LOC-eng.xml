@@ -649,6 +649,24 @@
 	<string id="RBM_SPECTATE_008" text="An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it." />
 	<string id="RBM_CAMP_001" text="RBM Campaign: incompatible save" />
 	<string id="RBM_CAMP_002" text="This save was not started with RBM Campaign features enabled.{newline}{newline}The one-time economy setup (settlement treasuries, citizen wealth, village purses and starting prosperity) only runs when a campaign is CREATED with RBM Campaign on, and it cannot be applied to an existing save. This campaign will run with a half-built, unbalanced economy -- markets stuck poor, treasuries and prosperity wrong, spoils and upkeep skewed.{newline}{newline}To get the intended experience, start a NEW campaign with RBM Campaign enabled. If you want to continue playing THIS save, disable the RBM Campaign module in the RBM configuration menu and reload the save." />
+	<string id="RBM_CAMP_ROLE_000" text="RBM Campaign: you are an adventurer" />
+	<string id="RBM_CAMP_ROLE_001" text="Recruits cost a bounty of five days' wages plus 10%. You do not pay for their gear." />
+	<string id="RBM_CAMP_ROLE_002" text="Your men pay for the upkeep of their gear from their own spoils. You cover only what they cannot." />
+	<string id="RBM_CAMP_ROLE_003" text="No one pays you a stipend. You live off loot, trade and quests." />
+	<string id="RBM_CAMP_ROLE_010" text="RBM Campaign: you are a mercenary" />
+	<string id="RBM_CAMP_ROLE_011" text="Your employer pays you a daily stipend that grows with your influence and renown. Your field troops draw double wages, and your employer repays all of it while his treasury allows." />
+	<string id="RBM_CAMP_ROLE_012" text="Your men bank twice their wage into spoils." />
+	<string id="RBM_CAMP_ROLE_013" text="Your own cut of the loot is 1.5 times larger." />
+	<string id="RBM_CAMP_ROLE_014" text="Your men still pay for the upkeep of their gear from their own spoils. You cover only what they cannot." />
+	<string id="RBM_CAMP_ROLE_015" text="Recruits cost their full gear, a bounty of five days' wages and 10% on top." />
+	<string id="RBM_CAMP_ROLE_020" text="RBM Campaign: you are a vassal" />
+	<string id="RBM_CAMP_ROLE_021" text="Recruits are free in your own fiefs. Elsewhere in your realm you pay for their gear and a bounty of five days' wages; outside it, 10% more." />
+	<string id="RBM_CAMP_ROLE_022" text="You pay the whole upkeep of your men's gear from your own gold. Their spoils no longer cover it." />
+	<string id="RBM_CAMP_ROLE_023" text="When you gather an army you can hire mercenary companies from the army screen." />
+	<string id="RBM_CAMP_ROLE_030" text="RBM Campaign: you are a ruler" />
+	<string id="RBM_CAMP_ROLE_031" text="Recruits are free in every fief of your realm." />
+	<string id="RBM_CAMP_ROLE_032" text="You receive a fifth of the coin minted from silver in your realm's towns." />
+	<string id="RBM_CAMP_ROLE_033" text="You pay the stipends and the doubled troop wages of the mercenary clans your kingdom employs." />
 	<!-- RBMCombat_WS_items.xml Strings -->
 	<string id="RBM_WS_001" text="Master Assassin Boots" />
 	<string id="RBM_WS_002" text="Master Assassin Armor" />

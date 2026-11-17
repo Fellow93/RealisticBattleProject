@@ -268,6 +268,7 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMMercenaryCompanyBehavior());
                 // Diagnostic only (logs/stuckparties); idles unless Stuck Party Logging is on.
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new StuckPartyLogBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMCampaign.RBMPlayerRoleNoticeBehavior());
                 // Registered last so it wins GetGameModel and receives whatever workshop model was
                 // already in place (vanilla's, or NavalDLC's) as its BaseModel to delegate to.
                 ((CampaignGameStarter)gameStarterObject).AddModel(new RBMCampaign.RBMWorkshopModel());
