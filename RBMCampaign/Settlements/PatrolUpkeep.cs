@@ -2042,6 +2042,17 @@ namespace RBMCampaign
             if (patrol != null && patrol.IsActive)
             {
                 bool atHome = patrol.CurrentSettlement == settlement;
+                // Vanilla hands patrols item loot but they never eat, sell or drop it: the load only grows until
+                // the patrol is overburdened and crawls.
+                if (patrol.ItemRoster != null && patrol.ItemRoster.Count > 0)
+                {
+                    if (PatrolLog.IsEnabled)
+                    {
+                        PatrolLog.Log("LOOT", settlement, "dropped " + patrol.ItemRoster.Count + " item stacks, "
+                            + patrol.TotalWeightCarried.ToString("0") + " weight");
+                    }
+                    patrol.ItemRoster.Clear();
+                }
                 if (_pendingStandDown.Remove(patrol) && atHome && patrol.MemberRoster.TotalManCount < MinSize
                     && CanTouchRosters(settlement, patrol))
                 {

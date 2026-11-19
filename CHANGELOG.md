@@ -9,6 +9,7 @@
 ### Campaign
 - A popup now tells you what RBM Campaign changes for your role (adventurer, mercenary, vassal or ruler): at the start of a new game, once when you load an existing save, and whenever your role changes.
 - AI lords now start a new campaign with 10x their usual gold, and a newly founded mercenary company starts with 10x as well. Existing lords and companies in a save are not changed.
+- Fixed: long-lived patrols slowed to a crawl. They kept every piece of battle loot forever and ended up overburdened; a patrol now drops what it carries each day (existing patrols recover on the next day).
 - Fixed: a crash (NullReferenceException in DeploymentMissionController.SetupTeams) when watching an AI siege assault if RTS Camera did not take control of a troop.
 
 ### Combat
