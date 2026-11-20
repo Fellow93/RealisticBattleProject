@@ -12,6 +12,9 @@
 - Fixed: long-lived patrols slowed to a crawl. They kept every piece of battle loot forever and ended up overburdened; a patrol now drops what it carries each day (existing patrols recover on the next day).
 - Fixed: a crash (NullReferenceException in DeploymentMissionController.SetupTeams) when watching an AI siege assault if RTS Camera did not take control of a troop.
 
+### AI
+- Fixed: the "Text with id str_formation_ai_behavior_text doesn't exist! Variation: RBMBehaviorArcherStand" error in the combat log (and the same one for foot troops following the cavalry). It was only a missing message text; the AI itself was not affected.
+
 ### Combat
 - Fixed: a crash (ArgumentOutOfRangeException in CalculateVisualSpeeds) when a weapon was equipped or shown in a tooltip with a usage mode its item does not have, seen with other item mods.
 - Fixed: the "duplicate key sequence 'dagger_blade_13_blunt'" error in the game log when loading RBM's crafting pieces.

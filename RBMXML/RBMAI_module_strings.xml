@@ -12,6 +12,8 @@
 	<string id="str_formation_ai_behavior_text.RBMBehaviorHedgehog" text="{=RBM_STR_018}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are forming a hedgehog." />
 	<string id="str_formation_ai_behavior_text.RBMBehaviorReservePlug" text="{=RBM_STR_019}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are waiting in reserve." />
 	<string id="str_formation_ai_behavior_text.RBMBehaviorHorseArcherSkirmish" text="{=RBM_STR_021}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are circling and shooting." />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorArcherStand" text="{=RBM_STR_027}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are standing their ground and shooting." />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorFollowCavalry" text="{=RBM_STR_028}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are following the cavalry." />
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorHorseArcherSkirmish" text="{=RBM_STR_022}Circle the enemy and shoot" />
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorArcherSkirmish" text="{=RBM_STR_005}Skirmish" />
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorForwardSkirmish" text="{=RBM_STR_006}Do hit and run on enemy." />
