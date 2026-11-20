@@ -105,7 +105,10 @@ namespace RBMAI
             }
             if (__instance.OrderEnum == MovementOrder.MovementOrderEnum.Advance)
             {
-                Formation enemyFormation = RBMAI.Utilities.FindSignificantEnemy(f, true, true, false, false, false, true);
+                // TargetFormation is only ever set by a player order: the pick wins.
+                Formation enemyFormation = (f.TargetFormation != null && f.TargetFormation.CountOfUnits > 0)
+                    ? f.TargetFormation
+                    : RBMAI.Utilities.FindSignificantEnemy(f, true, true, false, false, false, true);
                 FormationQuerySystem querySystem = f.QuerySystem;
                 FormationQuerySystem enemyQuerySystem;
                 if (enemyFormation != null)

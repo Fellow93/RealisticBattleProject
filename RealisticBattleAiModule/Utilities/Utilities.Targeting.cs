@@ -36,7 +36,8 @@ namespace RBMAI
                         Formation focus = movementOrder.TargetFormation;
                         if (focus != null && focus.CountOfUnits > 0)
                         {
-                            Agent focused = RBMAI.Utilities.NearestAgentFocused(agent.Position.AsVec2, formations, focus);
+                            // formation.TargetFormation is set only by a player's pick (null for AI).
+                            Agent focused = RBMAI.Utilities.NearestAgentFocused(agent.Position.AsVec2, formations, focus, playerPick: formation.TargetFormation == focus);
                             if (focused != null)
                             {
                                 return focused;
