@@ -769,9 +769,6 @@
 					slot="Item0"
 					id="Item.berserkr_axe" />
 				<equipment
-					slot="Item1"
-					id="Item.northern_spear_4_t5" />
-				<equipment
 					slot="Item2"
 					id="Item.nord_throwing_axe_1_t5" />
 				<equipment
@@ -797,9 +794,6 @@
 				<equipment
 					slot="Item0"
 					id="Item.nord_twohanded_axe_3_t5" />
-				<equipment
-					slot="Item1"
-					id="Item.northern_spear_4_t5" />
 				<equipment
 					slot="Item2"
 					id="Item.nord_throwing_axe_1_t5" />
@@ -937,9 +931,6 @@
 				<equipment
 					slot="Item0"
 					id="Item.nord_twohanded_axe_1_t3" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Item2"
 					id="Item.northern_javelin_2_t3" />
@@ -1106,9 +1097,6 @@
 					slot="Item0"
 					id="Item.nord_twohanded_axe_5_t4" />
 				<equipment
-					slot="Item1"
-					id="Item.nord_spear_1_t4" />
-				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_4_a" />
 				<equipment
@@ -1244,9 +1232,6 @@
 				<equipment
 					slot="Item0"
 					id="Item.nord_twohanded_axe_4_t5" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_spear_2_t5" />
 				<equipment
 					slot="Item2"
 					id="Item.northern_javelin_3_t4" />
@@ -1442,9 +1427,6 @@
 					slot="Item0"
 					id="Item.nord_twohanded_axe_3_t5" />
 				<equipment
-					slot="Item1"
-					id="Item.nord_spear_3_t5" />
-				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_5_b" />
 				<equipment
@@ -1624,9 +1606,6 @@
 				<equipment
 					slot="Item0"
 					id="Item.nord_long_two_handed_t6" />
-				<equipment
-					slot="Item1"
-					id="Item.nord_spear_3_t5" />
 				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_5_b" />
@@ -2180,9 +2159,6 @@
 					slot="Item2"
 					id="Item.nord_shield_tier_4_b" />
 				<equipment
-					slot="Item3"
-					id="Item.nord_spear_2_t3" />
-				<equipment
 					slot="Body"
 					id="Item.nord_king_armor" />
 				<equipment
@@ -2209,9 +2185,6 @@
 					slot="Item2"
 					id="Item.nord_shield_tier_4_b" />
 				<equipment
-					slot="Item3"
-					id="Item.nord_spear_2_t3" />
-				<equipment
 					slot="Body"
 					id="Item.nord_king_armor_b" />
 				<equipment
@@ -2237,9 +2210,6 @@
 				<equipment
 					slot="Item2"
 					id="Item.nord_shield_tier_4_b" />
-				<equipment
-					slot="Item3"
-					id="Item.nord_spear_2_t3" />
 				<equipment
 					slot="Body"
 					id="Item.nord_king_armor_c" />
@@ -4298,8 +4268,6 @@
                  id="Item.strapped_round_shield" />
       <equipment slot="Item2"
                  id="Item.northern_javelin_3_t4" />
-      <equipment slot="Item3"
-                 id="Item.northern_spear_4_t5" />
       <equipment slot="Head"
                  id="Item.sturgian_lord_helmet_b" />
       <equipment slot="Cape"

@@ -12,6 +12,7 @@
 - Fixed: a crash (NullReferenceException in DeploymentMissionController.SetupTeams) when watching an AI siege assault if RTS Camera did not take control of a troop.
 
 ### AI
+- Fixed (War Sails): Nord two-handed axe troops (Berserkir, Marauder, and the two-hander variants of Ungmann, Thegn, Jarlsmann, Hirdmann and Huscarl) and the two-handed axe Sturgian marine stood passive in melee. They carried a spare spear the AI kept reaching for and was refused; that spear is removed from those kits.
 - Fixed: the "Text with id str_formation_ai_behavior_text doesn't exist! Variation: RBMBehaviorArcherStand" error in the combat log (and the same one for foot troops following the cavalry). It was only a missing message text; the AI itself was not affected.
 
 ### Combat
