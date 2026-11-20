@@ -1,10 +1,9 @@
 # Changelog
 
-## v4.8.2 (changes since v4.8.1)
+## v4.8.3 (changes since v4.8.2)
 
 ### Other
-- The title screen has a "Support RBM on Patreon" button under "RBM Manual"; it opens the RBM Patreon page in your browser.
-- The title screen has an "RBM Discord" button under it, which opens the RBM Discord invite in your browser.
+- The title screen has an "RBM Discord" button under "Support RBM on Patreon", which opens the RBM Discord invite in your browser.
 
 ### Campaign
 - A popup now tells you what RBM Campaign changes for your role (adventurer, mercenary, vassal or ruler): at the start of a new game, once when you load an existing save, and whenever your role changes.
@@ -16,8 +15,15 @@
 - Fixed: the "Text with id str_formation_ai_behavior_text doesn't exist! Variation: RBMBehaviorArcherStand" error in the combat log (and the same one for foot troops following the cavalry). It was only a missing message text; the AI itself was not affected.
 
 ### Combat
-- Fixed: a crash (ArgumentOutOfRangeException in CalculateVisualSpeeds) when a weapon was equipped or shown in a tooltip with a usage mode its item does not have, seen with other item mods.
 - Fixed: the "duplicate key sequence 'dagger_blade_13_blunt'" error in the game log when loading RBM's crafting pieces.
+
+## v4.8.2 (changes since v4.8.1)
+
+### Other
+- The title screen has a "Support RBM on Patreon" button under "RBM Manual"; it opens the RBM Patreon page in your browser.
+
+### Combat
+- Fixed: a crash (ArgumentOutOfRangeException in CalculateVisualSpeeds) when a weapon was equipped or shown in a tooltip with a usage mode its item does not have, seen with other item mods.
 
 ## v4.8.1 (changes since v4.8.0)
 
