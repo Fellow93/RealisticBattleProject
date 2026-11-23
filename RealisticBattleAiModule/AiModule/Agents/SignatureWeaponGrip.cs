@@ -29,7 +29,8 @@ namespace RBMAI
                 None,
                 // Shield and sidearm are allowed once an enemy is within WeaponPreference's close radius.
                 SidearmWhenClose,
-                // Never the shield.
+                // No shield with the signature weapon. On foot with a shield and throwing weapons left, he stands behind
+                // the shield with a throwing weapon in hand until his target is inside ThrowWindowMin.
                 NoShieldThrowOnly
             }
 
@@ -210,6 +211,9 @@ namespace RBMAI
             private volatile bool _throwingWeaponInHandOutOfWindow;
             private volatile bool _inThrowWindow;
             private volatile int _throwingSlotMask;
+            // Shield posture: throwing weapon + shield is the default stance (shield up against arrows).
+            private volatile bool _shieldPosture;
+            private volatile int _drawSlotMask;
             // Swimming (NavalDLC sheathes both hands and clears CanAttack when a man goes overboard), climbing a
             // ladder/climbing machine (ClimbingMachineDetachment also clears CanAttack) or otherwise driven by a game
             // object: native input passes through untouched,
@@ -217,11 +221,17 @@ namespace RBMAI
             private volatile bool _suspended;
 
             // Throwing weapons are only allowed out while the current target is at throwing distance; otherwise the
-            // engine periodically draws the axe with nothing to throw at. No upper bound for a rider: the native
+            // engine periodically draws the axe with nothing to throw at. No upper bound in the shield posture, nor for
+            // a rider: the native
             // mounted AI draws javelins well beyond ThrowWindowMax, and swapping them back to the lance there made
             // Vanguard Faris dither on a charge and stand still after taking a position.
             private const float ThrowWindowMin = 6f;
             private const float ThrowWindowMax = 25f;
+            private const float ShieldReturnDistance = 8f;
+            private const float ShieldReturnDelay = 4f;
+            // Main thread only.
+            private bool _meleeLatched;
+            private float _awayTime;
 
             public SignatureWeaponGripComponent(Agent agent, SignatureWeaponGrip.Profile profile, EquipmentIndex mainSlot, EquipmentIndex shieldSlot) : base(agent)
             {
@@ -236,6 +246,19 @@ namespace RBMAI
                 // Signature weapon broken or lost: fight with whatever is left, as normal.
                 if (!_hasMainWeapon || _suspended)
                 {
+                    return;
+                }
+                if (_shieldPosture)
+                {
+                    eventFlag &= ~(Agent.EventControlFlag.Sheath0 | SignatureWeaponGrip.WieldFlag(_mainSlot));
+                    int draw = _drawSlotMask;
+                    for (int i = 0; i < SignatureWeaponGrip.SlotCount; i++)
+                    {
+                        if ((draw & (1 << i)) != 0)
+                        {
+                            eventFlag |= SignatureWeaponGrip.WieldFlag(i);
+                        }
+                    }
                     return;
                 }
                 if (_shieldSlot >= 0)
@@ -291,33 +314,78 @@ namespace RBMAI
                 _mainHandSlot = (int)inHand;
 
                 int throwingMask = 0;
+                int firstThrowingSlot = -1;
                 for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.ExtraWeaponSlot; i++)
                 {
                     MissionWeapon weapon = Agent.Equipment[i];
-                    if (!weapon.IsEmpty && SignatureWeaponGrip.IsThrowingWeapon(weapon.Item))
+                    if (!weapon.IsEmpty && weapon.Amount > 0 && SignatureWeaponGrip.IsThrowingWeapon(weapon.Item))
                     {
                         throwingMask |= 1 << (int)i;
+                        if (firstThrowingSlot < 0)
+                        {
+                            firstThrowingSlot = (int)i;
+                        }
                     }
                 }
                 _throwingSlotMask = throwingMask;
 
-                bool inThrowWindow = false;
+                bool canShieldPosture = _profile == SignatureWeaponGrip.Profile.NoShieldThrowOnly && _shieldSlot >= 0 &&
+                    firstThrowingSlot >= 0 && !Agent.HasMount && !Agent.Equipment[(EquipmentIndex)_shieldSlot].IsEmpty;
+
                 Agent target = Agent.GetTargetAgent();
-                if (target != null && target.IsActive())
+                bool hasTarget = target != null && target.IsActive();
+                float distance = hasTarget ? Agent.Position.Distance(target.Position) : float.MaxValue;
+                bool inThrowWindow = hasTarget && distance >= ThrowWindowMin && (distance <= ThrowWindowMax || Agent.HasMount);
+                if (canShieldPosture)
                 {
-                    float distance = Agent.Position.Distance(target.Position);
-                    inThrowWindow = distance >= ThrowWindowMin && (distance <= ThrowWindowMax || Agent.HasMount);
+                    // Two-hander at once when the target is close; back to the shield (the default, also with no
+                    // target) only after the target has stayed away for a while, so a target hovering at the
+                    // threshold or switching in a melee does not swap weapons back and forth.
+                    if (distance < ThrowWindowMin)
+                    {
+                        _meleeLatched = true;
+                        _awayTime = 0f;
+                    }
+                    else if (_meleeLatched)
+                    {
+                        _awayTime = distance >= ShieldReturnDistance ? _awayTime + dt : 0f;
+                        _meleeLatched = _awayTime < ShieldReturnDelay;
+                    }
+                    inThrowWindow = !_meleeLatched;
                 }
                 _inThrowWindow = inThrowWindow;
 
+                bool throwingInHand = inHand != EquipmentIndex.None && (throwingMask & (1 << (int)inHand)) != 0;
                 bool throwingOutOfWindow = false;
-                if (inHand != EquipmentIndex.None && (throwingMask & (1 << (int)inHand)) != 0)
+                if (throwingInHand)
                 {
                     WeaponComponentData usage = Agent.Equipment[inHand].CurrentUsageItem;
                     bool meleeMode = usage != null && !usage.IsRangedWeapon;
                     throwingOutOfWindow = meleeMode || !inThrowWindow;
+                    if (meleeMode && canShieldPosture)
+                    {
+                        _meleeLatched = true;
+                        _awayTime = 0f;
+                    }
                 }
                 _throwingWeaponInHandOutOfWindow = throwingOutOfWindow;
+
+                // Throwing weapon first; the shield follows once the two-hander is out of the hands.
+                int drawMask = 0;
+                bool shieldPosture = canShieldPosture && inThrowWindow && !throwingOutOfWindow;
+                if (shieldPosture)
+                {
+                    if (!throwingInHand)
+                    {
+                        drawMask = 1 << firstThrowingSlot;
+                    }
+                    else if ((int)Agent.GetOffhandWieldedItemIndex() != _shieldSlot)
+                    {
+                        drawMask = 1 << _shieldSlot;
+                    }
+                }
+                _drawSlotMask = drawMask;
+                _shieldPosture = shieldPosture;
             }
         }
 
