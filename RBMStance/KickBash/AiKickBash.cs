@@ -136,6 +136,10 @@ namespace RBMStance
             // Knockdown chance multiplier against a man a kick/bash landed on within KickStaggerSeconds.
             public static float KnockDownRecentKickMultiplier = 1.5f;
 
+            // Share of the engine's kick/bash blow magnitude (vanilla 1-2) that is kept: only the native hit reaction
+            // reads it, damage and posture come from the collision data. TUNE in game: untested guess.
+            public static float BlowMagnitudeFactor = 0.1f;
+
             public const float CooldownMin = 4f;
             public const float CooldownMax = 8f;
 
@@ -693,6 +697,7 @@ namespace RBMStance
                 {
                     return;
                 }
+                __result.BaseMagnitude *= AiKickBash.BlowMagnitudeFactor;
                 // A bash caught on the shield does nothing to the man behind it.
                 if (collisionData.AttackBlockedWithShield)
                 {
