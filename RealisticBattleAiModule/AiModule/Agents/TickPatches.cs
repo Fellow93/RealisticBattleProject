@@ -242,7 +242,9 @@ namespace RBMAI
                 RangedReachGate.TickRangedReach(___Agent, currentTime);
                 // Ranged AI judges range without its ammo limit. Set here on the main thread (native write), not in the
                 // SetAiRelatedProperties postfix, which can run on a parallel worker. Re-checked each tick.
-                if (___Agent.IsRangedCached && ___Agent.IsActive())
+                // Only with Combat on: there RangedReachGate caps the range; vanilla missiles have no such cap and
+                // archers would loose at the engine's full ballistic range.
+                if (RBMConfig.RBMConfig.rbmCombatEnabled && ___Agent.IsRangedCached && ___Agent.IsActive())
                 {
                     Agent.AISpecialCombatModeFlags combatFlags = ___Agent.GetScriptedCombatFlags();
                     if ((combatFlags & Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation) == 0)
