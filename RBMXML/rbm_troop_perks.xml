@@ -913,8 +913,8 @@
     <Perk id="ThrowingLastHit"/>
   </Troop>
   <Troop id="sturgian_hardened_brigand">
-    <Perk id="CrossbowWindWinder"/>
-    <Perk id="CrossbowFletcher"/>
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowDeepQuivers"/>
   </Troop>
   <Troop id="sturgia_marine_t4">
     <Perk id="PiratesProwess"/>
@@ -942,9 +942,9 @@
     <Perk id="OneHandedDeadlyPurpose"/>
   </Troop>
   <Troop id="sturgian_horse_raider">
-    <Perk id="CrossbowWindWinder"/>
-    <Perk id="CrossbowFletcher"/>
-    <Perk id="CrossbowCounterFire"/>
+    <Perk id="BowDeepQuivers"/>
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowSkirmishPhaseMaster"/>
   </Troop>
   <Troop id="sturgia_marine_t5">
     <Perk id="PiratesProwess"/>

@@ -12296,7 +12296,7 @@
       <skill id="Polearm"
              value="90" />
       <skill id="Bow"
-             value="45" />
+             value="110" />
       <skill id="Crossbow"
              value="110" />
       <skill id="Throwing"
@@ -12308,11 +12308,11 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_a" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
                  id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
-                 id="Item.GRE_bolt_d" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
                  id="Item.ridged_sabre_sword_t4" />
       <equipment slot="Head"
@@ -12332,11 +12332,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_a" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
                  id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
-                 id="Item.GRE_bolt_d" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
                  id="Item.pointed_falchion_sword_t4" />
       <equipment slot="Head"
@@ -12356,11 +12356,11 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.crossbow_a" />
+                 id="Item.composite_bow" />
       <equipment slot="Item1"
                  id="Item.northern_horsemans_shield" />
       <equipment slot="Item2"
-                 id="Item.GRE_bolt_d" />
+                 id="Item.GRE_bodkin_arrows_b" />
       <equipment slot="Item3"
                  id="Item.morningstar_mace_t3" />
       <equipment slot="Head"
@@ -12404,7 +12404,7 @@
       <skill id="Polearm"
              value="120" />
       <skill id="Bow"
-             value="60" />
+             value="140" />
       <skill id="Crossbow"
              value="140" />
       <skill id="Throwing"
@@ -12418,9 +12418,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.crossbow_e" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
-                 id="Item.GRE_bolt_b" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_b_open" />
       <equipment slot="Body"
@@ -12442,9 +12442,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.crossbow_e" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
-                 id="Item.GRE_bolt_b" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Head"
                  id="Item.sturgian_helmet_b_open" />
       <equipment slot="Body"
@@ -12466,9 +12466,9 @@
       <equipment slot="Item1"
                  id="Item.heavy_horsemans_kite_shield" />
       <equipment slot="Item2"
-                 id="Item.crossbow_e" />
+                 id="Item.steppe_heavy_bow" />
       <equipment slot="Item3"
-                 id="Item.GRE_bolt_b" />
+                 id="Item.GRE_vlandic_arrows" />
       <equipment slot="Head"
                  id="Item.northern_goggled_helmet" />
       <equipment slot="Body"

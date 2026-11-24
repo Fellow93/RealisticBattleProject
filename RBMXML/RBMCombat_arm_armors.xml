@@ -206,4 +206,56 @@
 		</ItemComponent>
 		<Flags />
 	</Item>
+	<Item
+		id="mail_mitten_e"
+		name="{=mIMhRKYa}Wrapped Mail Mittens"
+		mesh="mail_mitten_e"
+		culture="Culture.aserai"
+		weight="1.5"
+		appearance="3"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="46"
+				covers_hands="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags
+			UseTeamColor="true" />
+	</Item>
+	<Item
+		id="mail_mitten_f"
+		name="{=anDqDqQJ}Mail Mittens with Bronze Plate"
+		mesh="mail_mitten_f"
+		culture="Culture.khuzait"
+		weight="1.8"
+		appearance="4"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="55"
+				covers_hands="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags />
+	</Item>
+	<Item
+		id="mail_mitten_h"
+		name="{=jPcTFkUi}Mail Mittens with Plate Guard"
+		mesh="mail_mitten_h"
+		culture="Culture.sturgia"
+		weight="1.7"
+		appearance="3"
+		Type="HandArmor">
+		<ItemComponent>
+			<Armor
+				arm_armor="57"
+				covers_hands="true"
+				modifier_group="chain"
+				material_type="Chainmail" />
+		</ItemComponent>
+		<Flags />
+	</Item>
 </Items>
