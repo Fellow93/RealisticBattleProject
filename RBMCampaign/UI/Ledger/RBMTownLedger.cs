@@ -650,7 +650,8 @@ namespace RBMCampaign
             dataStore.SyncData("RBM_townFoodCitizensHist", ref _foodCitizens);
             dataStore.SyncData("RBM_townFoodGarrisonHist", ref _foodGarrison);
             dataStore.SyncData("RBM_townFoodMilitiaHist", ref _foodMilitia);
-            dataStore.SyncData("RBM_townEventHist", ref _events);
+            // The text-column series can outgrow one save entry; the int series cannot.
+            SaveStringChunks.Sync(dataStore, "RBM_townEventHist", ref _events);
             dataStore.SyncData("RBM_townItemDemandHist", ref _itemDemand);
             dataStore.SyncData("RBM_townItemSupplyHist", ref _itemSupply);
             dataStore.SyncData("RBM_townDayVillager", ref _dayVillager);
@@ -658,11 +659,11 @@ namespace RBMCampaign
             dataStore.SyncData("RBM_townDayCaravan", ref _dayCaravan);
             dataStore.SyncData("RBM_townDayVillagerGoodsUnits", ref flatGoodsUnits);
             dataStore.SyncData("RBM_townDayVillagerGoodsGold", ref flatGoodsGold);
-            dataStore.SyncData("RBM_townVillagerGoodsHist", ref _villagerGoods);
+            SaveStringChunks.Sync(dataStore, "RBM_townVillagerGoodsHist", ref _villagerGoods);
             dataStore.SyncData("RBM_townDaySettlementFlow", ref flatSettlementFlow);
             dataStore.SyncData("RBM_townDayCitizenFlow", ref flatCitizenFlow);
-            dataStore.SyncData("RBM_townSettlementFlowHist", ref _settlementFlow);
-            dataStore.SyncData("RBM_townCitizenFlowHist", ref _citizenFlow);
+            SaveStringChunks.Sync(dataStore, "RBM_townSettlementFlowHist", ref _settlementFlow);
+            SaveStringChunks.Sync(dataStore, "RBM_townCitizenFlowHist", ref _citizenFlow);
             dataStore.SyncData("RBM_townLedgerLastDay", ref _lastDay);
 
             if (dataStore.IsLoading)

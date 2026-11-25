@@ -289,6 +289,7 @@
     <Compile Include="NativeParameterGate.cs" />
     <Compile Include="PatrolReplenishGuard.cs" />
     <Compile Include="SaveRosterRepair.cs" />
+    <Compile Include="SaveEntryLengthRepair.cs" />
     <Compile Include="XmlLoadingPatches.cs" />
   </ItemGroup>
   <ItemGroup>

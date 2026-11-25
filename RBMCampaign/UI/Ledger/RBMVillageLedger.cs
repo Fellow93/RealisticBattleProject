@@ -281,7 +281,7 @@ namespace RBMCampaign
             dataStore.SyncData("RBM_villageWealthHist", ref _wealth);
             dataStore.SyncData("RBM_villageHearthHist", ref _hearth);
             dataStore.SyncData("RBM_villageMilitiaHist", ref _militia);
-            dataStore.SyncData("RBM_villageEventHist", ref _events);
+            SaveStringChunks.Sync(dataStore, "RBM_villageEventHist", ref _events);
             dataStore.SyncData("RBM_villageLedgerLastDay", ref _lastDay);
 
             if (_prod == null) _prod = new Dictionary<string, string>();

@@ -374,6 +374,7 @@
     <Compile Include="UI\Ledger\RBMLedgerTabVM.cs" />
     <Compile Include="UI\Ledger\RBMLedgerClanFinanceVM.cs" />
     <Compile Include="UI\Ledger\RBMClanFinanceLedger.cs" />
+    <Compile Include="UI\Ledger\SaveStringChunks.cs" />
     <Compile Include="UI\Ledger\RBMClanFinanceLedgerCampaignBehavior.cs" />
     <Compile Include="UI\Ledger\RBMLedgerViewModel.cs" />
     <Compile Include="UI\Ledger\RBMLedgerScreen.cs" />

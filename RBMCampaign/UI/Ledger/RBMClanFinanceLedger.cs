@@ -730,7 +730,7 @@ namespace RBMCampaign
                 _day[MetaPartial] = _openPartial ? 1 : 0;
             }
 
-            dataStore.SyncData("RBM_clanFinanceHist", ref _hist);
+            SaveStringChunks.Sync(dataStore, "RBM_clanFinanceHist", ref _hist);
             dataStore.SyncData("RBM_clanFinanceDay", ref _day);
 
             if (_hist == null)

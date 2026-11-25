@@ -116,6 +116,8 @@ namespace RBM
             CustomBattlePreset.LoadPreset();
             // Must run here: the engine reads project.mbproj right after OnSubModuleLoad, and only once.
             CombatParameterGate.Apply();
+            // A save is read before OnGameStart, so this cannot wait for ApplyHarmonyPatches.
+            SaveEntryLengthRepair.ApplyEarly();
 
             // Gauntlet parses and caches the party screen prefab before OnGameStart runs, so this
             // one hook cannot wait for ApplyHarmonyPatches like the rest of RBMCampaign does.

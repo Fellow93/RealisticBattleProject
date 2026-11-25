@@ -8,6 +8,7 @@
 ### Campaign
 - A popup now tells you what RBM Campaign changes for your role (adventurer, mercenary, vassal or ruler): at the start of a new game, once when you load an existing save, and whenever your role changes.
 - AI lords now start a new campaign with 10x their usual gold, and a newly founded mercenary company starts with 10x as well. Existing lords and companies in a save are not changed.
+- Fixed: a long campaign could produce a save that would not load. The RBM Ledger's 30-day history (clan finances, town trade flows) could grow past the size the game can store in one save entry; it is now saved in smaller pieces. Saves already broken this way load again with this version (re-save once to make them permanent). Thanks to the reporter who dug it out of the save file.
 - Fixed: long-lived patrols slowed to a crawl. They kept every piece of battle loot forever and ended up overburdened; a patrol now drops what it carries each day (existing patrols recover on the next day).
 - Fixed: a crash (NullReferenceException in DeploymentMissionController.SetupTeams) when watching an AI siege assault if RTS Camera did not take control of a troop.
 
