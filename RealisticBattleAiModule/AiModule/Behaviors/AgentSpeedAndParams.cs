@@ -178,6 +178,18 @@ namespace RBMAI
         [HarmonyPatch("SetBehaviorValueSet")]
         private static void SetBehaviorValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
         {
+            ApplyValueSet(__instance, behaviorValueSet, ___Agent);
+            // A mounted crossbow is only reloaded on an attack press, and only RangedHorseback presses it:
+            // while unloaded, RangedHorseback must beat GoToPos (max 6) at any range. The charge set already does.
+            if (___Agent != null && UnloadedCrossbowRider.Is(___Agent)
+                && !(behaviorValueSet == BehaviorValueSet.Charge && ___Agent.Formation.QuerySystem.IsRangedCavalryFormation))
+            {
+                __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 8f, 90f, 8f, 100f, 0.05f);
+            }
+        }
+
+        private static void ApplyValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
+        {
             if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
             {
                 if (___Agent != null && ___Agent.Equipment != null && ___Agent.IsRangedCached)
@@ -366,17 +378,91 @@ namespace RBMAI
             {
                 return;
             }
-            MovementOrder order = __instance.GetReadonlyMovementOrderReference();
-            MovementOrder.MovementOrderEnum orderEnum = order.OrderEnum;
-            if ((orderEnum == MovementOrder.MovementOrderEnum.Charge || orderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget) && order.GetPosition(__instance).IsValid)
-            {
-                orderEnum = MovementOrder.MovementOrderEnum.Move;
-            }
+            MovementOrder.MovementOrderEnum orderEnum = BehaviorOrderEnum(__instance);
             ArrangementOrderEnum arrangementEnum = __instance.ArrangementOrder.OrderEnum;
             __instance.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
             {
                 agent.RefreshBehaviorValues(orderEnum, arrangementEnum);
             });
+        }
+
+        internal static MovementOrder.MovementOrderEnum BehaviorOrderEnum(Formation formation)
+        {
+            MovementOrder order = formation.GetReadonlyMovementOrderReference();
+            MovementOrder.MovementOrderEnum orderEnum = order.OrderEnum;
+            if ((orderEnum == MovementOrder.MovementOrderEnum.Charge || orderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget) && order.GetPosition(formation).IsValid)
+            {
+                orderEnum = MovementOrder.MovementOrderEnum.Move;
+            }
+            return orderEnum;
+        }
+    }
+
+    // Re-applies a rider's behavior values when his crossbow is shot empty or reloaded (the unloaded boost lives in SetBehaviorValueSet).
+    [HarmonyPatch(typeof(Agent))]
+    internal class UnloadedCrossbowRider
+    {
+        private static readonly AccessTools.FieldRef<HumanAIComponent, BehaviorValueSet> LastBehaviorValueSet =
+            AccessTools.FieldRefAccess<HumanAIComponent, BehaviorValueSet>("_lastBehaviorValueSet");
+
+        // managed equipment reads only: SetBehaviorValueSet also runs on the AI thread
+        internal static bool Is(Agent agent)
+        {
+            if (!agent.HasMount || agent.Formation == null || !agent.Formation.IsAIControlled || agent.Equipment == null)
+            {
+                return false;
+            }
+            bool emptyCrossbow = false;
+            bool bolts = false;
+            for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.ExtraWeaponSlot; i++)
+            {
+                MissionWeapon weapon = agent.Equipment[i];
+                if (weapon.IsEmpty)
+                {
+                    continue;
+                }
+                WeaponComponentData usage = weapon.CurrentUsageItem;
+                if (usage.WeaponClass == WeaponClass.Crossbow)
+                {
+                    emptyCrossbow |= weapon.Ammo == 0 && !usage.WeaponFlags.HasAnyFlag(WeaponFlags.CantReloadOnHorseback);
+                }
+                else if (usage.WeaponClass == WeaponClass.Bolt)
+                {
+                    bolts |= weapon.Amount > 0;
+                }
+            }
+            return emptyCrossbow && bolts;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("OnWeaponAmmoConsume")]
+        private static void OnWeaponAmmoConsume(Agent __instance, EquipmentIndex slotIndex)
+        {
+            Reapply(__instance, slotIndex);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("OnWeaponAmmoReload")]
+        private static void OnWeaponAmmoReload(Agent __instance, EquipmentIndex slotIndex)
+        {
+            Reapply(__instance, slotIndex);
+        }
+
+        private static void Reapply(Agent agent, EquipmentIndex slotIndex)
+        {
+            HumanAIComponent ai = agent.HumanAIComponent;
+            if (ai == null || !agent.HasMount || agent.Formation == null || !agent.Formation.IsAIControlled)
+            {
+                return;
+            }
+            MissionWeapon weapon = agent.Equipment[slotIndex];
+            if (weapon.IsEmpty || weapon.CurrentUsageItem.WeaponClass != WeaponClass.Crossbow)
+            {
+                return;
+            }
+            // SetBehaviorValueSet skips a set it believes is already applied
+            LastBehaviorValueSet(ai) = BehaviorValueSet.Overriden;
+            ai.RefreshBehaviorValues(RefreshBehaviorValuesOnControlChange.BehaviorOrderEnum(agent.Formation), agent.Formation.ArrangementOrder.OrderEnum);
         }
     }
 }
