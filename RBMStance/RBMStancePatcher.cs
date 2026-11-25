@@ -15,7 +15,7 @@ namespace RBMStance
     /// so they keep running after RBMCombat's, as they did while RBMAI (patched per mission) hosted them.
     ///
     /// Plain PatchAll at module load, like RBMCombat: the original bodies of the targets RBMCombat does not already
-    /// patch (Agent.WieldInitialWeapons, Agent.OnWeaponReloadPhaseChange, MissionState.LoadMission/OnDeactivate,
+    /// patch (Mission.SpawnAgent,Agent.OnWeaponReloadPhaseChange, MissionState.LoadMission/OnDeactivate,
     /// TournamentRound.EndMatch, MissionMainAgentController.ControlTick) read no static of a type whose initializer
     /// needs the game loaded (see the cctor notes in RBMCampaignPatcher), so recompiling them early is safe.
     /// </summary>

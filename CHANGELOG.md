@@ -22,6 +22,7 @@
 
 ### Combat
 - Fixed: the "duplicate key sequence 'dagger_blade_13_blunt'" error in the game log when loading RBM's crafting pieces.
+- Fixed: some men knocked down by a kick or bash still flew back instead of falling where they stood, as in arena practice fights; AI fighters there now kick and bash too. Thanks to order_without_power for tracking it down.
 
 ## v4.8.2 (changes since v4.8.1)
 

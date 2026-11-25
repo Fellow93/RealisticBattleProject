@@ -667,11 +667,6 @@ namespace RBMStance
             // fall on the spot itself, on the victim's next tick (AiKickBashComponent.QueueFall).
             private static void KnockDown(ref Blow blow, AiKickBashComponent victimComponent, bool fromBehind)
             {
-                if (victimComponent == null)
-                {
-                    blow.BlowFlag |= BlowFlags.KnockDown;
-                    return;
-                }
                 blow.BlowFlag &= ~(BlowFlags.KnockDown | BlowFlags.KnockBack);
                 victimComponent.QueueFall(fromBehind);
             }
@@ -706,10 +701,14 @@ namespace RBMStance
                 // Read before this blow restarts the window.
                 bool kickedRecently = AiKickBash.WasKickedRecently(victimAgent);
                 AiKickBashComponent victimComponent = victimAgent.GetComponent<AiKickBashComponent>();
-                if (victimComponent != null)
+                if (victimComponent == null)
                 {
-                    victimComponent.LastKickedTime = victimAgent.Mission.CurrentTime;
+                    // Spawned before the setting was switched on: he still needs the component to fall on the
+                    // spot. No AI input callback: it cannot be switched on mid-mission.
+                    victimComponent = new AiKickBashComponent(victimAgent);
+                    victimAgent.AddComponent(victimComponent);
                 }
+                victimComponent.LastKickedTime = victimAgent.Mission.CurrentTime;
                 bool fromBehind = AiKickBash.IsBehind(attackerAgent, victimAgent);
                 // A man still reeling from a posture break or posture tiredness has no footing left: down.
                 if (AiKickBash.IsPostureBroken(victimAgent))
@@ -764,13 +763,15 @@ namespace RBMStance
             }
         }
 
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("WieldInitialWeapons")]
+        // On the spawn itself: WieldInitialWeapons is not called for every man (arena practice, civilian scenes).
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("SpawnAgent")]
         internal class AiKickBashSpawnPatch
         {
-            private static void Postfix(Agent __instance)
+            private static void Postfix(Agent __result)
             {
-                if (!RBMConfig.RBMConfig.aiKickBashEnabled || !__instance.IsHuman || __instance.GetComponent<AiKickBashComponent>() != null)
+                Agent __instance = __result;
+                if (!RBMConfig.RBMConfig.aiKickBashEnabled || __instance == null || !__instance.IsHuman || __instance.GetComponent<AiKickBashComponent>() != null)
                 {
                     return;
                 }

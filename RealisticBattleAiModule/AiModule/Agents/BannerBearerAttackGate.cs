@@ -89,13 +89,14 @@ namespace RBMAI
         }
 
         // Attached at spawn: OnAIInputSet walks the component list on the AI thread, so it is not changed mid-mission (TickPatches covers later pickups).
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("WieldInitialWeapons")]
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("SpawnAgent")]
         internal class BannerBearerAttackGateSpawnPatch
         {
-            private static void Postfix(Agent __instance)
+            private static void Postfix(Agent __result)
             {
-                if (!__instance.IsHuman || __instance.Equipment == null || __instance.GetComponent<BannerBearerAttackGate>() != null
+                Agent __instance = __result;
+                if (__instance == null || !__instance.IsHuman || __instance.Equipment == null || __instance.GetComponent<BannerBearerAttackGate>() != null
                     || !BannerBearerAttackGate.CarriesBanner(__instance))
                 {
                     return;
