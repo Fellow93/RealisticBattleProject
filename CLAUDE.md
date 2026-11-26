@@ -8,7 +8,7 @@ each module live in `docs/modules/` (see "Module docs" below). New design notes 
 
 Realistic Battle Mod (RBM) for Mount & Blade II: Bannerlord. A comprehensive combat overhaul mod that rewrites damage calculations, armor mechanics, AI behavior, and adds a stamina/posture system. Built on Harmony 2.4.2 for non-invasive runtime patching of game methods.
 
-Current version: v4.8.3 (`RBMXML/SubModule.xml`). Targets Bannerlord v1.5.4+ (per the
+Current version: v4.8.4 (`RBMXML/SubModule.xml`). Targets Bannerlord v1.5.4+ (per the
 `DependedModules` entries there); currently developed against v1.5.6 (its perk API — `PerkHelper` environment as the
 trailing optional argument, `TryGetPerkEffectBonus`, no `BattleEnvironment.None`, no environment overloads of
 `GetPerkValue`/`HasPerk` — does not compile against ≤ v1.5.5).

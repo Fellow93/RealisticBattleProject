@@ -152,7 +152,11 @@ namespace RBMAI
                 {
                     // Bow slope, but never worse than vanilla's flat 0.008: the old 0.007 slope left skilled
                     // crossbowmen missing everything past short range.
-                    agentDrivenProperties.AiShooterError = Math.Min(0.008f, 0.015f - (0.015f * effectiveSkillLevel));
+                    // Combat off: bows and crossbows keep vanilla's flat 0.008, so the engine picks its vanilla range.
+                    if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                    {
+                        agentDrivenProperties.AiShooterError = Math.Min(0.008f, 0.015f - (0.015f * effectiveSkillLevel));
+                    }
                     if (!playerAimsVanilla)
                     {
                         agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
@@ -162,7 +166,10 @@ namespace RBMAI
                 }
                 else if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Bow)
                 {
-                    agentDrivenProperties.AiShooterError = 0.015f - (0.015f * effectiveSkillLevel);
+                    if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                    {
+                        agentDrivenProperties.AiShooterError = 0.015f - (0.015f * effectiveSkillLevel);
+                    }
                     if (!playerAimsVanilla)
                     {
                         agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;

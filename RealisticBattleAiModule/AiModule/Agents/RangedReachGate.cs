@@ -70,7 +70,10 @@ namespace RBMAI
                 }
                 // GetTargetAgent is a native call polled every TargetCheckInterval, so only for shooters and throwers
                 // (IsRangedCached is launchers only; javelins and throwing axes are consumable, HasThrownCached).
-                if (!agent.IsRangedCached && !agent.HasThrownCached)
+                // A spanned crossbow shoots with no draw time, and IsRangedCached counts quiver bolts only: the last
+                // loaded bolt still has to be gated, and a new target measured before the next frame, not the next poll.
+                bool loadedCrossbow = HasLoadedCrossbow(agent);
+                if (!agent.IsRangedCached && !agent.HasThrownCached && !loadedCrossbow)
                 {
                     if (holding.Remove(agent))
                     {
@@ -82,7 +85,7 @@ namespace RBMAI
                 // the native target poll is throttled.
                 EquipmentIndex wielded = agent.GetPrimaryWieldedItemIndex();
                 bool sameWielded = checkedWielded.TryGetValue(agent, out EquipmentIndex lastWielded) && lastWielded == wielded;
-                if (sameWielded && nextTargetCheck.TryGetValue(agent, out float nextTarget) && currentTime < nextTarget)
+                if (!loadedCrossbow && sameWielded && nextTargetCheck.TryGetValue(agent, out float nextTarget) && currentTime < nextTarget)
                 {
                     return;
                 }
@@ -127,6 +130,13 @@ namespace RBMAI
                     }
                     agent.UpdateAgentProperties();
                 }
+            }
+
+            private static bool HasLoadedCrossbow(Agent agent)
+            {
+                MissionWeapon weapon = agent.WieldedWeapon;
+                return !weapon.IsEmpty && weapon.CurrentUsageItem != null
+                    && weapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow && weapon.Ammo > 0;
             }
 
             public static void ApplyRangedReach(Agent agent, AgentDrivenProperties agentDrivenProperties)

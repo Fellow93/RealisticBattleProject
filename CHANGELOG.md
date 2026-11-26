@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.8.4 (changes since v4.8.3)
+
+### AI
+- With only the AI module on (Combat off), AI archers and crossbowmen use the unmodded game's aiming error, so both judge their shooting range as in the unmodded game.
+- Fixed (Combat on): an AI crossbowman with a loaded crossbow could loose at a newly picked target beyond his bolt's reach, and one down to his last loaded bolt ignored the reach limit entirely.
+
 ## v4.8.3 (changes since v4.8.2)
 
 ### Other
