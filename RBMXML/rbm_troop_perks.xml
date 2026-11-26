@@ -101,6 +101,7 @@
   <Troop id="aserai_tribal_horseman">
     <Perk id="PolearmCleanThrust"/>
     <Perk id="RidingNimbleStead"/>
+    <Perk id="ThrowingShieldBreaker"/>
   </Troop>
   <Troop id="beni_zilal_tier_2">
     <Perk id="OneHandedToBeBlunt"/>
@@ -121,6 +122,7 @@
   <Troop id="aserai_faris">
     <Perk id="PolearmCleanThrust"/>
     <Perk id="RidingNimbleStead"/>
+    <Perk id="ThrowingShieldBreaker"/>
   </Troop>
   <Troop id="aserai_infantry">
     <Perk id="OneHandedWrappedHandles"/>
@@ -174,6 +176,8 @@
   <Troop id="aserai_veteran_faris">
     <Perk id="PolearmCleanThrust"/>
     <Perk id="RidingNimbleStead"/>
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="ThrowingLastHit"/>
   </Troop>
   <Troop id="aserai_veteran_infantry">
     <Perk id="ThrowingQuickDraw"/>
@@ -193,6 +197,9 @@
   <Troop id="aserai_vanguard_faris">
     <Perk id="PolearmCleanThrust"/>
     <Perk id="RidingNimbleStead"/>
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="ThrowingLastHit"/>
+    <Perk id="ThrowingWeakSpot"/>
   </Troop>
   <Troop id="battanian_volunteer">
     <Perk id="AthleticsWellBuilt"/>
