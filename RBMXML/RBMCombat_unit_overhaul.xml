@@ -4846,7 +4846,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_noble_sword_2_t5" />
       <equipment slot="Item1"
                  id="Item.highland_scouts_shield_shoulder" />
       <equipment slot="Item2"
@@ -4866,7 +4866,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_noble_sword_1_t5" />
       <equipment slot="Item1"
                  id="Item.highland_scouts_shield_shoulder" />
       <equipment slot="Item2"
@@ -4886,7 +4886,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_sword_5_t5" />
       <equipment slot="Item1"
                  id="Item.highland_scouts_shield_shoulder" />
       <equipment slot="Item2"
@@ -4948,7 +4948,7 @@
       <equipment slot="Item1"
                  id="Item.highland_riders_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_noble_sword_3_t5" />
       <equipment slot="Item3"
                  id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Body"
@@ -4970,7 +4970,7 @@
       <equipment slot="Item1"
                  id="Item.highland_riders_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_noble_sword_1_t5" />
       <equipment slot="Item3"
                  id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Body"
@@ -4992,7 +4992,7 @@
       <equipment slot="Item1"
                  id="Item.highland_riders_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.battania_2hsword_4_t4" />
+                 id="Item.battania_sword_5_t5" />
       <equipment slot="Item3"
                  id="Item.eastern_throwing_spear_2_t4" />
       <equipment slot="Body"
@@ -13939,7 +13939,7 @@
       <equipment slot="Item1"
                  id="Item.heavy_heater_shield_shoulder" />
       <equipment slot="Item2"
-                 id="Item.vlandia_2hsword_2_t5" />
+                 id="Item.vlandia_noble_sword_2_t5" />
       <equipment slot="Body"
                  id="Item.coat_of_plates_over_mail" />
       <equipment slot="Leg"
